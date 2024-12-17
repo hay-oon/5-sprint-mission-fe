@@ -26,13 +26,14 @@ body {
 
 .logoimg {
   width: 396px;
+  margin-bottom: 40px;
 }
 
 form {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 16px auto;
+  margin: 0 auto;
   width: 640px;
 }
 
@@ -94,6 +95,7 @@ button:hover {
   background-color: var(--sns-bg-color);
   padding: 16px 23px;
   border-radius: 8px;
+  width: 640px;
 }
 
 .snslogin {
