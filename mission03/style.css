@@ -95,8 +95,6 @@ header {
 }
 
 .contentbox {
-  max-width: 999px; /* 옅은 회색의 박스가 자식요소들과 연동되어야함 해결요망 */
-  max-height: 444px;
   display: flex;
   justify-content: center;
   align-items: center;

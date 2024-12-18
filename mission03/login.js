@@ -2,8 +2,8 @@
 // 이메일 유효성 검사 함수
 function validateEmail(input) {
     const emailValue = input.value.trim();
-    const errorMessage = input.nextElementSibling;
-  
+    const errorMessage = document.querySelector(".email-error");
+
     if (emailValue === "") {
       input.style.borderColor = "red";
       errorMessage.textContent = "이메일을 입력해주세요.";
@@ -16,7 +16,9 @@ function validateEmail(input) {
       errorMessage.textContent = "잘못된 이메일 형식입니다";
       errorMessage.style.display = "block";
       return false;
-    } else {
+    } 
+    
+    else {
     input.style.borderColor = "";
     errorMessage.style.display = "none";
     return true;
@@ -26,7 +28,7 @@ function validateEmail(input) {
 // 비밀번호 유효성 검사 함수
   function validatePassword(input) {
     const passwordValue = input.value.trim();
-    const errorMessage = input.nextElementSibling;
+    const errorMessage = document.querySelector(".password-error");
   
     if (passwordValue === "") {
       input.style.borderColor = "red";

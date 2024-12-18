@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="kr">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="signup.css" />
   <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="icon" herf="favicon.ico">
   <title>회원가입</title>
@@ -14,22 +14,42 @@
     <img class= "logoimg" src="image/logo.png" alt="판다마켓 로고">
   </a>
   <form>
-    <label for="username">이메일</label>
-    <input id="username" name="username" placeholder="이메일을 입력해주세요" >
+  <!-- 이메일 입력 -->
+  <div class="input-wrapper">
+    <label for="email">이메일</label>
+    <input id="email" type="text" placeholder="이메일을 입력해주세요">
+    <div class="email-error"></div>
+  </div>
+  <!-- 닉네임 입력 -->
+  <div class="input-wrapper">
     <label for="nickname">닉네임</label>
-    <input id="nickname" name="username" placeholder="닉네임을 입력해주세요" >
+    <input id="nickname" type="text" placeholder="닉네임을 입력해주세요">
+    <div class="nickname-error"></div>
+  </div>
+
+  <!-- 비밀번호 입력 -->
+  <div class="input-wrapper">
     <label for="password">비밀번호</label>
-    <div class="input-wrapper">
-      <input id="password" name="password" type="password" placeholder="비밀번호를 입력해주세요" >
-      <img class="eye-icon" src="image/btn_visibility_off_24px.png" alt="비밀번호 보기">
+    <div class="password-box">
+    <input id="password" type="password" placeholder="비밀번호를 입력해주세요">
+    <img id="password-toggle" class="eye-icon" src="image/btn_visibility_off_24px.png" alt="비밀번호 보기">
     </div>
-    <label for="checkpw">비밀번호 확인</label>
-    <div class="input-wrapper">
-      <input id="checkpw" name="password" type="password" placeholder="비밀번호를 다시 한 번 입력해주세요">
-      <img class="eye-icon" src="image/btn_visibility_off_24px.png" alt="비밀번호 보기">
+    <div class="password-error"></div>
+  </div>
+
+  <!-- 비밀번호 확인 -->
+  <div class="input-wrapper">
+    <label for="confirm-password">비밀번호 확인</label>
+    <div class="password-box">
+    <input id="confirm-password" type="password" placeholder="비밀번호를 다시 입력해주세요">
+    <img id="confirm-password-toggle" class="eye-icon" src="image/btn_visibility_off_24px.png" alt="비밀번호 보기">
     </div>
-      <button>회원가입</button>
-  </form>
+    <div class="confirm-password-error"></div>
+  </div>
+
+  <!-- 가입 버튼 -->
+  <button type="submit" class="submit-button" disabled>회원가입</button>
+</form>
   <div class="snscontainer">
     <div class="snslogin">
       <div>간편 로그인하기</div>
