@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="icon" herf="favicon.ico">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4CJ06G9H8Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-4CJ06G9H8Q');
+  </script>
+  <title>로그인</title>
+</head>
+<body>
+  <a href="/index.html">
+    <img class= "logoimg" src="image/logo.png" alt="판다마켓 로고">
+  </a>
+  <form>
+    <label for="username">이메일</label>
+    <input id="username" name="username" placeholder="이메일을 입력해주세요">
+    <div class="error-message email-error" style="display: none; color: red; font-size: 14px; margin-top: 8px;"></div>
+
+    <label for="password">비밀번호</label>
+    <div class="input-wrapper">
+      <input id="password" name="password" type="password" placeholder="비밀번호를 입력해주세요">
+      <img id="visibility-toggle" class="visibility-toggle" src="image/btn_visibility_off_24px.png" alt="비밀번호 보기 토글">
+    </div> 
+      <div class="error-message password-error" style="display: none; color: red; font-size: 14px; margin-top: 8px;"></div>
+    
+    <button class="button" disabled>로그인</button>
+  </form>
+  <div class="snscontainer">
+    <div class="snslogin">
+      <div>간편 로그인하기</div>
+      <div class="snsicons">
+        <a href="https://www.google.com/" target="_blank">
+          <img class="snsicon" src="image/google.png" alt="구글 아이콘">
+        </a href="https://www.kakaocorp.com/page/" target="_blank">
+        <a >
+          <img class="snsicon" src="image/kakao.png" alt="카톡 아이콘">
+        </a>
+        </div>
+    </div>
+  </div>
+  <div class="linktosignup">
+    판다마켓이 처음이신가요? <a href="signup.html">회원가입</a>
+  </div>
+  <script src="login.js"></script>
+</body>
+</html>
