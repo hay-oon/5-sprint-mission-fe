@@ -3,12 +3,11 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const submitButton = document.querySelector(".submit-button");
 
-//유효성 검사 함수
+// 유효성 검사 함수
 function validateForm() {
   let isValid = true;
 
   // 이메일 검사 조건문
-  
   const emailError = document.querySelector(".email-error");
 
   if (emailInput.value === "") {
@@ -52,14 +51,54 @@ function validateForm() {
   }
 }
 
-// 폼 제출 이벤트 추가
+const USER_DATA = [
+  { email: 'codeit1@codeit.com', password: "codeit101!" },
+  { email: 'codeit2@codeit.com', password: "codeit202!" },
+  { email: 'codeit3@codeit.com', password: "codeit303!" },
+  { email: 'codeit4@codeit.com', password: "codeit404!" },
+  { email: 'codeit5@codeit.com', password: "codeit505!" },
+  { email: 'codeit6@codeit.com', password: "codeit606!" },
+];
+
+// 폼 제출 이벤트 함수
 function handleFormSubmit(event) {
-  event.preventDefault(); // 기본 동작 중단
-  if (!submitButton.disabled) {
-    // 유효한 값이 있을 경우 이동
-    window.location.href = "/items";
+  event.preventDefault(); // 기본 폼 제출 방지
+  
+// 데이터 확인을 위한 플래그
+let userFound = false;
+let passwordMatch = false;
+
+  // USER_DATA 배열 순회
+  for (let i = 0; i < USER_DATA.length; i++) {
+      const users = USER_DATA[i];
+    if (users.email === emailInput.value) {
+        userFound = true; // 이메일이 데이터베이스에 존재함
+        if (users.password === passwordInput.value) {
+            passwordMatch = true; // 비밀번호도 일치함
+        }
+    }
+
+  // 조건에 따른 메시지 출력
+  if (!userFound) {
+      alert("이메일이 존재하지 않습니다.");
+  } else if (!passwordMatch) {
+      alert("비밀번호가 일치하지 않습니다.");
+  } else {
+      alert("로그인 성공!");
+      window.location.href = "/items"; // /items로 이동
   }
 }
+}
+
+
+// 폼 제출 이벤트 추가
+// function handleFormSubmit(event) {
+//   event.preventDefault(); // 기본 동작 중단
+//   if (!submitButton.disabled) {
+//     // 유효한 값이 있을 경우 이동
+//     window.location.href = "/items";
+//   }
+
 
 // 이벤트 리스너
 emailInput.addEventListener("input", validateForm);

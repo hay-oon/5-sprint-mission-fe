@@ -1,0 +1,27 @@
+1. 이벤트리스너 input 대신 focus in / out 적용해보기
+
+2. 유효성 검사 함수 개별적용시켜보기
+
+3. 유효성 검사 반복되는 조건문 아래와 같이 추상화 해보기
+; const validateStyle = (textContent => {
+;     emailInput.style.outline = "3px solid red";
+;     emailError.textContent = textContent;
+;     emailError.style.color = "red";
+;     isValid = false;
+; })
+
+; //유효성 검사 함수
+; function validateForm() {
+;   let isValid = true;
+
+;   // 이메일 검사 조건문
+;   const emailError = document.querySelector(".email-error")
+;   if (emailInput.value === "") {
+;     validateStyle("이메일을 입력해주세요.")
+;   } else if (!emailInput.value.includes("@") || !emailInput.value.includes(".")) {
+;     validateStyle("잘못된 이메일 형식입니다.")
+;   } else {
+;     emailInput.style.border = "none";
+;     emailError.textContent = "";
+
+4. 로그인/회원가입 페이지 이메일이 존재하지 않을때 alert 확인눌러도 안닫힘 문제
