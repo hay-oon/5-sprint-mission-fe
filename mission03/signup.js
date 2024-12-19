@@ -98,7 +98,7 @@ const USER_DATA = [
 ];
 
 function handleFormSubmit(event) {
-  event.preventDefault();
+  event.preventDefault(); // 기본 폼 제출 방지
 
   for (let i = 0; i < USER_DATA.length; i++) {
     const user = USER_DATA[i]
