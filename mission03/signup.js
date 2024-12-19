@@ -23,7 +23,7 @@ function validateForm() {
     emailError.style.color = "red";
     isValid = false;
   } else {
-    emailInput.style.border = "";
+    emailInput.style.border = "none";
     emailError.textContent = "";
   }
 
@@ -41,7 +41,7 @@ function validateForm() {
     nicknameError.style.color = "red";
     isValid = false;
   } else {
-    nicknameInput.style.border = "";
+    nicknameInput.style.border = "none";
     nicknameError.textContent = "";
   }
 
@@ -59,7 +59,7 @@ function validateForm() {
     passwordError.style.color = "red";
     isValid = false;
   } else {
-    passwordInput.style.border = "";
+    passwordInput.style.border = "none";
     passwordError.textContent = "";
   }
 
@@ -77,16 +77,14 @@ function validateForm() {
     confirmPasswordError.style.color = "red";
     isValid = false;
   } else {
-    confirmPasswordInput.style.border = "";
+    confirmPasswordInput.style.border = "none";
     confirmPasswordError.textContent = "";
   }
 
 // 버튼 활성화 및 비활성화 처리
   if (isValid) {
-    submitButton.classList.add("active");
     submitButton.disabled = false;
   } else {
-    submitButton.classList.remove("active");
     submitButton.disabled = true;
   }
 }

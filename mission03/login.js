@@ -1,111 +1,80 @@
-
-// 이메일 유효성 검사 함수
-function validateEmail(input) {
-    const emailValue = input.value.trim();
-    const errorMessage = document.querySelector(".email-error");
-
-    if (emailValue === "") {
-      input.style.borderColor = "red";
-      errorMessage.textContent = "이메일을 입력해주세요.";
-      errorMessage.style.display = "block";
-      return false;
-    }
-  
-    else if (!emailValue.includes("@") || !emailValue.includes(".")) {
-      input.style.borderColor = "red";
-      errorMessage.textContent = "잘못된 이메일 형식입니다";
-      errorMessage.style.display = "block";
-      return false;
-    } 
-    
-    else {
-    input.style.borderColor = "";
-    errorMessage.style.display = "none";
-    return true;
-    }
-  }
-  
-// 비밀번호 유효성 검사 함수
-  function validatePassword(input) {
-    const passwordValue = input.value.trim();
-    const errorMessage = document.querySelector(".password-error");
-  
-    if (passwordValue === "") {
-      input.style.borderColor = "red";
-      errorMessage.textContent = "비밀번호를 입력해주세요.";
-      errorMessage.style.display = "block";
-      return false;
-    } else if (passwordValue.length < 8) {
-      input.style.borderColor = "red";
-      errorMessage.textContent = "비밀번호를 8자 이상 입력해주세요.";
-      errorMessage.style.display = "block";
-      return false;
-    } else {
-      input.style.borderColor = "";
-      errorMessage.style.display = "none";
-      return true;
-    }
-  }
-  
-
 // HTML 요소 가져오기
-  const emailInput = document.getElementById("username");
-  const passwordInput = document.getElementById("password");
-  const loginButton = document.querySelector(".button");
-  const visibilityToggle = document.getElementById("visibility-toggle");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const submitButton = document.querySelector(".submit-button");
 
-  let passwordVisible = false;
+//유효성 검사 함수
+function validateForm() {
+  let isValid = true;
+
+  // 이메일 검사 조건문
   
-  // 비밀번호 토글 버튼 클릭 이벤트
-  visibilityToggle.addEventListener("click", (e) => {
-    e.preventDefault(); // 클릭 시 입력 필드에 포커스가 이동하지 않도록 방지
-    passwordVisible = !passwordVisible;
-    if (passwordVisible) {
-      passwordInput.type = "text";
-      visibilityToggle.src = "/image/btn_visibility_on_24px.png";
-    } else {
-      passwordInput.type = "password";
-      visibilityToggle.src = "/image/btn_visibility_off_24px.png";ßß
-    }
-  });
-// 모든 입력값 유효성 확인 후 로그인 버튼 활성화/비활성화 함수
-  function validateLogin() {
-    const isEmailValid = validateEmail(emailInput);
-    const isPasswordValid = validatePassword(passwordInput);
-  
-    loginButton.disabled = !(isEmailValid && isPasswordValid);
+  const emailError = document.querySelector(".email-error");
+
+  if (emailInput.value === "") {
+    emailInput.style.border = "3px solid red";
+    emailError.textContent = "이메일을 입력해주세요.";
+    emailError.style.color = "red";
+    isValid = false;
+  } else if (!emailInput.value.includes("@") || !emailInput.value.includes(".")) {
+    emailInput.style.border = "3px solid red";
+    emailError.textContent = "잘못된 이메일 형식입니다.";
+    emailError.style.color = "red";
+    isValid = false;
+  } else {
+    emailInput.style.border = "none";
+    emailError.textContent = "";
   }
-  
-// 이메일 input 이벤트 핸들러
-  emailInput.addEventListener("focusout", () => {
-    validateEmail(emailInput);
-    validateLogin();
-  });
-  
-  emailInput.addEventListener("focus", () => {
-    const errorMessage = emailInput.nextElementSibling;
-    emailInput.style.borderColor = "";
-    errorMessage.style.display = "none";
-  });
-  
-// 비밀번호 input 이벤트 핸들러
-  passwordInput.addEventListener("focusout", () => {
-    validatePassword(passwordInput);
-    validateLogin();
-  });
-  
-  passwordInput.addEventListener("focus", () => {
-    const errorMessage = passwordInput.nextElementSibling;
-    passwordInput.style.borderColor = "";
-    errorMessage.style.display = "none";
-  });
-  
-  // 로그인 버튼 클릭 이벤트 핸들러
-  loginButton.addEventListener("click", (event) => {
-    event.preventDefault(); // 기본 동작 막기
-    if (!loginButton.disabled) {
-      window.location.href = "/items"; // 페이지 이동
-    }
-  });
-  
- 
+
+  // 비밀번호 검사 조건문
+  const passwordError = document.querySelector(".password-error");
+
+  if (passwordInput.value === "") {
+    passwordInput.style.border = "3px solid red";
+    passwordError.textContent = "비밀번호를 입력해주세요.";
+    passwordError.style.color = "red";
+    isValid = false;
+  } else if (passwordInput.value.length < 8) {
+    passwordInput.style.border = "3px solid red";
+    passwordError.textContent = "비밀번호는 8자 이상이어야 합니다.";
+    passwordError.style.color = "red";
+    isValid = false;
+  } else {
+    passwordInput.style.border = "none";
+    passwordError.textContent = "";
+  }
+
+// 버튼 활성화 및 비활성화 처리
+  if (isValid) {
+    submitButton.disabled = false;
+  } else {
+    submitButton.disabled = true;
+  }
+}
+
+// 폼 제출 이벤트 추가
+function handleFormSubmit(event) {
+  event.preventDefault(); // 기본 동작 중단
+  if (!submitButton.disabled) {
+    // 유효한 값이 있을 경우 이동
+    window.location.href = "/items";
+  }
+}
+
+// 이벤트 리스너
+emailInput.addEventListener("input", validateForm);
+passwordInput.addEventListener("input", validateForm);
+submitButton.addEventListener("click", handleFormSubmit);
+
+// 비밀번호 보기 토글
+const passwordToggle = document.getElementById("password-toggle");
+
+passwordToggle.addEventListener("click", () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    passwordToggle.src = "image/btn_visibility_on_24px.png";
+  } else {
+    passwordInput.type = "password";
+    passwordToggle.src = "image/btn_visibility_off_24px.png";
+  }
+});
