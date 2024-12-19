@@ -88,15 +88,39 @@ function validateForm() {
     submitButton.disabled = true;
   }
 }
+const USER_DATA = [
+  { email: 'codeit1@codeit.com', password: "codeit101!" },
+  { email: 'codeit2@codeit.com', password: "codeit202!" },
+  { email: 'codeit3@codeit.com', password: "codeit303!" },
+  { email: 'codeit4@codeit.com', password: "codeit404!" },
+  { email: 'codeit5@codeit.com', password: "codeit505!" },
+  { email: 'codeit6@codeit.com', password: "codeit606!" },
+];
 
-// 폼 제출 이벤트 추가
 function handleFormSubmit(event) {
-  event.preventDefault(); // 기본 동작 중단
-  if (!submitButton.disabled) {
-    // 유효한 값이 있을 경우 이동
-    window.location.href = "/items";
+  event.preventDefault();
+
+  for (let i = 0; i < USER_DATA.length; i++) {
+    const user = USER_DATA[i]
+    
+    if (user.email === emailInput.value) {
+      alert("사용 중인 이메일입니다.");
+      return; // 이메일이 존재하면 함수 종료
+    }
   }
+
+  // 이메일이 없을 경우
+  window.location.href = "/login";
 }
+
+// // 폼 제출 이벤트 추가
+// function handleFormSubmit(event) {
+//   event.preventDefault(); // 기본 동작 중단
+//   if (!submitButton.disabled) {
+//     // 유효한 값이 있을 경우 이동
+//     window.location.href = "/items";
+//   }
+// }
 
 // 이벤트 리스너
 emailInput.addEventListener("input", validateForm);

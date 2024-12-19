@@ -60,44 +60,58 @@ const USER_DATA = [
   { email: 'codeit6@codeit.com', password: "codeit606!" },
 ];
 
-// 폼 제출 이벤트 함수
 function handleFormSubmit(event) {
   event.preventDefault(); // 기본 폼 제출 방지
-  
-// 데이터 확인을 위한 플래그
-let userFound = false;
-let passwordMatch = false;
 
-  // USER_DATA 배열 순회
   for (let i = 0; i < USER_DATA.length; i++) {
-      const users = USER_DATA[i];
-    if (users.email === emailInput.value) {
-        userFound = true; // 이메일이 데이터베이스에 존재함
-        if (users.password === passwordInput.value) {
-            passwordMatch = true; // 비밀번호도 일치함
-        }
+    const user = USER_DATA[i];
+
+    if (user.email === emailInput.value) {
+      if (user.password === passwordInput.value) {
+        window.location.href = "/items";
+        return; // 성공하면 함수 종료
+      } else {
+        alert("비밀번호가 일치하지 않습니다.");
+        return; // 비밀번호가 틀리면 함수 종료
+      }
     }
-
-  // 조건에 따른 메시지 출력
-  if (!userFound) {
-      alert("이메일이 존재하지 않습니다.");
-  } else if (!passwordMatch) {
-      alert("비밀번호가 일치하지 않습니다.");
-  } else {
-      alert("로그인 성공!");
-      window.location.href = "/items"; // /items로 이동
   }
-}
+
+  // 이메일이 없을 경우
+  alert("이메일이 존재하지 않습니다.");
 }
 
-
-// 폼 제출 이벤트 추가
+// // 폼 제출 이벤트 함수
 // function handleFormSubmit(event) {
-//   event.preventDefault(); // 기본 동작 중단
-//   if (!submitButton.disabled) {
-//     // 유효한 값이 있을 경우 이동
-//     window.location.href = "/items";
+//   event.preventDefault(); // 기본 폼 제출 방지
+  
+// // 데이터 확인을 위한 플래그
+// let userFound = false;
+// let passwordMatch = false;
+
+//   // USER_DATA 배열 순회
+//   for (let i = 0; i < USER_DATA.length; i++) {
+//       const user = USER_DATA[i];
+//     if (user.email === emailInput.value) {
+//         userFound = true; // 이메일이 데이터베이스에 존재함
+//         if (user.password === passwordInput.value) {
+//             passwordMatch = true; // 비밀번호도 일치함
+//             break;  // break를 안써주면 alert("비밀번호가 일치하지 않습니다.") 조건문에서 계속 작동
+//           }
+//       }    
+//     }
+
+
+//   // 조건에 따른 메시지 출력
+//   if (!userFound) {
+//       alert("이메일이 존재하지 않습니다.");
+//   } else if (!passwordMatch) {
+//       alert("비밀번호가 일치하지 않습니다.");
+//   } else {
+//       alert("로그인 성공!");
+//       window.location.href = "/items"; // /items로 이동
 //   }
+// }
 
 
 // 이벤트 리스너
