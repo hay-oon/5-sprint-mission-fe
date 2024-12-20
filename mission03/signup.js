@@ -136,19 +136,19 @@ const confirmPasswordToggle = document.getElementById("confirm-password-toggle")
 passwordToggle.addEventListener("click", () => {
   if (passwordInput.type === "password") {
     passwordInput.type = "text";
-    passwordToggle.src = "image/btn_visibility_on_24px.png";
+    passwordToggle.src = "images/icons/eye-visible.svg";
   } else {
     passwordInput.type = "password";
-    passwordToggle.src = "image/btn_visibility_off_24px.png";
+    passwordToggle.src = "images/icons/eye-invisible.svg";
   }
 });
 
 confirmPasswordToggle.addEventListener("click", function () {
   if(confirmPasswordInput.type === "password") {
     confirmPasswordInput.type = "text"
-    confirmPasswordToggle.src = "image/btn_visibility_on_24px.png";
+    confirmPasswordToggle.src = "images/icons/eye-visible.svg";
   } else {
     confirmPasswordInput.type = "password";
-    confirmPasswordToggle.src = "image/btn_visibility_off_24px.png";
+    confirmPasswordToggle.src = "images/icons/eye-visible.svg";
   }
 });
