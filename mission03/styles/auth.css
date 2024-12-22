@@ -106,3 +106,59 @@
   text-decoration: underline;
   text-underline-offset: 2px; /* 밑줄과 텍스트 사이 간격을 조정 */
 }
+
+@media (max-width: 743px) {
+  body {
+    padding-left : 16px;
+    padding-right : 16px;
+  }
+  
+}
+
+.modal-background {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color : rgba(0,0,0,0.3);
+}
+
+.modal-container {
+  background-color: #ffffff;
+  opacity: 90%;
+  position: absolute;
+  width: 40%;
+  max-width: 356px;
+  height: 20%;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 35%;
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  box-shadow: 0 0 10px #474646;
+  z-index: 999;
+}
+
+.modal-message {
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.modalbtn {
+  width: 30%;
+  font-size: 14px;
+  padding: 4px 0;
+  margin-top: 36px;
+  background-color: #3692ff;
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: 500;
+}

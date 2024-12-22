@@ -106,8 +106,8 @@ if(confirmpwInput) {
 }
 
 // 버튼 활성화
-const signupButton = document.getElementById("signup-button");
 const loginButton = document.getElementById("login-button");
+const signupButton = document.getElementById("signup-button");
 
 // button 유효성 검사
 if(loginButton){
@@ -172,6 +172,10 @@ const USER_DATA = [
     { email: 'codeit6@codeit.com', password: "codeit606!" },
 ];
 
+const modalBackground = document.querySelector(".modal-background")
+const modalContainer = document.querySelector(".modal-container")
+const modalMessage = document.querySelector(".modal-message")
+
 if(loginButton){
 loginButton.addEventListener("click", (e) => {
     e.preventDefault();
@@ -183,27 +187,44 @@ loginButton.addEventListener("click", (e) => {
             window.location.href = "./items.html";
             return; // 성공하면 함수 종료
             } else {
-            alert("비밀번호가 일치하지 않습니다.");
+            modalBackground.style.display = "block"
+            modalContainer.style.display = "flex"
+            loginButton.style.display = "none"
+            modalMessage.textContent = "비밀번호가 일치하지 않습니다"
             return; // 비밀번호가 틀리면 함수 종료
             }
         }
     }
-    alert("이메일이 존재하지 않습니다.");
+    modalBackground.style.display = "block"
+    modalContainer.style.display = "flex"
+    loginButton.style.display = "none"
+    modalMessage.textContent = "이메일이 존재하지 않습니다"
 })
 }
-
+const modalButton = document.querySelector(".modalbtn")
 if(signupButton){
 signupButton.addEventListener("click", (e) => {
-    console.log("클릭 이벤트 동작 확인");
     e.preventDefault();
     for (let i = 0; i < USER_DATA.length; i++){
         const user = USER_DATA[i];
         if (user.email === emailInput.value){
-            alert("사용 중인 이메일입니다");
+            modalBackground.style.display = "block"
+            modalContainer.style.display = "flex"
+            signupButton.style.display = "none"
+            modalMessage.textContent = "사용 중인 이메일입니다" 
             return;
         }
     }
-    alert("회원가입이 완료되었습니다!");
-    window.location.href = "./login.html";
+    modalBackground.style.display = "block"
+    modalContainer.style.display = "flex"
+    signupButton.style.display = "none"
+    modalMessage.textContent = "판다마켓의 회원이 되셨습니다!"
+    modalButton.textContent = "로그인"
+    modalButton.addEventListener("click", ()=>{
+        window.location.href = "./login.html";
+    })
+    
 })
 }
+
+//모달

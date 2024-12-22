@@ -23,5 +23,4 @@
 ;     emailInput.style.border = "none";
 ;     emailError.textContent = "";
 
-5. USERDATA 폼 제출 함수 두 가지 코드 로직 차이 공부하기
 
