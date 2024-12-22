@@ -1,9 +1,36 @@
-@import "styles/reset.css";
+/* [심화 요구사항]
+  <프로젝트에서 자주 사용되는 색상을 CSS 변수로 등록하는 방법>
 
-  /* 기본 HTML 폰트 크기를 62.5%로 설정하여, 기본 16rem 대신 10rem이 기본 크기가 되도록 합니다.
-  이로써 1rem = 10rem이 되어, REM 단위를 사용할 때 계산이 편리해집니다.. */
+  - CSS custom properties, CSS variables, cascading variables 등으로 불려요.
+  - CSS 변수를 사용하면 테마 색상을 중앙에서 관리할 수 있어 사이트 전반에 걸쳐 일관된 스타일을 유지하고, 필요한 경우 쉽게 색상을 변경할 수 있어요.
+  - 전역적으로 사용할 수 있도록 root CSS selector(`:root` pseudo-class)에서 선언하는 것이 일반적이에요.
+  - 변수명을 등록할 때는 hyphen 두 개(`--`) 뒤에 원하는 이름을 붙여주면 되는데, 이때 색상명이나 색상을 잘 설명하는 별칭을 부여하면 돼요. 
+    (예: 메인 컬러인 하늘색 색상은 `--blue` 또는 `--main-color` 등으로 등록할 수 있겠죠. 
+    포인트 컬러가 다양하거나 등록할 블루 계열 색상이 많아 이런 포괄적인 이름으로 구분이 어려운 경우에는 `--main-button-color` 같이 해당 색상의 사용 용도로 표현하기도 해요.)
+  - 등록된 색상을 적용할 때는 hex code 대신 `var(변수명)`를 넣어주면 됩니다.
+
+  - 참고 문서: https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties
+*/
 html {
   font-size: 62.5%;
+}
+
+:root {
+  /* Gray scale */
+  --gray-900: #1b1d1f;
+  --gray-800: #26282b;
+  --gray-600: #454c53;
+  --gray-500: #72787f;
+  --gray-400: #9ea4a8;
+  --gray-200: #e5e7eb;
+  --gray-100: #e8ebed;
+  --gray-50: #f7f7f8;
+
+  /* Primary color */
+  --blue: #3692ff;
+
+  /* Layout dimensions */
+  --header-height: 7rem;
 }
 
 * {
@@ -17,6 +44,20 @@ a {
   color: inherit;
 }
 
+/* form 요소 스타일 리셋: 브라우저 간 스타일 차이를 최소화하기 위해 기본 스타일을 제거하고 부모 요소로부터 속성을 상속 받도록 했어요. */
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 button {
   background: none;
   border: none;
@@ -25,32 +66,39 @@ button {
   cursor: pointer;
 }
 
-/* 
-  - 이미지는 기본적으로 inline 요소로 취급되기 때문에 텍스트의 baseline에 맞춰서 정렬됩니다. 
-    브라우저가 이미지를 텍스트와 같은 라인에 배치할 때 g, j, p 등 아래로 치우치는 알파벳의 descender 공간을 예약해 놓기 때문에 이미지와 주변 텍스트 사이에 의도하지 않은 작은 간격이 생기는 경우가 많습니다. 
-    <img> 태그에 vertical-align: bottom;을 설정해 주면 이미지가 텍스트 라인의 가장 아래쪽에 맞춰서 정렬되어, 불필요한 공간 없이 배치할 수 있습니다.
-  - 전역적으로 <img>의 display 유형을 inline이 아닌 block으로 바꿔 해당 이슈를 해결하는 경우도 있습니다.
-*/
 img {
   vertical-align: bottom;
 }
 
 body {
   color: #374151;
-  word-break: keep-all; /* 띄어쓰기를 기준으로 줄바꿈하도록 설정하여 어절 기반의 한국어 특성에 적합한 읽기 편한 레이아웃을 제공 */
+  word-break: keep-all;
   font-family: "Pretendard", sans-serif;
 }
 
-/* 여러 요소가 나란히 배열되어 있을 때는 티가 나지 않아 보여도 항상 잊지 말고 display: flex; align-items: center;로 세로 중앙 정렬을 맞춰주세요. */
+/* 
+  <header를 웹 페이지 상단에 고정>
+  - header에 position: fixed를 적용해 스크롤 시에도 동일한 위치에 고정되어 있는 요소로 만들어 주세요. 
+  - 고정된 요소는 부모 요소에서 독립되어 지정된 위치에 배치되기 때문에 top/left 속성을 함께 명시해 주어야 해요.
+  - header가 나머지 페이지 콘텐츠와 겹쳐 보이지 않도록 main에 header의 높이만큼 margin-top을 부여해 주어 콘텐츠 시작점을 조정해 주세요.
+*/
+
 header {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 7rem;
+  height: var(--header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 20rem;
   background-color: #ffffff;
   border-bottom: 0.1rem solid #dfdfdf;
+}
+
+.with-header {
+  margin-top: var(--header-height);
 }
 
 footer {
@@ -66,7 +114,7 @@ footer {
 #footerMenu {
   display: flex;
   gap: 3rem;
-  color: #e5e7eb;
+  color: var(--gray-200);
 }
 
 #socialMedia {
@@ -88,17 +136,13 @@ h1 {
 }
 
 .button {
-  background-color: #3692ff;
+  background-color: var(--blue);
   color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-/* 
-  가상 클래스(pseudo-class)를 사용해 특정 상태에 맞는 스타일을 적용하세요. 
-  버튼 역할을 하는 요소에는 hover 또는 disabled 시의 스타일을 지정해 주는 것이 사용자 경험에 도움이 됩니다. 
-*/
 .button:hover {
   background-color: #1967d6;
 }
@@ -113,14 +157,23 @@ h1 {
   pointer-events: none;
 }
 
-/* 
- 고정된 width나 height을 부여하는 것보다 내부 콘텐츠에 padding을 적용해서 요소의 전체 크기를 유동적으로 조정하는 방법이 반응형 웹 디자인과 접근성(accessibility) 측면에서 더 적합합니다.
-*/
 .pill-button {
   font-size: 2rem;
   font-weight: 700;
   border-radius: 99.9rem;
   padding: 1.6rem 12.4rem;
+}
+
+/* 
+  Utility Classes:
+  - 유틸리티 클래스는 자주 사용하는 스타일 속성을 작은 단위로 분리하여 정의한 CSS이며, 스타일의 재사용성이 가장 큰 장점이에요.
+  - 유틸리티 클래스 또는 기존에 정의된 클래스를 적절하게 결합하여 활용하면 별도의 id나 class를 정의하지 않고도 스타일 변화를 적용할 수 있어 작업 속도를 높이고, 코드의 간결성을 유지할 수 있어요.
+  - 예시: 판다마켓 로그인/회원가입 form 제출 버튼처럼 기존에 스타일링되어 있는 요소와 유사하되 너비만 컨테이너의 100%로 확장한 형태가 필요한 경우가 있습니다. 
+    이때 기존의 `pill-button` 클래스 속성에 width: 100%가 추가된 새로운 클래스를 생성하기 보다는 `pill-button`과 `full-width` 유틸리티 클래스를 결합하여 사용함으로써 간단하게 원하는 스타일을 구현할 수 있어요.
+*/
+
+.full-width {
+  width: 100%;
 }
 
 /* Media Queries */
@@ -130,7 +183,7 @@ h1 {
   header {
     padding: 0 2.4rem;
   }
- 
+
   .feature img {
     width: 36.4rem;
 }
@@ -148,9 +201,4 @@ h1 {
     width: 50%;
     margin : 0 3.2rem;
 }
-  /* footer div {
-    margin-bottom: 16px; /* footer 요소 간 간격 증가 */
-  } */
 }
-
-
