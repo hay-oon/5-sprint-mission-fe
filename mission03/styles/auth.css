@@ -33,6 +33,10 @@
   cursor: pointer;
 }
 
+.error-outline {
+  outline: 2.5px solid red;
+}
+
 .error-message {
   margin-top: 10px;
   margin-left: 18px;
@@ -131,12 +135,12 @@
   position: absolute;
   width: 40%;
   max-width: 356px;
-  height: 20%;
+  height: 25%;
   display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  top: 35%;
+  top: 50%;
   left: 50%; 
   transform: translate(-50%, -50%);
   border-radius: 10px;

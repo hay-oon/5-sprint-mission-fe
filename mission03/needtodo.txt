@@ -22,5 +22,6 @@
 ;   } else {
 ;     emailInput.style.border = "none";
 ;     emailError.textContent = "";
-
+}
+}
 

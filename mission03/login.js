@@ -14,6 +14,7 @@ const errorNickname = document.getElementById("nickname-error")
 const errorPw = document.getElementById("password-error")
 const errorConfirmpw = document.getElementById("confirm-password-error")
 
+
 // 이메일 유효성 검사
 if (emailInput) {
     emailInput.addEventListener("focusout", () => {
@@ -38,7 +39,7 @@ if (nicknameInput) {
             errorNickname.textContent = "닉네임을 입력해 주세요";
         } else if (nicknameInput.value.length < 2) {
             nicknameInput.style.outline = "2.5px solid red";
-            errorNickname.textContent = "닉네임을 2자 이상 입력해 주세요";
+            errorNickname.textContent = "닉네임을 2자 이상 입력해 주세요"; // 객체로 묶어봐
         } else {
             nicknameInput.style.outline = "none";
             errorNickname.textContent = "";
@@ -201,11 +202,12 @@ loginButton.addEventListener("click", (e) => {
     modalMessage.textContent = "이메일이 존재하지 않습니다"
 })
 }
+
 const modalButton = document.querySelector(".modalbtn")
 if(signupButton){
 signupButton.addEventListener("click", (e) => {
     e.preventDefault();
-    for (let i = 0; i < USER_DATA.length; i++){
+    for (let i = 0; i < USER_DATA.length; i++){  //find 사용 // UI관련 코드묶기
         const user = USER_DATA[i];
         if (user.email === emailInput.value){
             modalBackground.style.display = "block"
@@ -223,8 +225,6 @@ signupButton.addEventListener("click", (e) => {
     modalButton.addEventListener("click", ()=>{
         window.location.href = "./login.html";
     })
-    
 })
 }
 
-//모달
