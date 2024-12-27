@@ -4,13 +4,13 @@ export const getArticleList = async (page, pageSize, keyword) => {
       `https://sprint-mission-api.vercel.app/articles?page=${page}&pageSize=${pageSize}&keyword=${keyword}`
     );
     if (!res.ok) {
-      throw new Error(`Failed to fetch article list: ${res.status}`);
+      const errorMessage = await res.text();
+      throw new Error(`Error ${res.status}: ${errorMessage}`);
     }
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error in getArticleList:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -20,13 +20,13 @@ export const getArticle = async (id) => {
       `https://sprint-mission-api.vercel.app/articles/${id}`
     );
     if (!res.ok) {
-      throw new Error(`Failed to fetch article: ${res.status}`);
+      const errorMessage = await res.text();
+      throw new Error(`Error ${res.status}: ${errorMessage}`);
     }
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error in getArticle:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -44,13 +44,13 @@ export const createArticle = async () => {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Failed to create article: ${res.status}`);
+      const errorMessage = await res.text();
+      throw new Error(`Error ${res.status}: ${errorMessage}`);
     }
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error in createArticle:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -71,13 +71,13 @@ export const patchArticle = async (id) => {
       }
     );
     if (!res.ok) {
-      throw new Error(`Failed to update article: ${res.status}`);
+      const errorMessage = await res.text();
+      throw new Error(`Error ${res.status}: ${errorMessage}`);
     }
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error in patchArticle:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -90,12 +90,12 @@ export const deleteArticle = async (id) => {
       }
     );
     if (!res.ok) {
-      throw new Error(`Failed to delete article: ${res.status}`);
+      const errorMessage = await res.text();
+      throw new Error(`Error ${res.status}: ${errorMessage}`);
     }
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error in deleteArticle:", error);
-    return null;
+    throw error;
   }
 };
