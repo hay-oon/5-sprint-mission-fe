@@ -44,36 +44,56 @@
           />
           <div id="nickname-error" class="error-message"></div>
         </div>
-        
-  <!-- 비밀번호 입력 -->
-  <div class="input-item">
-    <label for="password">비밀번호</label>
-    <div class="password-box">
-    <input id="password" type="password" placeholder="비밀번호를 입력해주세요">
-    <img id="password-toggle" src="images/icons/eye-invisible.svg" alt="비밀번호 보기">
-    </div>
-    <div id="password-error" class="error-message"></div>
-  </div>
 
-  <!-- 비밀번호 확인 -->
-  <div class="input-item">
-    <label for="confirm-password">비밀번호 확인</label>
-    <div class="password-box">
-    <input id="confirm-password" type="password" placeholder="비밀번호를 다시 한 번 입력해주세요">
-    <img id="confirm-password-toggle" src="images/icons/eye-invisible.svg" alt="비밀번호 보기">
-    </div>
-    <div id="confirm-password-error" class="error-message"></div>
-  </div>
+        <!-- 비밀번호 입력 -->
+        <div class="input-item">
+          <label for="password">비밀번호</label>
+          <div class="password-box">
+            <input
+              id="password"
+              type="password"
+              placeholder="비밀번호를 입력해주세요"
+            />
+            <img
+              id="password-toggle"
+              src="images/icons/eye-invisible.svg"
+              alt="비밀번호 보기"
+            />
+          </div>
+          <div id="password-error" class="error-message"></div>
+        </div>
 
-        <button id="signup-button" type="submit" class="button pill-button full-width" disabled>
+        <!-- 비밀번호 확인 -->
+        <div class="input-item">
+          <label for="confirm-password">비밀번호 확인</label>
+          <div class="password-box">
+            <input
+              id="confirm-password"
+              type="password"
+              placeholder="비밀번호를 다시 한 번 입력해주세요"
+            />
+            <img
+              id="confirm-password-toggle"
+              src="images/icons/eye-invisible.svg"
+              alt="비밀번호 보기"
+            />
+          </div>
+          <div id="confirm-password-error" class="error-message"></div>
+        </div>
+
+        <button
+          id="signup-button"
+          type="submit"
+          class="button pill-button full-width"
+          disabled
+        >
           회원가입
         </button>
-        <div class="modal-background">
+        <div class="modal-background"></div>
+        <div class="modal-container">
+          <h2 class="modal-message"></h2>
+          <button class="modalbtn" type="button">확인</button>
         </div>
-          <div class="modal-container">
-            <h2 class="modal-message"></h2>
-            <button class="modalbtn" type="button">확인</button>
-          </div>
       </form>
 
       <div class="social-login-container">

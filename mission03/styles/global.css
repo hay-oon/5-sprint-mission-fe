@@ -186,7 +186,7 @@ h1 {
 
   .feature img {
     width: 36.4rem;
-}
+  }
   footer {
     padding: 3.2rem 2.4rem 6rem 2.4rem;
   }
@@ -199,6 +199,6 @@ h1 {
   }
   .feature img {
     width: 50%;
-    margin : 0 3.2rem;
-}
+    margin: 0 3.2rem;
+  }
 }

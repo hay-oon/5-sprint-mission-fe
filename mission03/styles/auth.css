@@ -25,10 +25,11 @@
   align-items: center;
 }
 
-#password-toggle,#confirm-password-toggle {
+#password-toggle,
+#confirm-password-toggle {
   position: absolute;
   top: 50%;
-  right: 16px; 
+  right: 16px;
   transform: translateY(-50%);
   cursor: pointer;
 }
@@ -113,10 +114,9 @@
 
 @media (max-width: 743px) {
   body {
-    padding-left : 16px;
-    padding-right : 16px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
-  
 }
 
 .modal-background {
@@ -126,7 +126,7 @@
   top: 0;
   width: 100vw;
   height: 100vh;
-  background-color : rgba(0,0,0,0.3);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .modal-container {
@@ -141,7 +141,7 @@
   justify-content: center;
   align-items: center;
   top: 50%;
-  left: 50%; 
+  left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
   box-shadow: 0 0 10px #474646;
@@ -154,7 +154,6 @@
   flex-direction: column;
   justify-content: center;
 }
-
 
 .modalbtn {
   width: 30%;
