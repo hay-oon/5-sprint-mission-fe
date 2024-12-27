@@ -1,38 +1,42 @@
-export const getArticleList = async (page, pageSize, keyword) => {
+export const getArticleList = (page, pageSize, keyword) => {
   try {
-    const res = await fetch(
+    return fetch(
       `https://sprint-mission-api.vercel.app/articles?page=${page}&pageSize=${pageSize}&keyword=${keyword}`
-    );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+    ).then((res) => {
+      if (!res.ok) {
+        return res.text().then((errorMessage) => {
+          throw new Error(`Error ${res.status}: ${errorMessage}`);
+        });
+      }
+      return res.json();
+    });
   } catch (error) {
+    console.error("Error in getArticleList:", error);
     throw error;
   }
 };
 
-export const getArticle = async (id) => {
+export const getArticle = (id) => {
   try {
-    const res = await fetch(
-      `https://sprint-mission-api.vercel.app/articles/${id}`
+    return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`).then(
+      (res) => {
+        if (!res.ok) {
+          return res.text().then((errorMessage) => {
+            throw new Error(`Error ${res.status}: ${errorMessage}`);
+          });
+        }
+        return res.json();
+      }
     );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
   } catch (error) {
+    console.error("Error in getArticle:", error);
     throw error;
   }
 };
 
-export const createArticle = async () => {
+export const createArticle = () => {
   try {
-    const res = await fetch("https://sprint-mission-api.vercel.app/articles", {
+    return fetch("https://sprint-mission-api.vercel.app/articles", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,60 +46,60 @@ export const createArticle = async () => {
         content: "string",
         image: "string",
       }),
+    }).then((res) => {
+      if (!res.ok) {
+        return res.text().then((errorMessage) => {
+          throw new Error(`Error ${res.status}: ${errorMessage}`);
+        });
+      }
+      return res.json();
     });
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
   } catch (error) {
+    console.error("Error in createArticle:", error);
     throw error;
   }
 };
 
-export const patchArticle = async (id) => {
+export const patchArticle = (id) => {
   try {
-    const res = await fetch(
-      `https://sprint-mission-api.vercel.app/articles/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: "string",
-          content: "string",
-          image: "string",
-        }),
+    return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: "string",
+        content: "string",
+        image: "string",
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        return res.text().then((errorMessage) => {
+          throw new Error(`Error ${res.status}: ${errorMessage}`);
+        });
       }
-    );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+      return res.json();
+    });
   } catch (error) {
+    console.error("Error in patchArticle:", error);
     throw error;
   }
 };
 
-export const deleteArticle = async (id) => {
+export const deleteArticle = (id) => {
   try {
-    const res = await fetch(
-      `https://sprint-mission-api.vercel.app/articles/${id}`,
-      {
-        method: "DELETE",
+    return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+      method: "DELETE",
+    }).then((res) => {
+      if (!res.ok) {
+        return res.text().then((errorMessage) => {
+          throw new Error(`Error ${res.status}: ${errorMessage}`);
+        });
       }
-    );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+      return res.json();
+    });
   } catch (error) {
+    console.error("Error in deleteArticle:", error);
     throw error;
   }
 };
