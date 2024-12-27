@@ -1,0 +1,27 @@
+리팩토링
+
+
+const setError = (targetElement, errorElement, errorMessage) => {
+    targetElement.classList.add('error-outline')
+    errorElement.textContent = errorMessage
+}
+const clearError = (targetElement, errorElement) => {
+    targetElement.classList.remove('error-outline')
+    errorElement.textContent = ''
+}
+
+if (emailInput) {
+    emailInput.addEventListener('focusout', () => {
+        if(!emailInput.value) {
+            setError(emailInput, errorEmail, '이메일을 입력해주세요')
+        }
+        else if (!emailInput.value.includes('@') || !emailInput.value.includes('.')) {
+            setError(emailInput, errorEmail, '잘못된 이메일 형식입니다')
+        } else {
+            clearError(emailInput, errorEmail) 
+        }
+    })
+}
+
+
+객체로 묶어라 ?

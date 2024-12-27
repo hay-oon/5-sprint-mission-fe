@@ -1,0 +1,167 @@
+/* 
+  Authentication 관련 스타일링
+  - 로그인과 회원가입 페이지에 공통된 요소가 많기 때문에 authentication(본인인증)이라는 컨셉으로 묶어 하나의 스타일시트에서 관리해 주었어요.
+*/
+
+.auth-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.logo-home-button-wrapper {
+  display: block;
+  text-align: center;
+  margin-top: 60px;
+  margin-bottom: 40px;
+}
+
+.input-item {
+  margin-bottom: 24px;
+}
+
+.password-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#password-toggle,
+#confirm-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.error-outline {
+  outline: 2.5px solid red;
+}
+
+.error-message {
+  margin-top: 10px;
+  margin-left: 18px;
+  color: #f74747;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.input-item label {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.input-item input {
+  padding: 16px 24px;
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 24px;
+  width: 100%;
+}
+
+.input-item input::placeholder {
+  color: #9ca3af;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.input-item input:focus {
+  outline-color: var(--blue);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.social-login-container {
+  background-color: #e6f2ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 23px;
+  margin: 24px 0;
+}
+
+.social-login-container h3 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.social-login-buttons-container {
+  display: flex;
+  gap: 16px;
+}
+
+.auth-switch {
+  font-weight: 500;
+  font-size: 15px;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: #3182f6;
+  text-decoration: underline;
+  text-underline-offset: 2px; /* 밑줄과 텍스트 사이 간격을 조정 */
+}
+
+@media (max-width: 743px) {
+  body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.modal-background {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal-container {
+  background-color: #ffffff;
+  opacity: 90%;
+  position: absolute;
+  width: 40%;
+  max-width: 356px;
+  height: 25%;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  box-shadow: 0 0 10px #474646;
+  z-index: 999;
+}
+
+.modal-message {
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modalbtn {
+  width: 30%;
+  font-size: 14px;
+  padding: 4px 0;
+  margin-top: 36px;
+  background-color: #3692ff;
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: 500;
+}
