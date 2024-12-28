@@ -1,73 +1,56 @@
-// [ ]  구현한 함수들을 아래와 같이 파일을 분리해 주세요.
+// RESPONSE HANDLING (except for DELETE)
+const handleResponse = async (res) => {
+  if (!res.ok) {
+    const errorMessage = await res.text();
+    console.log(`Error ${res.status}: ${errorMessage}`);
+    return { error: true, status: res.status };
+  }
+  const data = res.json();
+  return data;
+};
 
-// [ ] export를 활용해 주세요.
-// [ ] ProductService.js 파일 Product API 관련 함수들을 작성해 주세요.
-// [ ] ArticleService.js 파일에 Article API 관련 함수들을 작성해 주세요.
-// [ ]  이외의 코드들은 모두 main.js 파일에 작성해 주세요.
-
-// [ ] import를 활용해 주세요.
-// [ ] 각 함수를 실행하는 코드를 작성하고, 제대로 동작하는지 확인해 주세요.
-
-export const getProductList = async (page, pageSize, keyword) => {
+// FETCHING API
+const getProductList = async (page = 1, pageSize = 100, keyword = "") => {
   try {
     const res = await fetch(
       `https://sprint-mission-api.vercel.app/products?page=${page}&pageSize=${pageSize}&keyword=${keyword}`
     );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+    return await handleResponse(res);
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
-export const getProduct = async (id) => {
+const getProduct = async (id) => {
   try {
     const res = await fetch(
       `https://sprint-mission-api.vercel.app/products/${id}`
     );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+    return await handleResponse(res);
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
-export const createProduct = async () => {
+const createProduct = async (postProductData) => {
   try {
     const res = await fetch("https://sprint-mission-api.vercel.app/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name: "string",
-        description: "string",
-        price: 0,
-        manufacturer: "string",
-        tags: ["string"],
-        images: ["string"],
-      }),
+      body: JSON.stringify(postProductData),
     });
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+    return await handleResponse(res);
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
-export const patchProduct = async (id) => {
+const patchProduct = async (id, patchProductData) => {
   try {
     const res = await fetch(
       `https://sprint-mission-api.vercel.app/products/${id}`,
@@ -76,42 +59,41 @@ export const patchProduct = async (id) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: "string",
-          description: "string",
-          price: 0,
-          manufacturer: "string",
-          tags: ["string"],
-          images: ["string"],
-        }),
+        body: JSON.stringify(patchProductData),
       }
     );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
+    return await handleResponse(res);
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
-export const deleteProduct = async (id) => {
-  try {
-    const res = await fetch(
-      `https://sprint-mission-api.vercel.app/products/${id}`,
-      {
-        method: "DELETE",
+const deleteProduct = (id) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        console.log(`Error ${res.status}: ${id} is not founded :((((( `);
+        return { success: false, status: res.status };
       }
-    );
-    if (!res.ok) {
-      const errorMessage = await res.text();
-      throw new Error(`Error ${res.status}: ${errorMessage}`);
-    }
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    throw error;
-  }
+      console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
+      return { success: true, status: res.status };
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
+
+export {
+  getProductList,
+  getProduct,
+  createProduct,
+  patchProduct,
+  deleteProduct,
 };

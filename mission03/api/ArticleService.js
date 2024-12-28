@@ -1,105 +1,91 @@
-export const getArticleList = (page, pageSize, keyword) => {
-  try {
-    return fetch(
-      `https://sprint-mission-api.vercel.app/articles?page=${page}&pageSize=${pageSize}&keyword=${keyword}`
-    ).then((res) => {
-      if (!res.ok) {
-        return res.text().then((errorMessage) => {
-          throw new Error(`Error ${res.status}: ${errorMessage}`);
-        });
-      }
-      return res.json();
-    });
-  } catch (error) {
-    console.error("Error in getArticleList:", error);
-    throw error;
+// RESPONSE HANDLING (except for DELETE)
+const handleResponse = async (res) => {
+  if (!res.ok) {
+    const errorMessage = await res.text();
+    console.log(`Error ${res.status}: ${errorMessage}`);
+    return { error: true, status: res.status };
   }
+  const data = res.json();
+  return data;
 };
 
-export const getArticle = (id) => {
-  try {
-    return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`).then(
-      (res) => {
-        if (!res.ok) {
-          return res.text().then((errorMessage) => {
-            throw new Error(`Error ${res.status}: ${errorMessage}`);
-          });
-        }
-        return res.json();
-      }
-    );
-  } catch (error) {
-    console.error("Error in getArticle:", error);
-    throw error;
-  }
+// FETCHING API
+const getArticleList = (page = 1, pageSize = 100, keyword = "") => {
+  return fetch(
+    `https://sprint-mission-api.vercel.app/articles?page=${page}&pageSize=${pageSize}&keyword=${keyword}`
+  )
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
 };
 
-export const createArticle = () => {
-  try {
-    return fetch("https://sprint-mission-api.vercel.app/articles", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: "string",
-        content: "string",
-        image: "string",
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        return res.text().then((errorMessage) => {
-          throw new Error(`Error ${res.status}: ${errorMessage}`);
-        });
-      }
-      return res.json();
+const getArticle = (id) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`)
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
     });
-  } catch (error) {
-    console.error("Error in createArticle:", error);
-    throw error;
-  }
 };
 
-export const patchArticle = (id) => {
-  try {
-    return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: "string",
-        content: "string",
-        image: "string",
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        return res.text().then((errorMessage) => {
-          throw new Error(`Error ${res.status}: ${errorMessage}`);
-        });
-      }
-      return res.json();
+const createArticle = async (title = "", content = "", image = "") => {
+  const data = { title, content, image };
+  return fetch("https://sprint-mission-api.vercel.app/articles", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
     });
-  } catch (error) {
-    console.error("Error in patchArticle:", error);
-    throw error;
-  }
 };
 
-export const deleteArticle = (id) => {
-  try {
-    return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
-      method: "DELETE",
-    }).then((res) => {
-      if (!res.ok) {
-        return res.text().then((errorMessage) => {
-          throw new Error(`Error ${res.status}: ${errorMessage}`);
-        });
-      }
-      return res.json();
+const patchArticle = (id, patchArticleData) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(patchArticleData),
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
     });
-  } catch (error) {
-    console.error("Error in deleteArticle:", error);
-    throw error;
-  }
+};
+
+const deleteArticle = (id) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        console.log(`Error ${res.status}: ${id} is not founded :((((( `);
+        return { success: false, status: res.status };
+      }
+      console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
+      return { success: true, status: res.status };
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
+
+export {
+  getArticleList,
+  getArticle,
+  createArticle,
+  patchArticle,
+  deleteArticle,
 };
