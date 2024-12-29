@@ -1,86 +1,70 @@
+import axios from "axios";
+
+const url = "https://sprint-mission-api.vercel.app/articles";
+
 // RESPONSE HANDLING (except for DELETE)
 const handleResponse = async (res) => {
-  if (!res.ok) {
-    const errorMessage = await res.text();
-    console.log(`Error ${res.status}: ${errorMessage}`);
-    return { error: true, status: res.status };
-  }
-  const data = res.json();
+  const data = res.data;
   return data;
 };
 
-// FETCHING API
-const url = "https://sprint-mission-api.vercel.app/articles";
+// ERROR HANDLING
+const handleError = (error) => {
+  if (error.response) {
+    console.log(
+      `Error ${error.response.status}: ${error.response.data.message}`
+    );
+  } else if (error.request) {
+    console.log("No response", error.request);
+  } else {
+    console.log(error.message);
+  }
+};
 
+// API (AXIOS, THEN CHAINING)
 const getArticleList = (page = 1, pageSize = 100, keyword = "") => {
-  const params = new URLSearchParams({ page, pageSize, keyword });
-  return fetch(`${url}?${params.toString()}`)
-    .then(handleResponse)
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
+  const params = { page, pageSize, keyword };
+  return axios.get(url, { params }).then(handleResponse).catch(handleError);
 };
 
 const getArticle = (id) => {
-  return fetch(`${url}/${id}`)
-    .then(handleResponse)
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
+  return axios.get(`${url}/${id}`).then(handleResponse).catch(handleError);
 };
 
 const createArticle = async (title = "", content = "", image = "") => {
   const data = { title, content, image };
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
+  return axios
+    .post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
     .then(handleResponse)
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
+    .catch(handleError);
 };
 
 const patchArticle = (id, patchArticleData) => {
-  return fetch(`${url}/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(patchArticleData),
-  })
+  return axios
+    .patch(`${url}/${id}`, patchArticleData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
     .then(handleResponse)
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
+    .catch(handleError);
 };
 
 const deleteArticle = (id) => {
-  return fetch(`${url}/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        console.log(`Error ${res.status}: ${id} is not founded :((((( `);
-        return { success: false, status: res.status };
-      }
-      console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
-      return { success: true, status: res.status };
+  return axios
+    .delete(`${url}/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
+    .then((res) => {
+      console.log(`id(${id}) is successfully deleted !!!!!`);
+    })
+    .catch(handleError);
 };
 
 export {
