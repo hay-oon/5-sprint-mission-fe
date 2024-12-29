@@ -1,89 +1,77 @@
-// RESPONSE HANDLING (except for DELETE)
-const handleResponse = async (res) => {
-  if (!res.ok) {
-    const errorMessage = await res.text();
-    console.log(`Error ${res.status}: ${errorMessage}`);
-    return { error: true, status: res.status };
+import axios from "axios";
+
+const url = "https://sprint-mission-api.vercel.app/products";
+
+// ERROR HANDLING
+const handleError = (error) => {
+  if (error.response) {
+    console.log(
+      `Error ${error.response.status}: ${JSON.stringify(error.response.data)}`
+    );
+  } else if (error.request) {
+    console.log("No response", error.request);
+  } else {
+    console.log(error.message);
   }
-  const data = res.json();
-  return data;
 };
 
 // FETCHING API
-const url = "https://sprint-mission-api.vercel.app/products";
-
 const getProductList = async (page = 1, pageSize = 100, keyword = "") => {
   try {
-    const params = new URLSearchParams({ page, pageSize, keyword });
-    const res = await fetch(`${url}?${params.toString()}`);
-    return await handleResponse(res);
+    const params = { page, pageSize, keyword };
+    const res = await axios.get(url, { params });
+    return res.data;
   } catch (error) {
-    console.log(error);
-    throw error;
+    handleError(error);
   }
 };
 
 const getProduct = async (id) => {
   try {
-    const res = await fetch(`${url}/${id}`);
-    return await handleResponse(res);
+    const res = await axios.get(`${url}/${id}`);
+    return res.data;
   } catch (error) {
-    console.log(error);
-    throw error;
+    handleError(error);
   }
 };
 
 const createProduct = async (postProductData) => {
   try {
-    const res = await fetch(url, {
-      method: "POST",
+    const res = await axios.post(url, postProductData, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(postProductData),
     });
-    return await handleResponse(res);
+    return res.data;
   } catch (error) {
-    console.log(error);
-    throw error;
+    handleError(error);
   }
 };
 
 const patchProduct = async (id, patchProductData) => {
   try {
-    const res = await fetch(`${url}/${id}`, {
-      method: "PATCH",
+    const res = await axios.patch(`${url}/${id}`, patchProductData, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(patchProductData),
     });
-    return await handleResponse(res);
+    return res.data;
   } catch (error) {
-    console.log(error);
-    throw error;
+    handleError(error);
   }
 };
 
-const deleteProduct = (id) => {
-  return fetch(`${url}/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        console.log(`Error ${res.status}: ${id} is not founded :((((( `);
-        return { success: false, status: res.status };
-      }
-      console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
-      return { success: true, status: res.status };
-    })
-    .catch((error) => {
-      console.log(error);
-      throw error;
+const deleteProduct = async (id) => {
+  try {
+    const res = await axios.delete(`${url}/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+    console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
+  } catch (error) {
+    handleError(error);
+  }
 };
 
 export {
