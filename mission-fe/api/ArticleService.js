@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const url = "https://sprint-mission-api.vercel.app/articles";
+const apiClient = axios.create({
+  baseURL: "https://sprint-mission-api.vercel.app/articles",
+  timeout: 5000,
+});
 
 // RESPONSE HANDLING (except for DELETE)
 const handleResponse = async (res) => {
@@ -24,47 +27,29 @@ const handleError = (error) => {
 // API (AXIOS, THEN CHAINING)
 const getArticleList = (page = 1, pageSize = 100, keyword = "") => {
   const params = { page, pageSize, keyword };
-  return axios.get(url, { params }).then(handleResponse).catch(handleError);
+  return apiClient.get("/", { params }).then(handleResponse).catch(handleError);
 };
 
 const getArticle = (id) => {
-  return axios.get(`${url}/${id}`).then(handleResponse).catch(handleError);
+  return apiClient.get(`/${id}`).then(handleResponse).catch(handleError);
 };
 
-const createArticle = async (title = "", content = "", image = "") => {
-  const data = { title, content, image };
-  return axios
-    .post(url, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+const createArticle = async (postArticleData) => {
+  return apiClient
+    .post("/", postArticleData)
     .then(handleResponse)
     .catch(handleError);
 };
 
 const patchArticle = (id, patchArticleData) => {
-  return axios
-    .patch(`${url}/${id}`, patchArticleData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+  return apiClient
+    .patch(`/${id}`, patchArticleData)
     .then(handleResponse)
     .catch(handleError);
 };
 
 const deleteArticle = (id) => {
-  return axios
-    .delete(`${url}/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((res) => {
-      console.log(`id(${id}) is successfully deleted !!!!!`);
-    })
-    .catch(handleError);
+  return apiClient.delete(`/${id}`).then(handleResponse).catch(handleError);
 };
 
 export {
