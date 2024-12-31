@@ -2,66 +2,78 @@ import axios from "axios";
 
 const apiClient = axios.create({
   baseURL: "https://sprint-mission-api.vercel.app/products",
-  timeout: 5000,
 });
 
-// ERROR HANDLING
-const handleError = (error) => {
-  if (error.response) {
-    console.log(
-      `Error ${error.response.status}: ${error.response.data.message}`
-    );
-  } else if (error.request) {
-    console.log("No response", error.request);
-  } else {
-    console.log(error.message);
+// REQUEST INTERCEPTOR
+apiClient.interceptors.request.use(
+  (config) => {
+    // console.log(808);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-};
+);
 
-// FETCHING API
+// RESPONSE INTERCEPTOR
+apiClient.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    // console.log(909);
+    console.log(error.response.data);
+    return Promise.reject(error.response.data);
+  }
+);
+
+// API
 const getProductList = async (page = 1, pageSize = 100, keyword = "") => {
+  const params = { page, pageSize, keyword };
   try {
-    const params = { page, pageSize, keyword };
-    const res = await apiClient.get("/", { params });
-    return res.data;
+    return await apiClient.get("/", { params });
   } catch (error) {
-    handleError(error);
+    // console.error("Error in getProductList:", error);
+    // throw error;
   }
 };
 
 const getProduct = async (id) => {
   try {
-    const res = await apiClient.get(`/${id}`);
-    return res.data;
+    // throw error("good");
+    return await apiClient.get(`/${id}`);
   } catch (error) {
-    handleError(error);
+    // console.log("Error in getProduct:", error); //try 문에서 새로 생성한 new Error 객체가 전달, 해당 코드에는 interceptor에서 처리한 axios 에러 메세지가 중복되어 주석처리
+    // console.log(error.response.data); // AXIOS에서 발생한 에러이므로 인터셉터로 이동
+    // throw error;
   }
 };
 
 const createProduct = async (postProductData) => {
   try {
-    const res = await apiClient.post("/", postProductData);
-    return res.data;
+    return await apiClient.post("/", postProductData);
   } catch (error) {
-    handleError(error);
+    // console.error("Error in createProduct:", error);
+    // throw error;
   }
 };
 
 const patchProduct = async (id, patchProductData) => {
   try {
-    const res = await apiClient.patch(`/${id}`, patchProductData);
-    return res.data;
+    return await apiClient.patch(`/${id}`, patchProductData);
   } catch (error) {
-    handleError(error);
+    // console.error("Error in patchProduct:", error);
+    // throw error;
   }
 };
 
 const deleteProduct = async (id) => {
   try {
-    const res = await apiClient.delete(`/${id}`);
-    console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
+    await apiClient.delete(`/${id}`);
+    console.log(`Product with ID ${id} is successfully deleted!`);
   } catch (error) {
-    handleError(error);
+    // console.error("Error in deleteProduct:", error);
+    // throw error;
   }
 };
 
