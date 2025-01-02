@@ -1,21 +1,91 @@
-// [ ] getArticleList() : GET 메서드를 사용해 주세요.
-// [ ] page, pageSize, keyword 쿼리 파라미터를 이용해 주세요.
-// [ ] getArticle() : GET 메서드를 사용해 주세요.
-// [ ] createArticle() : POST 메서드를 사용해 주세요.
-// [ ] request body에 title, content, image 를 포함해 주세요.
-// [ ] patchArticle() : PATCH 메서드를 사용해 주세요.
-// [ ] deleteArticle() : DELETE 메서드를 사용해 주세요.
-// [ ]  fetch 혹은 axios 를 이용해 주세요.
+// RESPONSE HANDLING (except for DELETE)
+const handleResponse = async (res) => {
+  if (!res.ok) {
+    const errorMessage = await res.text();
+    console.log(`Error ${res.status}: ${errorMessage}`);
+    return { error: true, status: res.status };
+  }
+  const data = res.json();
+  return data;
+};
 
-// [ ] 응답의 상태 코드가 2XX가 아닐 경우, 에러메시지를 콘솔에 출력해 주세요.
-// [ ]  .then() 메서드를 이용하여 비동기 처리를 해주세요.
+// FETCHING API
+const getArticleList = (page = 1, pageSize = 100, keyword = "") => {
+  return fetch(
+    `https://sprint-mission-api.vercel.app/articles?page=${page}&pageSize=${pageSize}&keyword=${keyword}`
+  )
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
 
-// [ ]  .catch() 를 이용하여 오류 처리를 해주세요.
+const getArticle = (id) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`)
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
 
-export const getArticleList = async = () {
-    const res = await fetch("https://sprint-mission-api.vercel.app/articles")
-    const data = await res.json()
-    console.log(data)
-}
+const createArticle = async (title = "", content = "", image = "") => {
+  const data = { title, content, image };
+  return fetch("https://sprint-mission-api.vercel.app/articles", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
 
-getArticleList()
+const patchArticle = (id, patchArticleData) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(patchArticleData),
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
+
+const deleteArticle = (id) => {
+  return fetch(`https://sprint-mission-api.vercel.app/articles/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        console.log(`Error ${res.status}: ${id} is not founded :((((( `);
+        return { success: false, status: res.status };
+      }
+      console.log(`Error ${res.status}: ${id} is successfully deleted !!!!!`);
+      return { success: true, status: res.status };
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
+
+export {
+  getArticleList,
+  getArticle,
+  createArticle,
+  patchArticle,
+  deleteArticle,
+};
