@@ -1,48 +1,52 @@
-.bestItems {
-  padding: 8rem 20rem 4rem 20rem;
-}
-
-.bestItems h2 {
+.container h2 {
   font-size: 2rem;
   margin-bottom: 1.6rem;
 }
 
-.itemGrid {
+.best-itemGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+  justify-content: center;
 }
 
 .itemCard {
-  width: 28.2rem;
-  height: 28.2rem;
+  width: 100%;
+  aspect-ratio: 1;
   border: 1px solid #dfdfdf;
   border-radius: 1.6rem;
   overflow: hidden;
-}
-
-.itemCard img {
-  width: 100%;
-  aspect-ratio: 1;
+  margin-bottom: 1.2rem;
   object-fit: cover;
 }
 
 .itemInfo {
-  padding: 1.6rem;
+  padding: 1.2rem 0.8rem;
 }
 
 .itemInfo h3 {
   font-size: 1.4rem;
-  margin-bottom: 0.8rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 0.6rem;
 }
 
 .itemInfo p {
   font-size: 1.6rem;
-  font-weight: bold;
-  margin-bottom: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
 }
 
 .itemInfo span {
   font-size: 1.2rem;
-  color: #6b7280;
+  font-weight: 500;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.heartIcon {
+  width: 1.6rem;
+  height: 1.6rem;
 }

@@ -1,114 +1,100 @@
+import { useState, useEffect } from "react";
+import Pagination from "./Pagination";
 import "./OnSaleItems.css";
+import heartIcon from "../images/icons/ic_heart.png";
+import vectorIcon from "../images/icons/Vector.png";
+import toggleIcon from "../images/icons/ic_arrow_down.png";
 
 function OnSaleItems() {
-  const items = [
-    {
-      id: 1,
-      title: "화장품 팔레트",
-      price: 1500000,
-      likes: 240,
-      image: "https://example.com/palette.jpg",
-    },
-    {
-      id: 2,
-      title: "로봇청소기",
-      price: 1500000,
-      likes: 240,
-      image: "https://example.com/robot.jpg",
-    },
-    {
-      id: 3,
-      title: "무선이어폰",
-      price: 250000,
-      likes: 185,
-      image: "https://example.com/earbuds.jpg",
-    },
-    {
-      id: 4,
-      title: "스마트워치",
-      price: 350000,
-      likes: 156,
-      image: "https://example.com/smartwatch.jpg",
-    },
-    {
-      id: 5,
-      title: "노트북",
-      price: 2100000,
-      likes: 423,
-      image: "https://example.com/laptop.jpg",
-    },
-    {
-      id: 6,
-      title: "커피머신",
-      price: 680000,
-      likes: 198,
-      image: "https://example.com/coffee.jpg",
-    },
-    {
-      id: 7,
-      title: "게이밍 마우스",
-      price: 89000,
-      likes: 267,
-      image: "https://example.com/mouse.jpg",
-    },
-    {
-      id: 8,
-      title: "블루투스 스피커",
-      price: 125000,
-      likes: 142,
-      image: "https://example.com/speaker.jpg",
-    },
-    {
-      id: 9,
-      title: "태블릿PC",
-      price: 890000,
-      likes: 334,
-      image: "https://example.com/tablet.jpg",
-    },
-    {
-      id: 10,
-      title: "전기자전거",
-      price: 1200000,
-      likes: 178,
-      image: "https://example.com/bike.jpg",
-    },
-    {
-      id: 11,
-      title: "캠핑 텐트",
-      price: 320000,
-      likes: 225,
-      image: "https://example.com/tent.jpg",
-    },
-    {
-      id: 12,
-      title: "공기청정기",
-      price: 450000,
-      likes: 291,
-      image: "https://example.com/airpurifier.jpg",
-    },
-  ];
+  const [items, setItems] = useState([]);
+  const [orderBy, setOrderBy] = useState("recent");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
+
+  const handleSortChange = (value) => {
+    setOrderBy(value);
+    setIsDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchOnSaleItems = async () => {
+      try {
+        const response = await fetch(
+          `https://panda-market-api.vercel.app/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}`
+        );
+        if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
+
+        const data = await response.json();
+        setItems(data.list);
+        setTotalPages(Math.ceil(data.total / pageSize));
+      } catch (err) {
+        console.log("데이터 로딩 에러:", err);
+      }
+    };
+
+    fetchOnSaleItems();
+  }, [currentPage, orderBy]);
 
   return (
-    <section className="onSaleItems">
+    <section className="container">
       <div className="sectionHeader">
         <h2>판매중인 상품</h2>
         <div className="searchBox">
-          <input type="text" placeholder="검색어를 입력해주세요" />
-          <button>상품 등록하기</button>
+          <div className="searchInput">
+            <img src={vectorIcon} alt="검색" className="searchIcon" />
+            <input type="text" placeholder="검색할 상품을 입력해주세요" />
+          </div>
+          <button className="register-button">상품 등록하기</button>
+
+          <div className="dropdown">
+            <button
+              className="dropdownButton"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {orderBy === "recent" ? "최신순" : "좋아요순"}
+              <img src={toggleIcon} alt="토글" width={24} />
+            </button>
+            {isDropdownOpen && (
+              <div className="dropdownMenu">
+                <div>
+                  <button onClick={() => handleSortChange("recent")}>
+                    최신순
+                  </button>
+                </div>
+                <div>
+                  <button onClick={() => handleSortChange("favorite")}>
+                    좋아요순
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div className="itemGrid">
+
+      <div className="onSale-itemGrid">
         {items.map((item) => (
-          <div key={item.id} className="itemCard">
-            <img src={item.image} alt={item.title} />
+          <div key={item.id}>
+            <img src={item.images} alt={item.title} className="itemCard" />
             <div className="itemInfo">
-              <h3>{item.title}</h3>
+              <h3>{item.name}</h3>
               <p>{item.price.toLocaleString()}원</p>
-              <span>♥ {item.likes}</span>
+              <span>
+                <img src={heartIcon} alt="좋아요" className="heartIcon" />
+                {item.favoriteCount}
+              </span>
             </div>
           </div>
         ))}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </section>
   );
 }

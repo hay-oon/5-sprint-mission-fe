@@ -15,7 +15,7 @@ function Header() {
         </div>
       </div>
       <div className="header-right">
-        <a href="login.html" className="button">
+        <a href="login.html" className="login-button">
           로그인
         </a>
       </div>

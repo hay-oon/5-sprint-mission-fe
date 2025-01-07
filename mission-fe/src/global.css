@@ -3,27 +3,28 @@
   --header-height: 6.4rem;
 }
 
-html,
-body {
-  height: 100%;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  font-size: 62.5%;
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
 }
 
 button {
   cursor: pointer;
+}
+
+.container {
+  max-width: 120rem;
+  padding: 4rem 2rem;
+  margin: 0 auto;
+  width: 100%;
 }
