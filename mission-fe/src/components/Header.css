@@ -1,0 +1,45 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20rem;
+  background-color: #ffffff;
+  border-bottom: 0.1rem solid #dfdfdf;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-menu-container {
+  margin-left: 2.4rem;
+}
+
+.button {
+  background-color: var(--blue);
+  color: #ffffff;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.4rem;
+  text-decoration: none;
+  font-size: 1.4rem;
+}
+
+.button:hover {
+  background-color: #1967d6;
+}
+
+.button:focus {
+  background-color: #1251aa;
+}
+
+.button:disabled {
+  background-color: #9ca3af;
+  cursor: default;
+  pointer-events: none;
+}

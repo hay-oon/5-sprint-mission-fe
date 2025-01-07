@@ -1,0 +1,43 @@
+.onSaleItems {
+  padding: 4rem 20rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2rem;
+}
+
+.searchBox {
+  display: flex;
+  gap: 1rem;
+}
+
+.searchBox input {
+  width: 30rem;
+  padding: 0.8rem 1.6rem;
+  border: 1px solid #dfdfdf;
+  border-radius: 0.4rem;
+  font-size: 1.4rem;
+}
+
+.searchBox button {
+  background-color: var(--blue);
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.itemGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem;
+}
