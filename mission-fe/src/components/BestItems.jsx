@@ -3,7 +3,7 @@ import "./BestItems.css";
 import heartIcon from "../images/icons/ic_heart.png";
 
 function BestItems() {
-  const [bestItems, setBestItems] = useState([]);
+  const [productLists, setProductLists] = useState([]);
 
   useEffect(() => {
     const fetchBestItems = async () => {
@@ -16,7 +16,7 @@ function BestItems() {
         }
         const data = await response.json();
         console.log("데이터 응답값", data);
-        setBestItems(data.list);
+        setProductLists(data.list);
       } catch (err) {
         console.log("데이터 로딩 에러:", err);
       }
@@ -29,7 +29,7 @@ function BestItems() {
     <section className="container">
       <h2>베스트 상품</h2>
       <div className="best-itemGrid">
-        {bestItems.map((item) => (
+        {productLists.map((item) => (
           <div key={item.id}>
             <img src={item.images} alt={item.title} className="itemCard" />
             <div className="itemInfo">

@@ -1,7 +1,7 @@
 import "./Pagination.css";
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
-  const pageNumbers = [1, 2, 3, 4, 5]; // 지정된 배열말고 좀 더 동적으로 만들어봐야함
+  const pageNumbers = [1, 2, 3, 4, 5]; // 지정된 배열말고 좀 더 동적인 방식으로 구현할 수 있도록 해야함
 
   return (
     <div className="pagination">

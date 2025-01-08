@@ -6,7 +6,7 @@ import vectorIcon from "../images/icons/Vector.png";
 import toggleIcon from "../images/icons/ic_arrow_down.png";
 
 function OnSaleItems() {
-  const [items, setItems] = useState([]);
+  const [productList, setProductList] = useState([]);
   const [orderBy, setOrderBy] = useState("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,8 +27,8 @@ function OnSaleItems() {
         if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
         const data = await response.json();
-        setItems(data.list);
-        setTotalPages(Math.ceil(data.total / pageSize));
+        setProductList(data.list);
+        setTotalPages(Math.ceil(data.totalCount / pageSize));
       } catch (err) {
         console.log("데이터 로딩 에러:", err);
       }
@@ -75,7 +75,7 @@ function OnSaleItems() {
       </div>
 
       <div className="onSale-itemGrid">
-        {items.map((item) => (
+        {productList.map((item) => (
           <div key={item.id}>
             <img src={item.images} alt={item.title} className="itemCard" />
             <div className="itemInfo">
