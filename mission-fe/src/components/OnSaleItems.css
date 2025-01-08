@@ -59,6 +59,57 @@
   justify-content: center;
 }
 
+/* 태블릿 화면 */
+@media screen and (max-width: 1024px) {
+  .onSale-itemGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+  }
+}
+
+/* 모바일 화면 */
+@media screen and (max-width: 768px) {
+  .onSale-itemGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+
+  .searchBox {
+    width: 100%;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .header-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 1.2rem;
+  }
+
+  .register-button {
+    flex: 1;
+  }
+
+  .dropdown {
+    flex: 1;
+  }
+
+  .dropdownButton {
+    width: 100%;
+  }
+}
+
 .itemCard {
   width: 100%;
   aspect-ratio: 1;

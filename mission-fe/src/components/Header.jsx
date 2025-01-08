@@ -1,5 +1,6 @@
 import "./Header.css";
 import logo from "../images/logo/logo.svg";
+import avatar from "../images/icons/Avatar.png";
 import NavMenu from "./NavMenu";
 
 function Header() {
@@ -18,6 +19,9 @@ function Header() {
         <a href="login.html" className="login-button">
           로그인
         </a>
+        <button className="avatar-button">
+          <img src={avatar} alt="프로필" />
+        </button>
       </div>
     </div>
   );

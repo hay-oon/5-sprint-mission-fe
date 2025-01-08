@@ -13,25 +13,52 @@ function OnSaleItems() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
   const [keyword, setKeyword] = useState("");
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const handleSortChange = (value) => {
     setOrderBy(value);
     setIsDropdownOpen(false);
   };
 
+  const getPageSize = () => {
+    if (windowWidth <= 768) {
+      return 4; // 모바일: 2열 * 2행
+    } else if (windowWidth <= 1024) {
+      return 6; // 태블릿: 3열 * 2행
+    } else {
+      return 15; // 데스크탑: 5열 * 3행
+    }
+  };
+
+  useEffect(() => {
+    let timeoutId;
+
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setWindowWidth(window.innerWidth);
+      }, 300);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchOnSaleItems = async () => {
       try {
         const response = await fetch(
-          `${BASE_URL}/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}&keyword=${keyword}`
+          `${BASE_URL}/products?page=${currentPage}&pageSize=10&orderBy=${orderBy}&keyword=${keyword}`
         );
         if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
         const data = await response.json();
         setProductList(data.list);
-        setTotalPages(Math.ceil(data.totalCount / pageSize));
+        setTotalPages(Math.ceil(data.totalCount / 10));
       } catch (err) {
         console.log("데이터 로딩 에러:", err);
       }
@@ -39,6 +66,8 @@ function OnSaleItems() {
 
     fetchOnSaleItems();
   }, [currentPage, orderBy, keyword]);
+
+  const visibleProducts = productList.slice(0, getPageSize());
 
   return (
     <section className="container">
@@ -84,7 +113,7 @@ function OnSaleItems() {
       </div>
 
       <div className="onSale-itemGrid">
-        {productList.map((item) => (
+        {visibleProducts.map((item) => (
           <div key={item.id}>
             <img src={item.images} alt={item.title} className="itemCard" />
             <div className="itemInfo">

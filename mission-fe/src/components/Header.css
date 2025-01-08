@@ -35,12 +35,40 @@
   background-color: #1967d6;
 }
 
-.login-button:focus {
-  background-color: #1251aa;
+.avatar-button {
+  display: none;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
-.login-button:disabled {
-  background-color: #9ca3af;
-  cursor: default;
-  pointer-events: none;
+.avatar-button img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* 태블릿 화면 */
+@media screen and (max-width: 1024px) {
+  .header {
+    padding: 0 2.4rem;
+  }
+
+  .login-button {
+    display: none;
+  }
+
+  .avatar-button {
+    display: block;
+  }
+}
+
+/* 모바일 화면 */
+@media screen and (max-width: 768px) {
+  .header {
+    padding: 0 1.6rem;
+  }
 }
