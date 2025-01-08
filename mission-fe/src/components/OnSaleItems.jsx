@@ -5,6 +5,8 @@ import heartIcon from "../images/icons/ic_heart.png";
 import vectorIcon from "../images/icons/Vector.png";
 import toggleIcon from "../images/icons/ic_arrow_down.png";
 
+const BASE_URL = "https://panda-market-api.vercel.app";
+
 function OnSaleItems() {
   const [productList, setProductList] = useState([]);
   const [orderBy, setOrderBy] = useState("recent");
@@ -12,6 +14,7 @@ function OnSaleItems() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;
+  const [keyword, setKeyword] = useState("");
 
   const handleSortChange = (value) => {
     setOrderBy(value);
@@ -22,7 +25,7 @@ function OnSaleItems() {
     const fetchOnSaleItems = async () => {
       try {
         const response = await fetch(
-          `https://panda-market-api.vercel.app/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}`
+          `${BASE_URL}/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}&keyword=${keyword}`
         );
         if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
@@ -35,7 +38,7 @@ function OnSaleItems() {
     };
 
     fetchOnSaleItems();
-  }, [currentPage, orderBy]);
+  }, [currentPage, orderBy, keyword]);
 
   return (
     <section className="container">
@@ -44,7 +47,13 @@ function OnSaleItems() {
         <div className="searchBox">
           <div className="searchInput">
             <img src={vectorIcon} alt="검색" className="searchIcon" />
-            <input type="text" placeholder="검색할 상품을 입력해주세요" />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="검색어를 입력하세요"
+              className="search-input"
+            />
           </div>
           <button className="register-button">상품 등록하기</button>
 
