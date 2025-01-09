@@ -4,6 +4,7 @@ import "./OnSaleItems.css";
 import heartIcon from "../images/icons/ic_heart.png";
 import vectorIcon from "../images/icons/Vector.png";
 import toggleIcon from "../images/icons/ic_arrow_down.png";
+import defaultImage from "../images/icons/img_default.png";
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 
@@ -16,21 +17,13 @@ function OnSaleItems() {
   const [keyword, setKeyword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  // dropdown handler
   const handleSortChange = (value) => {
     setOrderBy(value);
     setIsDropdownOpen(false);
   };
 
-  const getPageSize = () => {
-    if (windowWidth <= 768) {
-      return 4; // 모바일: 2열 * 2행
-    } else if (windowWidth <= 1024) {
-      return 6; // 태블릿: 3열 * 2행
-    } else {
-      return 15; // 데스크탑: 5열 * 3행
-    }
-  };
-
+  // responsive handler
   useEffect(() => {
     let timeoutId;
 
@@ -48,11 +41,23 @@ function OnSaleItems() {
     };
   }, []);
 
+  const getPageSize = () => {
+    if (windowWidth <= 768) {
+      return 4; // mobile
+    } else if (windowWidth <= 1024) {
+      return 6; // tablet
+    } else {
+      return 10; // desktop
+    }
+  };
+
+  // fetch data
   useEffect(() => {
     const fetchOnSaleItems = async () => {
       try {
+        const pageSize = getPageSize();
         const response = await fetch(
-          `${BASE_URL}/products?page=${currentPage}&pageSize=10&orderBy=${orderBy}&keyword=${keyword}`
+          `${BASE_URL}/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}&keyword=${keyword}`
         );
         if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
@@ -67,8 +72,7 @@ function OnSaleItems() {
     fetchOnSaleItems();
   }, [currentPage, orderBy, keyword]);
 
-  const visibleProducts = productList.slice(0, getPageSize());
-
+  // render
   return (
     <section className="container">
       <div className="sectionHeader">
@@ -113,9 +117,17 @@ function OnSaleItems() {
       </div>
 
       <div className="onSale-itemGrid">
-        {visibleProducts.map((item) => (
+        {productList.map((item) => (
           <div key={item.id}>
-            <img src={item.images} alt={item.title} className="itemCard" />
+            <img
+              src={item.images || defaultImage}
+              alt={item.title}
+              className="itemCard"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultImage;
+              }}
+            />
             <div className="itemInfo">
               <h3>{item.name}</h3>
               <p>{item.price.toLocaleString()}원</p>

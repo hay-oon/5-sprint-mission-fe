@@ -10,6 +10,7 @@
   padding: 0 20rem;
   background-color: #ffffff;
   border-bottom: 0.1rem solid #dfdfdf;
+  z-index: 1000;
 }
 
 .header-left {
