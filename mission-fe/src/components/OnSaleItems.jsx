@@ -51,11 +51,12 @@ function OnSaleItems() {
     }
   };
 
+  const pageSize = getPageSize();
+
   // fetch data
   useEffect(() => {
     const fetchOnSaleItems = async () => {
       try {
-        const pageSize = getPageSize();
         const response = await fetch(
           `${BASE_URL}/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}&keyword=${keyword}`
         );
@@ -63,14 +64,14 @@ function OnSaleItems() {
 
         const data = await response.json();
         setProductList(data.list);
-        setTotalPages(Math.ceil(data.totalCount / 10));
+        setTotalPages(Math.ceil(data.totalCount / pageSize));
       } catch (err) {
         console.log("데이터 로딩 에러:", err);
       }
     };
 
     fetchOnSaleItems();
-  }, [currentPage, orderBy, keyword]);
+  }, [currentPage, orderBy, keyword, pageSize]);
 
   // render
   return (
