@@ -1,13 +1,13 @@
 import "./Footer.css";
 
-import instagramLogo from "../images/social/instagram-logo.svg";
-import facebookLogo from "../images/social/facebook-logo.svg";
-import twitterLogo from "../images/social/twitter-logo.svg";
-import youtubeLogo from "../images/social/youtube-logo.svg";
-import facebookUrl from "../images/social/facebook-logo.svg";
-import twitterUrl from "../images/social/twitter-logo.svg";
-import youtubeUrl from "../images/social/youtube-logo.svg";
-import instagramUrl from "../images/social/instagram-logo.svg";
+import instagramLogo from "../../assets/images/social/instagram-logo.svg";
+import facebookLogo from "../../assets/images/social/facebook-logo.svg";
+import twitterLogo from "../../assets/images/social/twitter-logo.svg";
+import youtubeLogo from "../../assets/images/social/youtube-logo.svg";
+import facebookUrl from "../../assets/images/social/facebook-logo.svg";
+import twitterUrl from "../../assets/images/social/twitter-logo.svg";
+import youtubeUrl from "../../assets/images/social/youtube-logo.svg";
+import instagramUrl from "../../assets/images/social/instagram-logo.svg";
 
 function Footer() {
   return (

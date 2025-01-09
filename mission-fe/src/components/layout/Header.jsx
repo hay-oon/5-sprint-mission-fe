@@ -1,8 +1,8 @@
 import "./Header.css";
-import logo from "../images/logo/logo.svg";
-import avatar from "../images/icons/Avatar.png";
-import NavMenu from "./NavMenu";
-import mobileLogo from "../images/logo/headerlogo_mobile.png";
+import logo from "../../assets/images/logo/logo.svg";
+import avatar from "../../assets/icons/Avatar.png";
+import NavMenu from "../common/NavMenu";
+import mobileLogo from "../../assets/images/logo/headerlogo_mobile.png";
 
 function Header() {
   return (

@@ -1,11 +1,10 @@
 import "./Pagination.css";
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
-  // 현재 페이지가 속한 그룹의 페이지 번호들을 계산
   const getPageNumbers = () => {
-    const pageGroup = Math.ceil(currentPage / 5); // 현재 페이지 그룹
-    const startPage = (pageGroup - 1) * 5 + 1; // 그룹의 시작 페이지
-    const endPage = Math.min(pageGroup * 5, totalPages); // 그룹의 마지막 페이지
+    const pageGroup = Math.ceil(currentPage / 5);
+    const startPage = (pageGroup - 1) * 5 + 1;
+    const endPage = Math.min(pageGroup * 5, totalPages);
 
     const pageNumbers = [];
     for (let i = startPage; i <= endPage; i++) {

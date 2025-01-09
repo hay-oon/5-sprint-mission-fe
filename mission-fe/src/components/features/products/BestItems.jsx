@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./BestItems.css";
-import heartIcon from "../images/icons/ic_heart.png";
-import defaultImage from "../images/icons/img_default.png";
-import useResponsivePageSize from "../hooks/useResponsivePageSize.js";
+import heartIcon from "../../../assets/icons/ic_heart.png";
+import defaultImage from "../../../assets/icons/img_default.png";
+import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
 
 function BestItems() {
   const [productLists, setProductLists] = useState([]);
@@ -28,7 +28,7 @@ function BestItems() {
     fetchBestItems();
   }, [pageSize]);
 
-  // const visibleProducts = productLists.slice(0, pageSize);
+  // const visibleProducts = productLists.slice(0, pageSize); // 프론트에서 리스트를 관리하는 방식에서 백으로 넘겨주는 방식으로 변경
 
   return (
     <section className="container">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import vectorIcon from "../images/icons/Vector.png";
+import vectorIcon from "../../assets/icons/Vector.png";
 
 const SearchInput = ({ keyword, setKeyword }) => {
   const [inputValue, setInputValue] = useState(keyword);

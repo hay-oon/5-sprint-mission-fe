@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import Pagination from "./Pagination";
+import Pagination from "../../common/Pagination";
+import SearchInput from "../../common/SearchInput";
 import "./OnSaleItems.css";
-import heartIcon from "../images/icons/ic_heart.png";
-import toggleIcon from "../images/icons/ic_arrow_down.png";
-import defaultImage from "../images/icons/img_default.png";
-import useResponsivePageSize from "../hooks/useResponsivePageSize";
-import SearchInput from "./SearchInput";
+import heartIcon from "../../../assets/icons/ic_heart.png";
+import toggleIcon from "../../../assets/icons/ic_arrow_down.png";
+import defaultImage from "../../../assets/icons/img_default.png";
+import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 

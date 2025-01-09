@@ -32,7 +32,6 @@
   opacity: 0.5;
 }
 
-/* 태블릿 화면 */
 @media screen and (max-width: 1024px) {
   .pagination {
     margin-top: 4rem;
@@ -40,7 +39,6 @@
   }
 }
 
-/* 모바일 화면 */
 @media screen and (max-width: 768px) {
   .pagination {
     margin-top: 4rem;

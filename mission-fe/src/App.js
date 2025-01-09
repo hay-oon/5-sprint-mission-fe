@@ -1,8 +1,8 @@
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import BestItems from "./components/BestItems";
-import OnSaleItems from "./components/OnSaleItems";
-import "./App.css";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
+import BestItems from "./components/features/products/BestItems";
+import OnSaleItems from "./components/features/products/OnSaleItems";
+import "./styles/App.css";
 
 function App() {
   return (
