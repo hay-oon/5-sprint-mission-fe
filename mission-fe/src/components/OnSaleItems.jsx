@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import Pagination from "./Pagination";
 import "./OnSaleItems.css";
 import heartIcon from "../images/icons/ic_heart.png";
-import vectorIcon from "../images/icons/Vector.png";
 import toggleIcon from "../images/icons/ic_arrow_down.png";
 import defaultImage from "../images/icons/img_default.png";
 import useResponsivePageSize from "../hooks/useResponsivePageSize";
+import SearchInput from "./SearchInput";
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 
@@ -42,7 +42,7 @@ function OnSaleItems() {
     };
 
     fetchOnSaleItems();
-  }, [currentPage, orderBy, keyword, pageSize]);
+  }, [currentPage, orderBy, pageSize, keyword]);
 
   // render
   return (
@@ -50,16 +50,7 @@ function OnSaleItems() {
       <div className="sectionHeader">
         <h2>판매중인 상품</h2>
         <div className="searchBox">
-          <div className="searchInput">
-            <img src={vectorIcon} alt="검색" className="searchIcon" />
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              placeholder="검색어를 입력하세요"
-              className="search-input"
-            />
-          </div>
+          <SearchInput keyword={keyword} setKeyword={setKeyword} />
           <button className="register-button">상품 등록하기</button>
 
           <div className="dropdown">
