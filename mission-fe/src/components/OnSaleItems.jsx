@@ -5,6 +5,8 @@ import heartIcon from "../images/icons/ic_heart.png";
 import vectorIcon from "../images/icons/Vector.png";
 import toggleIcon from "../images/icons/ic_arrow_down.png";
 import defaultImage from "../images/icons/img_default.png";
+// 인풋박스 디바운싱
+// windowwidth 커스텀훅
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 

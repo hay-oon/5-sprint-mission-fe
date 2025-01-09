@@ -1,7 +1,20 @@
 import "./Pagination.css";
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
-  const pageNumbers = [1, 2, 3, 4, 5]; // 지정된 배열말고 좀 더 동적인 방식으로 구현할 수 있도록 해야함
+  // 현재 페이지가 속한 그룹의 페이지 번호들을 계산
+  const getPageNumbers = () => {
+    const pageGroup = Math.ceil(currentPage / 5); // 현재 페이지 그룹
+    const startPage = (pageGroup - 1) * 5 + 1; // 그룹의 시작 페이지
+    const endPage = Math.min(pageGroup * 5, totalPages); // 그룹의 마지막 페이지
+
+    const pageNumbers = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
+
+  const pageNumbers = getPageNumbers();
 
   return (
     <div className="pagination">
@@ -18,7 +31,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           key={pageNum}
           onClick={() => onPageChange(pageNum)}
           className={`page-button ${currentPage === pageNum ? "active" : ""}`}
-          disabled={pageNum > totalPages}
         >
           {pageNum}
         </button>
