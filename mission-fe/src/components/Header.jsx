@@ -2,13 +2,20 @@ import "./Header.css";
 import logo from "../images/logo/logo.svg";
 import avatar from "../images/icons/Avatar.png";
 import NavMenu from "./NavMenu";
+import mobileLogo from "../images/logo/headerlogo_mobile.png";
 
 function Header() {
   return (
     <div className="header">
       <div className="header-left">
         <a href="/">
-          <img src={logo} alt="판다마켓 홈" width="153" />
+          <img
+            src={logo}
+            alt="판다마켓 홈"
+            width="153"
+            className="desktop-logo"
+          />
+          <img src={mobileLogo} alt="판다마켓 홈" className="mobile-logo" />
         </a>
         <div className="nav-menu-container">
           <NavMenu>자유게시판</NavMenu>
