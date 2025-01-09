@@ -34,6 +34,14 @@
   overflow: hidden;
   margin-bottom: 1.2rem;
   object-fit: cover;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.itemCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .itemInfo {
