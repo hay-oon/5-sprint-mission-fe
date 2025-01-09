@@ -2,45 +2,18 @@ import { useEffect, useState } from "react";
 import "./BestItems.css";
 import heartIcon from "../images/icons/ic_heart.png";
 import defaultImage from "../images/icons/img_default.png";
+import useResponsivePageSize from "../hooks/useResponsivePageSize.js";
 
 function BestItems() {
   const [productLists, setProductLists] = useState([]);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  // responsive handler
-  useEffect(() => {
-    let timeoutId; // setTimeout 의 반환값을 지정하고, clearTimeout 에 사용하기 위한 변수선언
-
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setWindowWidth(window.innerWidth);
-      }, 300); // 디바운싱, 불 필요한 리렌더링 방지
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  const getPageSize = () => {
-    if (windowWidth <= 768) {
-      return 1; // mobile
-    } else if (windowWidth <= 1024) {
-      return 2; // tablet
-    } else {
-      return 4; // desktop
-    }
-  };
+  const pageSize = useResponsivePageSize({ mobile: 1, tablet: 2, desktop: 4 });
 
   // fetch data
   useEffect(() => {
     const fetchBestItems = async () => {
       try {
         const response = await fetch(
-          `https://panda-market-api.vercel.app/products?page=1&pageSize=4&orderBy=favorite`
+          `https://panda-market-api.vercel.app/products?page=1&pageSize=${pageSize}&orderBy=favorite`
         );
         if (!response.ok) {
           throw new Error("데이터를 불러오는데 실패했습니다");
@@ -53,15 +26,15 @@ function BestItems() {
     };
 
     fetchBestItems();
-  }, []);
+  }, [pageSize]);
 
-  const visibleProducts = productLists.slice(0, getPageSize()); // best items slice
+  // const visibleProducts = productLists.slice(0, pageSize);
 
   return (
     <section className="container">
       <h2>베스트 상품</h2>
       <div className="best-itemGrid">
-        {visibleProducts.map((item) => (
+        {productLists.map((item) => (
           <div key={item.id}>
             <img
               src={item.images || defaultImage}

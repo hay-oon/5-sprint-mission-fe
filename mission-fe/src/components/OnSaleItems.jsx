@@ -5,8 +5,7 @@ import heartIcon from "../images/icons/ic_heart.png";
 import vectorIcon from "../images/icons/Vector.png";
 import toggleIcon from "../images/icons/ic_arrow_down.png";
 import defaultImage from "../images/icons/img_default.png";
-// 인풋박스 디바운싱
-// windowwidth 커스텀훅
+import useResponsivePageSize from "../hooks/useResponsivePageSize";
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 
@@ -17,43 +16,13 @@ function OnSaleItems() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const pageSize = useResponsivePageSize({ mobile: 4, tablet: 6, desktop: 10 });
 
   // dropdown handler
   const handleSortChange = (value) => {
     setOrderBy(value);
     setIsDropdownOpen(false);
   };
-
-  // responsive handler
-  useEffect(() => {
-    let timeoutId;
-
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setWindowWidth(window.innerWidth);
-      }, 300);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  const getPageSize = () => {
-    if (windowWidth <= 768) {
-      return 4; // mobile
-    } else if (windowWidth <= 1024) {
-      return 6; // tablet
-    } else {
-      return 10; // desktop
-    }
-  };
-
-  const pageSize = getPageSize();
 
   // fetch data
   useEffect(() => {
