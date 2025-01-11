@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Pagination from "../../common/Pagination";
 import SearchInput from "../../common/SearchInput";
+import DropDown from "../../common/DropDown";
 import "./OnSaleItems.css";
 import heartIcon from "../../../assets/icons/ic_heart.png";
-import toggleIcon from "../../../assets/icons/ic_arrow_down.png";
 import defaultImage from "../../../assets/icons/img_default.png";
 import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
 
@@ -12,17 +12,10 @@ const BASE_URL = "https://panda-market-api.vercel.app";
 function OnSaleItems() {
   const [productList, setProductList] = useState([]);
   const [orderBy, setOrderBy] = useState("recent");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
   const pageSize = useResponsivePageSize({ mobile: 4, tablet: 6, desktop: 10 });
-
-  // dropdown handler
-  const handleSortChange = (value) => {
-    setOrderBy(value);
-    setIsDropdownOpen(false);
-  };
 
   // fetch data
   useEffect(() => {
@@ -52,30 +45,7 @@ function OnSaleItems() {
         <div className="searchBox">
           <SearchInput keyword={keyword} setKeyword={setKeyword} />
           <button className="register-button">상품 등록하기</button>
-
-          <div className="dropdown">
-            <button
-              className="dropdownButton"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              {orderBy === "recent" ? "최신순" : "좋아요순"}
-              <img src={toggleIcon} alt="토글" width={24} />
-            </button>
-            {isDropdownOpen && (
-              <div className="dropdownMenu">
-                <div>
-                  <button onClick={() => handleSortChange("recent")}>
-                    최신순
-                  </button>
-                </div>
-                <div>
-                  <button onClick={() => handleSortChange("favorite")}>
-                    좋아요순
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <DropDown orderBy={orderBy} setOrderBy={setOrderBy} />
         </div>
       </div>
 

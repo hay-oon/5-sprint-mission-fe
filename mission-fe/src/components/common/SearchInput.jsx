@@ -12,7 +12,7 @@ const SearchInput = ({ keyword, setKeyword }) => {
   // 디바운싱 처리
   useEffect(() => {
     const handler = setTimeout(() => {
-      setKeyword(inputValue); // 디바운스 후 부모 컴포넌트의 keyword 업데이트
+      setKeyword(inputValue);
     }, 300);
 
     return () => {
