@@ -4,6 +4,8 @@ import heartIcon from "../../../assets/icons/ic_heart.png";
 import defaultImage from "../../../assets/icons/img_default.png";
 import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
 
+const BASE_URL = "https://panda-market-api.vercel.app";
+
 function BestItems() {
   const [productLists, setProductLists] = useState([]);
   const pageSize = useResponsivePageSize({ mobile: 1, tablet: 2, desktop: 4 });
@@ -13,7 +15,7 @@ function BestItems() {
     const fetchBestItems = async () => {
       try {
         const response = await fetch(
-          `https://panda-market-api.vercel.app/products?page=1&pageSize=${pageSize}&orderBy=favorite`
+          `${BASE_URL}/products?page=1&pageSize=${pageSize}&orderBy=favorite`
         );
         if (!response.ok) {
           throw new Error("데이터를 불러오는데 실패했습니다");

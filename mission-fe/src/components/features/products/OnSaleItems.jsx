@@ -12,9 +12,9 @@ const BASE_URL = "https://panda-market-api.vercel.app";
 function OnSaleItems() {
   const [productList, setProductList] = useState([]);
   const [orderBy, setOrderBy] = useState("recent");
+  const [keyword, setKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [keyword, setKeyword] = useState("");
   const pageSize = useResponsivePageSize({ mobile: 4, tablet: 6, desktop: 10 });
 
   // fetch data
