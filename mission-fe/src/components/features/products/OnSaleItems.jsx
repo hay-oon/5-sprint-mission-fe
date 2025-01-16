@@ -6,6 +6,7 @@ import "./OnSaleItems.css";
 import heartIcon from "../../../assets/icons/ic_heart.png";
 import defaultImage from "../../../assets/icons/img_default.png";
 import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 
@@ -16,6 +17,7 @@ function OnSaleItems() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = useResponsivePageSize({ mobile: 4, tablet: 6, desktop: 10 });
+  const navigate = useNavigate();
 
   // fetch data
   useEffect(() => {
@@ -51,7 +53,7 @@ function OnSaleItems() {
 
       <div className="onSale-itemGrid">
         {productList.map((item) => (
-          <div key={item.id}>
+          <div key={item.id} onClick={() => navigate(`/products/${item.id}`)}>
             <img
               src={item.images || defaultImage}
               alt={item.title}
