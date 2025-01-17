@@ -1,9 +1,9 @@
 import "./Footer.css";
 
-import instagramLogo from "../../assets/images/social/instagram-logo.svg";
-import facebookLogo from "../../assets/images/social/facebook-logo.svg";
-import twitterLogo from "../../assets/images/social/twitter-logo.svg";
-import youtubeLogo from "../../assets/images/social/youtube-logo.svg";
+import instagramLogo from "../../../assets/images/social/instagram-logo.svg";
+import facebookLogo from "../../../assets/images/social/facebook-logo.svg";
+import twitterLogo from "../../../assets/images/social/twitter-logo.svg";
+import youtubeLogo from "../../../assets/images/social/youtube-logo.svg";
 
 function Footer() {
   return (

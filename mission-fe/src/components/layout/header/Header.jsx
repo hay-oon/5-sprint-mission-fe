@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import "./Header.css";
-import logo from "../../assets/images/logo/logo.svg";
-import avatar from "../../assets/icons/Avatar.png";
-import NavMenu from "../common/NavMenu";
-import mobileLogo from "../../assets/images/logo/headerlogo_mobile.png";
-import Button from "../common/Button";
+import logo from "../../../assets/images/logo/logo.svg";
+import avatar from "../../../assets/icons/Avatar.png";
+import NavMenu from "../../layout/navigation/NavMenu";
+import mobileLogo from "../../../assets/images/logo/headerlogo_mobile.png";
+import Button from "../../common/Button";
 
 function Header() {
   const location = useLocation();

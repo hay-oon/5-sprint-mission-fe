@@ -1,7 +1,7 @@
 import { useState } from "react";
-import toggleIcon from "../../assets/icons/ic_arrow_down.png";
+import toggleIcon from "../../../assets/icons/ic_arrow_down.png";
 
-function DropDown({ orderBy, setOrderBy }) {
+function ProductSortDropdown({ orderBy, setOrderBy }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // dropdown handler
@@ -35,4 +35,4 @@ function DropDown({ orderBy, setOrderBy }) {
   );
 }
 
-export default DropDown;
+export default ProductSortDropdown;

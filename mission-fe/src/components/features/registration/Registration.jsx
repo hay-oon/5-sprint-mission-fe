@@ -1,14 +1,16 @@
 import { useState } from "react";
-import Header from "../../layout/Header";
-import Footer from "../../layout/Footer";
+import Header from "../../layout/header/Header";
+import Footer from "../../layout/footer/Footer";
 import "./Registration.css";
 import Button from "../../common/Button";
+
+const BASE_URL = "https://five-sprint-mission-be.onrender.com/api/products";
+
 function Registration() {
   const [tags, setTags] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 폼 제출 로직 구현
   };
 
   const handleAddTag = (e) => {

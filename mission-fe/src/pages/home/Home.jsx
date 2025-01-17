@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
-import "../styles/home.css";
-import feature1Image from "../assets/images/home/feature1-image.png";
-import feature2Image from "../assets/images/home/feature2-image.png";
-import feature3Image from "../assets/images/home/feature3-image.png";
-import heroImage from "../assets/images/home/hero-image.png";
-import bottomBannerImage from "../assets/images/home/bottom-banner-image.png";
+import Header from "../../components/layout/header/Header";
+import Footer from "../../components/layout/footer/Footer";
+import "./home.css";
+import feature1Image from "../../assets/images/home/feature1-image.png";
+import feature2Image from "../../assets/images/home/feature2-image.png";
+import feature3Image from "../../assets/images/home/feature3-image.png";
+import heroImage from "../../assets/images/home/hero-image.png";
+import bottomBannerImage from "../../assets/images/home/bottom-banner-image.png";
 
 function Home() {
   return (

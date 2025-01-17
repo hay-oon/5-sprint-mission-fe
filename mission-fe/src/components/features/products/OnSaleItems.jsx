@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import Pagination from "../../common/Pagination";
+import Pagination from "../../common/pagination/Pagination";
 import SearchInput from "../../common/SearchInput";
-import DropDown from "../../common/DropDown";
+import ProductSortDropdown from "./ProductSortDropdown";
 import "./OnSaleItems.css";
 import heartIcon from "../../../assets/icons/ic_heart.png";
 import defaultImage from "../../../assets/icons/img_default.png";
@@ -52,7 +52,7 @@ function OnSaleItems() {
             상품 등록하기
           </Button>
 
-          <DropDown orderBy={orderBy} setOrderBy={setOrderBy} />
+          <ProductSortDropdown orderBy={orderBy} setOrderBy={setOrderBy} />
         </div>
       </div>
 
