@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import Pagination from "../../common/pagination/Pagination";
-import SearchInput from "../../common/SearchInput";
-import ProductSortDropdown from "./ProductSortDropdown";
+import Pagination from "../../../common/pagination/Pagination";
+import SearchInput from "../../../common/SearchInput";
+import ProductSortDropdown from "../ProductSortDropdown";
 import "./OnSaleItems.css";
-import heartIcon from "../../../assets/icons/ic_heart.png";
-import defaultImage from "../../../assets/icons/img_default.png";
-import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
+import heartIcon from "../../../../assets/icons/ic_heart.png";
+import defaultImage from "../../../../assets/icons/img_default.png";
+import useResponsivePageSize from "../../../../hooks/useResponsivePageSize";
 import { useNavigate } from "react-router-dom";
-import Button from "../../common/Button";
+import Button from "../../../common/Button";
 
 const BASE_URL = "https://five-sprint-mission-be.onrender.com/api/products";
 
@@ -25,11 +25,12 @@ function OnSaleItems() {
     const fetchOnSaleItems = async () => {
       try {
         const response = await fetch(
-          `${BASE_URL}?page=${currentPage}&limit=${pageSize}&keyword=${keyword}`
+          `${BASE_URL}?page=${currentPage}&pageSize=${pageSize}&keyword=${keyword}`
         );
         if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
         const data = await response.json();
+        console.log(data);
         setProductList(data.products);
         setTotalPages(data.totalPages);
       } catch (err) {

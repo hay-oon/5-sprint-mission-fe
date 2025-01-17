@@ -63,16 +63,3 @@
   align-items: center;
   gap: 4px;
 }
-
-.remove-tag {
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 0 4px;
-}
-
-.remove-tag:hover {
-  color: #ff4444;
-}

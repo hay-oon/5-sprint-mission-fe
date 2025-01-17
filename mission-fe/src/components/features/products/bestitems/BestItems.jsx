@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./BestItems.css";
-import heartIcon from "../../../assets/icons/ic_heart.png";
-import defaultImage from "../../../assets/icons/img_default.png";
-import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
+import heartIcon from "../../../../assets/icons/ic_heart.png";
+import defaultImage from "../../../../assets/icons/img_default.png";
+import useResponsivePageSize from "../../../../hooks/useResponsivePageSize";
 
 const BASE_URL = "https://panda-market-api.vercel.app";
 
