@@ -7,6 +7,7 @@ import heartIcon from "../../../assets/icons/ic_heart.png";
 import defaultImage from "../../../assets/icons/img_default.png";
 import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
 import { useNavigate } from "react-router-dom";
+import Button from "../../common/Button";
 
 const BASE_URL = "https://five-sprint-mission-be.onrender.com/api/products";
 
@@ -47,12 +48,9 @@ function OnSaleItems() {
         <div className="searchBox">
           <SearchInput keyword={keyword} setKeyword={setKeyword} />
 
-          <button
-            className="register-button"
-            onClick={() => navigate("/registration")}
-          >
+          <Button className="button" onClick={() => navigate("/registration")}>
             상품 등록하기
-          </button>
+          </Button>
 
           <DropDown orderBy={orderBy} setOrderBy={setOrderBy} />
         </div>

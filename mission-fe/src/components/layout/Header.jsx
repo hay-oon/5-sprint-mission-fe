@@ -4,6 +4,7 @@ import logo from "../../assets/images/logo/logo.svg";
 import avatar from "../../assets/icons/Avatar.png";
 import NavMenu from "../common/NavMenu";
 import mobileLogo from "../../assets/images/logo/headerlogo_mobile.png";
+import Button from "../common/Button";
 
 function Header() {
   const location = useLocation();
@@ -27,9 +28,7 @@ function Header() {
         </div>
       </div>
       <div className="header-right">
-        <Link to="/login" className="login-button">
-          로그인
-        </Link>
+        <Button className="button">로그인</Button>
         <button className="avatar-button">
           <img src={avatar} alt="프로필" />
         </button>
