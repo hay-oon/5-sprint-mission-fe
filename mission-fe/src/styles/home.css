@@ -1,63 +1,212 @@
+.content {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  padding: 0 100px;
+  box-sizing: border-box;
+}
+
+.landing {
+  background-color: #cfe5ff;
+  height: 540px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.landing .content {
+  gap: 7px;
+  justify-content: center;
+  align-items: end;
+}
+.landing .content .intro {
+  width: 357px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 100px;
+}
+
+.landing .content .intro h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 56px;
+}
+
+.landing .content .intro .button {
+  background-color: #3692ff;
+  color: #f9fafb;
+  font-size: 2rem;
+  line-height: 32px;
+
+  padding: 12px 124px;
+
+  border: none;
+  border-radius: 40px;
+
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.info {
+  background-color: #ffffff;
+  height: 720px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.info .card {
+  background-color: #fcfcfc;
+  width: 988px;
+  height: 444px;
+
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+.hot-item .card,
+.register .card {
+  flex-direction: row;
+}
+.search .card {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.info .card .card-content {
+  display: flex;
+  flex-direction: column;
+}
+.info .card .card-content .badge {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3692ff;
+  margin-bottom: 12px;
+}
+.info .card .card-content h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 56px;
+
+  margin-bottom: 24px;
+}
+.info .card .card-content p {
+  font-size: 2.4rem;
+  font-weight: 500;
+  line-height: 32px;
+}
+
 .banner {
   background-color: #cfe5ff;
   height: 540px;
   display: flex;
-  align-items: center;
-  background-repeat: no-repeat;
-  background-position: 80% bottom;
-  background-size: 55%;
+  flex-direction: column;
+  justify-content: flex-end;
 }
-
-#hero {
-  background-image: url("/src/assets/images/home/hero-image.png");
-}
-
-#features {
-  padding-bottom: 138px;
-}
-
-#bottomBanner {
-  background-image: url("/src/assets/images/home/bottom-banner-image.png");
-}
-
-#loginLinkButton {
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 11.5px 23px;
-}
-
-.banner .pill-button {
-  margin-top: 32px;
-}
-
-.feature {
-  padding: 138px 0;
+.banner .content {
   display: flex;
-  align-items: center;
-  gap: 5%;
+  justify-content: center;
+  align-items: end;
+  gap: 69px;
 }
-
-.feature:nth-child(2) {
-  text-align: right;
-}
-
-.feature-content {
-  flex: 1;
-}
-
-.feature-tag {
-  color: var(--blue);
-  font-size: 18px;
-  line-height: 25px;
+.banner h1 {
+  font-size: 4rem;
   font-weight: 700;
-  margin-bottom: 12px;
+  line-height: 56px;
+
+  margin-bottom: 172.5px;
 }
 
-.feature-description {
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 120%;
-  letter-spacing: 0.08em;
-  margin-top: 24px;
+/* image size */
+#img-logo {
+  width: 153px;
+  height: auto;
+}
+#img-landing {
+  width: 746px;
+  height: auto;
+}
+.info .card img {
+  width: 588px;
+  height: auto;
+}
+.img-sns {
+  width: 20px;
+  height: 20px;
+}
+#img-banner {
+  width: 746px;
+  height: auto;
+}
+
+/* 미디어 쿼리 설정 */
+@media (max-width: 1024px) {
+  .landing {
+    height: auto;
+    margin: var(--header-height) auto 0;
+  }
+  .landing .content {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 40px;
+  }
+  .landing .content .intro {
+    width: 90%;
+    text-align: center;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+  .landing .content .intro h1 {
+    line-height: 48px;
+    margin-top: 40px;
+  }
+  .landing .content .intro .button {
+    width: 100%;
+    max-width: 357px;
+    padding: 12px 14px;
+  }
+
+  .info {
+    height: auto;
+    padding: 20px;
+  }
+  .info .card {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+  }
+  .info .card img {
+    width: 100%;
+    height: auto;
+  }
+  .info .card .card-content {
+    width: 90%;
+    text-align: center;
+  }
+
+  .banner {
+    height: auto;
+  }
+  .banner .content {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .banner h1 {
+    line-height: 48px;
+    margin: 40px 0;
+  }
+}
+
+/* 미디어 쿼리 */
+@media (max-width: 768px) {
+  #img-landing,
+  #img-banner {
+    width: 97.14vw;
+    height: auto;
+  }
+  .content {
+    padding: 0 20px;
+  }
 }

@@ -12,83 +12,93 @@ function Home() {
   return (
     <>
       <Header />
-      <main className="with-header">
-        <section id="hero" className="banner">
-          <div className="wrapper">
+      <section class="landing">
+        <div class="content">
+          <div class="intro">
             <h1>
               일상의 모든 물건을
               <br />
               거래해 보세요
             </h1>
-            <Link to="/products" className="button pill-button">
-              구경하러 가기
+            <Link to="/items" class="button">
+              구경하러가기
             </Link>
           </div>
-        </section>
+          <img id="img-landing" src={heroImage} alt="heroImage" />
+        </div>
+      </section>
 
-        <section id="features" className="wrapper">
-          <div className="feature">
-            <img src={feature1Image} alt="인기 상품" width="50%" />
-            <div className="feature-content">
-              <h2 className="feature-tag">Hot item</h2>
-              <h1>
-                인기 상품을
-                <br />
-                확인해 보세요
-              </h1>
-              <p className="feature-description">
-                가장 HOT한 중고거래 물품을
-                <br />
-                판다마켓에서 확인해 보세요
-              </p>
-            </div>
-          </div>
-
-          <div className="feature">
-            <div className="feature-content">
-              <h2 className="feature-tag">Search</h2>
-              <h1>
-                구매를 원하는
-                <br />
-                상품을 검색하세요
-              </h1>
-              <p className="feature-description">
-                구매하고 싶은 물품은 검색해서
-                <br />
-                쉽게 찾아보세요
-              </p>
-            </div>
-            <img src={feature2Image} alt="검색 기능" width="50%" />
-          </div>
-
-          <div className="feature">
-            <img src={feature3Image} alt="판매 상품 등록" width="50%" />
-            <div className="feature-content">
-              <h2 className="feature-tag">Register</h2>
-              <h1>
-                판매를 원하는
-                <br />
-                상품을 등록하세요
-              </h1>
-              <p className="feature-description">
-                어떤 물건이든 판매하고 싶은 상품을
-                <br />
-                쉽게 등록하세요
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section id="bottomBanner" className="banner">
-          <div className="wrapper">
+      <section class="info hot-item">
+        <div class="card">
+          <img src={feature1Image} alt="feature1Image" />
+          <div class="card-content">
+            <div class="badge">Hot item</div>
             <h1>
-              믿을 수 있는
+              인기 상품을
               <br />
-              판다마켓 중고거래
+              확인해 보세요
             </h1>
+            <p>
+              가장 HOT한 중고거래 물품을
+              <br />
+              판다 마켓에서 확인해 보세요
+            </p>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      <section class="info search">
+        <div class="card">
+          <img src={feature2Image} alt="feature2Image" />
+          <div class="card-content">
+            <div class="badge">Search</div>
+            <h1>
+              구매를 원하는
+              <br />
+              상품을 검색하세요
+            </h1>
+            <p>
+              구매하고 싶은 물품은 검색해서
+              <br />
+              쉽게 찾아보세요
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="info register">
+        <div class="card">
+          <img src={feature3Image} alt="feature3Image" />
+          <div class="card-content">
+            <div class="badge">Register</div>
+            <h1>
+              판매를 원하는
+              <br />
+              상품을 등록하세요
+            </h1>
+            <p>
+              어떤 물건이든 판매하고 싶은 상품을
+              <br />
+              쉽게 등록하세요
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="banner">
+        <div class="content">
+          <h1>
+            믿을 수 있는
+            <br />
+            판다마켓 중고 거래
+          </h1>
+          <img
+            id="img-banner"
+            src={bottomBannerImage}
+            alt="bottomBannerImage"
+          />
+        </div>
+      </section>
       <Footer />
     </>
   );

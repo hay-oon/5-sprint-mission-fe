@@ -8,7 +8,7 @@ import defaultImage from "../../../assets/icons/img_default.png";
 import useResponsivePageSize from "../../../hooks/useResponsivePageSize";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "https://panda-market-api.vercel.app";
+const BASE_URL = "https://five-sprint-mission-be.onrender.com/api/products";
 
 function OnSaleItems() {
   const [productList, setProductList] = useState([]);
@@ -24,13 +24,13 @@ function OnSaleItems() {
     const fetchOnSaleItems = async () => {
       try {
         const response = await fetch(
-          `${BASE_URL}/products?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}&keyword=${keyword}`
+          `${BASE_URL}?page=${currentPage}&limit=${pageSize}&keyword=${keyword}`
         );
         if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
         const data = await response.json();
-        setProductList(data.list);
-        setTotalPages(Math.ceil(data.totalCount / pageSize));
+        setProductList(data.products);
+        setTotalPages(data.totalPages);
       } catch (err) {
         console.log("데이터 로딩 에러:", err);
       }
@@ -46,17 +46,24 @@ function OnSaleItems() {
         <h2>판매중인 상품</h2>
         <div className="searchBox">
           <SearchInput keyword={keyword} setKeyword={setKeyword} />
-          <button className="register-button">상품 등록하기</button>
+
+          <button
+            className="register-button"
+            onClick={() => navigate("/registration")}
+          >
+            상품 등록하기
+          </button>
+
           <DropDown orderBy={orderBy} setOrderBy={setOrderBy} />
         </div>
       </div>
 
       <div className="onSale-itemGrid">
         {productList.map((item) => (
-          <div key={item.id} onClick={() => navigate(`/products/${item.id}`)}>
+          <div key={item._id} onClick={() => navigate(`/products/${item._id}`)}>
             <img
               src={item.images || defaultImage}
-              alt={item.title}
+              alt={item.name}
               className="itemCard"
               onError={(e) => {
                 e.target.onerror = null;
@@ -68,7 +75,7 @@ function OnSaleItems() {
               <p>{item.price.toLocaleString()}원</p>
               <span>
                 <img src={heartIcon} alt="좋아요" className="heartIcon" />
-                {item.favoriteCount}
+                {item.favoriteCount || 0}
               </span>
             </div>
           </div>
