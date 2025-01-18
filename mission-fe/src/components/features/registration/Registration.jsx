@@ -5,6 +5,8 @@ import Footer from "../../layout/footer/Footer";
 import "./Registration.css";
 import Button from "../../common/Button";
 import xIcon from "../../../assets/icons/ic_X.png";
+import { useProductValidation } from "../../../hooks/useProductValidation";
+
 const BASE_URL = "https://five-sprint-mission-be.onrender.com/api/products";
 
 function Registration() {
@@ -15,6 +17,8 @@ function Registration() {
     price: "",
     tags: [],
   });
+  const [tagError, setTagError] = useState("");
+  const { errors, validateTag } = useProductValidation(product);
 
   const handleInput = (e) => {
     const { name, value } = e.target; // input 태그의 name과 value를 가져온다.
@@ -29,6 +33,16 @@ function Registration() {
     if (e.key === "Enter" && e.target.value.trim()) {
       e.preventDefault(); // 폼 제출 시 기본 동작 방지
       const newTag = e.target.value.trim();
+      const tagError = validateTag(newTag);
+
+      // 2-1. 태그 유효성 검사 실패 시
+      if (tagError) {
+        setTagError(tagError);
+        return;
+      }
+
+      // 2-2. 태그 유효성 검사 통과 시
+      setTagError("");
       setProduct({
         ...product,
         tags: [...product.tags, newTag],
@@ -70,7 +84,14 @@ function Registration() {
   };
 
   const isFormValid = () => {
-    return product.name && product.description && product.price;
+    return (
+      product.name &&
+      product.description &&
+      product.price &&
+      !errors.name &&
+      !errors.description &&
+      !errors.price
+    );
   };
 
   return (
@@ -98,7 +119,9 @@ function Registration() {
               value={product.name}
               onChange={handleInput}
               placeholder="상품명을 입력해주세요"
+              className={errors.name ? "error" : ""}
             />
+            {errors.name && <p className="error-message">{errors.name}</p>}
           </div>
 
           <div className="form-group">
@@ -109,18 +132,24 @@ function Registration() {
               onChange={handleInput}
               placeholder="상품 소개를 입력해주세요"
               rows={10}
+              className={errors.description ? "error" : ""}
             />
+            {errors.description && (
+              <p className="error-message">{errors.description}</p>
+            )}
           </div>
 
           <div className="form-group">
             <label>판매 가격</label>
             <input
-              type="number"
+              type="text"
               name="price"
               value={product.price}
               onChange={handleInput}
               placeholder="판매 가격을 입력해주세요"
+              className={errors.price ? "error" : ""}
             />
+            {errors.price && <p className="error-message">{errors.price}</p>}
           </div>
 
           <div className="form-group">
@@ -129,7 +158,9 @@ function Registration() {
               type="text"
               placeholder="태그를 입력해주세요"
               onKeyPress={addTag} //Enter 키 이벤트 발생 시 addTag 호출 , onKeyDown 이벤트 핸들러 사용시 두번씩 호출되는 오류 발생
+              className={tagError ? "error" : ""}
             />
+            {tagError && <p className="error-message">{tagError}</p>}
             <div className="tags-container">
               {product.tags.map((tag, index) => (
                 <span key={index} className="tag">
