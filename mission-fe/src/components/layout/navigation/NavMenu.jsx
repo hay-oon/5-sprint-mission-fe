@@ -1,10 +1,11 @@
+import { Link } from "react-router-dom";
 import "./NavMenu.css";
 
-function NavMenu({ children, isActive }) {
+function NavMenu({ children, isActive, to }) {
   return (
-    <button className={`navMenu ${isActive ? "active" : ""}`}>
+    <Link to={to} className={`navMenu ${isActive ? "active" : ""}`}>
       {children}
-    </button>
+    </Link>
   );
 }
 

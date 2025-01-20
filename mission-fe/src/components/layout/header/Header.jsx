@@ -7,7 +7,7 @@ import mobileLogo from "../../../assets/images/logo/headerlogo_mobile.png";
 import Button from "../../common/Button";
 
 function Header() {
-  const location = useLocation();
+  const location = useLocation(); // 현재 경로 가져오기
   const isItemsPage = location.pathname === "/items";
 
   return (
@@ -24,7 +24,9 @@ function Header() {
         </Link>
         <div className="nav-menu-container">
           <NavMenu>자유게시판</NavMenu>
-          <NavMenu isActive={isItemsPage}>중고마켓</NavMenu>
+          <NavMenu isActive={isItemsPage} to="/items">
+            중고마켓
+          </NavMenu>
         </div>
       </div>
       <div className="header-right">
