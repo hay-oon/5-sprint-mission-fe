@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[var(--background)]">
       <Header />
       <main className="flex-1 pt-[var(--header-height)]">
         <Component {...pageProps} />

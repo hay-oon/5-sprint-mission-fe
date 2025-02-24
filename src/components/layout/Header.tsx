@@ -11,6 +11,7 @@ import Button from "@/components/common/Button";
 const Header = () => {
   const pathname = usePathname(); // 현재 경로 가져오기
   const isItemsPage = pathname === "/items"; // 현재 페이지가 '/items'인지 확인
+  const isArticlesPage = pathname === "/articles"; // articles 페이지 여부 확인
   const isRootPage = pathname === "/"; // 루트 페이지 여부 확인
 
   return (
@@ -36,7 +37,7 @@ const Header = () => {
         </Link>
         {!isRootPage && (
           <nav className="ml-2 sm:ml-4 md:ml-6">
-            <NavMenu isActive={false} to="/board">
+            <NavMenu isActive={isArticlesPage} to="/articles">
               자유게시판
             </NavMenu>
             <NavMenu isActive={isItemsPage} to="/items">
