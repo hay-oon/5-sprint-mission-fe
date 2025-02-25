@@ -25,10 +25,6 @@ interface ArticlesPageProps {
   bestArticles: Article[];
 }
 
-interface DropdownProps {
-  onSortChange: (value: "latest" | "likes") => void;
-}
-
 // 초기 로딩 시 SSR 사용
 export async function getServerSideProps() {
   try {
@@ -119,9 +115,7 @@ export default function ArticlesPage({
 
   // 초기 로딩 및 검색, 정렬 변경 시 새로 불러오기
   useEffect(() => {
-    if (initialArticles.length === 0) {
-      fetchArticles();
-    } // 초기 로딩 시 데이터가 없으면 데이터를 불러오고, 있으면 데이터를 불러오지 않음
+    fetchArticles();
   }, [sortBy, keyword]);
 
   const handleSort = (value: "latest" | "likes") => {
