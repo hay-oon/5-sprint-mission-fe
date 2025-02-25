@@ -23,6 +23,7 @@ export default {
         "text-error-red": "var(--text-error-red)",
         "banner-background": "var(--banner-background)",
         "best-article-background": "var(--best-article-background)",
+        "input-background": "var(--input-background)",
       },
     },
   },

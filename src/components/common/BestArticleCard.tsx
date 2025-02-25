@@ -12,7 +12,7 @@ export default function ArticleCard({
   likeCount: number;
 }) {
   return (
-    <div className="w-[343px] flex flex-col justify-between mt-4 px-6 pt-[46px] pb-4 h-[198px] relative xl:w-[384px] xl:h-[169px] bg-best-article-background rounded-lg">
+    <div className="w-[343px] flex flex-col justify-between mt-4 px-6 pt-[46px] pb-4 h-[198px] relative xl:w-[384px] xl:h-[169px] bg-best-article-background rounded-lg shadow-lg">
       <Image
         src="/images/best_badge.png"
         alt="best badge"

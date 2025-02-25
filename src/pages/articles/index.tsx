@@ -5,7 +5,7 @@ import SearchInput from "@/components/common/SearchInput";
 import { useState, useEffect } from "react";
 import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
-
+import Link from "next/link";
 interface Article {
   id: number;
   title: string;
@@ -147,7 +147,9 @@ export default function ArticlesPage({
             게시글
           </h2>
           <div>
-            <Button>글쓰기</Button>
+            <Link href="/articles/write">
+              <Button>글쓰기</Button>
+            </Link>
           </div>
         </div>
         <div className="flex justify-between gap-[13px] mt-4 md:mt-12 xl:mt-6">
