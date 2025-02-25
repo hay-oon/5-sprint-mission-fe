@@ -22,6 +22,11 @@ interface ArticleResponse {
 interface ArticlesPageProps {
   initialArticles: Article[];
 }
+
+interface DropdownProps {
+  onSortChange: (value: "latest" | "likes") => void;
+}
+
 // 초기 로딩 시 SSR 사용
 export async function getServerSideProps() {
   try {
@@ -100,7 +105,7 @@ export default function ArticlesPage({ initialArticles }: ArticlesPageProps) {
         </div>
       </section>
 
-      <section className="px-4">
+      <section className="px-4 mb-[91px] md:mb-[19px] lg:mb-[293px]">
         <div className="flex justify-between">
           <h2 className="flex items-center text-[18px] text-text-primary-black font-bold">
             게시글
@@ -117,7 +122,7 @@ export default function ArticlesPage({ initialArticles }: ArticlesPageProps) {
           />
           <Dropdown onSortChange={handleSort} />
         </div>
-        <div className="flex flex-col gap-4 mt-4 md:mt-12 xl:mt-6">
+        <div className="flex flex-col gap-4 mt-4 md:mt-12 xl:mt-6 mb-23">
           {isLoading ? (
             <div>로딩 중...</div>
           ) : (
