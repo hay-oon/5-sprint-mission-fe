@@ -13,7 +13,7 @@ const NavMenu = ({ children, isActive, to }: NavMenuProps) => {
     <Link
       href={to}
       className={`px-6 py-5 text-lg font-bold text-gray-700 no-underline transition-colors ${
-        isActive ? "text-blue-500" : "hover:text-blue-400"
+        isActive ? "text-primary-blue" : "hover:text-primary-blue"
       }`}
     >
       {children}

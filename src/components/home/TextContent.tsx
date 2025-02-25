@@ -14,11 +14,11 @@ export default function TextContent({
   return (
     <div
       className={cn(
-        `w-[290px] flex flex-col justify-center`,
+        `my-8 xl:w-[290px] xl:flex xl:flex-col xl:justify-center`,
         align === "right" ? "text-right" : ""
       )}
     >
-      <span className="text-text-blue font-bold text-[18px] mb-3">
+      <span className="text-primary-blue font-bold text-[18px] mb-3">
         {subTitle}
       </span>
       <div className="font-bold text-[40px] break-keep mb-6">{title}</div>
