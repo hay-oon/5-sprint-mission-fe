@@ -1,4 +1,3 @@
-"use client";
 import BestArticleCard from "@/components/common/BestArticleCard";
 import ArticleCard from "@/components/common/ArticleCard";
 import Button from "@/components/common/Button";
@@ -20,10 +19,39 @@ interface ArticleResponse {
   totalPages: number;
 }
 
-export default function ArticlesPage() {
+interface ArticlesPageProps {
+  initialArticles: Article[];
+}
+// 초기 로딩 시 SSR 사용
+export async function getServerSideProps() {
+  try {
+    const response = await api.get<ArticleResponse>(`/api/articles`, {
+      params: {
+        page: 1,
+        sortBy: "latest",
+      },
+    });
+
+    return {
+      props: {
+        initialArticles: response.data.articles,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to fetch articles:", error);
+    return {
+      props: {
+        initialArticles: [],
+      },
+    };
+  }
+}
+
+// 검색, 정렬 변경 시 클라이언트 컴포넌트 재렌더링
+export default function ArticlesPage({ initialArticles }: ArticlesPageProps) {
   const [keyword, setKeyword] = useState("");
   const [sortBy, setSortBy] = useState<"latest" | "likes">("latest");
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<Article[]>(initialArticles || []);
   const [isLoading, setIsLoading] = useState(false);
 
   // 게시글 불러오기
@@ -39,7 +67,7 @@ export default function ArticlesPage() {
       });
       setArticles(response.data.articles);
     } catch (error) {
-      console.error("게시글을 불러오는데 실패했습니다:", error);
+      console.error("Failed to fetch articles:", error);
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +75,9 @@ export default function ArticlesPage() {
 
   // 초기 로딩 및 검색, 정렬 변경 시 새로 불러오기
   useEffect(() => {
-    fetchArticles();
+    if (initialArticles.length === 0) {
+      fetchArticles();
+    } // 초기 로딩 시 데이터가 없으면 데이터를 불러오고, 있으면 데이터를 불러오지 않음
   }, [sortBy, keyword]);
 
   const handleSort = (value: "latest" | "likes") => {
