@@ -1,6 +1,19 @@
+"use client";
 import ArticleCard from "@/components/common/ArticleCard";
+import Button from "@/components/common/Button";
+import SearchInput from "@/components/common/SearchInput";
+import { useState } from "react";
+import Dropdown from "@/components/common/Dropdown";
 
 export default function ArticlesPage() {
+  const [keyword, setKeyword] = useState("");
+  const [sortBy, setSortBy] = useState<"latest" | "likes">("latest");
+
+  const handleSort = (value: "latest" | "likes") => {
+    setSortBy(value);
+    // TODO: 정렬 로직 구현
+  };
+
   return (
     <div className="max-w-[1200px] mx-auto">
       {/* 베스트 게시글 섹션 */}
@@ -21,10 +34,23 @@ export default function ArticlesPage() {
 
       {/* 일반 게시글 섹션 */}
       <section className="px-4">
-        <h2 className="text-[18px] text-text-primary-black font-bold">
-          최신 게시글
-        </h2>
-        {/* 일반 게시글 목록 */}
+        <div className="flex justify-between">
+          <h2 className="flex items-center text-[18px] text-text-primary-black font-bold">
+            게시글
+          </h2>
+          <div>
+            <Button>글쓰기</Button>
+          </div>
+        </div>
+        <div className="flex justify-between gap-[13px] mt-4 md:mt-12 xl:mt-6">
+          <SearchInput
+            placeholder="검색할 상품을 입력해주세요"
+            keyword={keyword}
+            setKeyword={setKeyword}
+          />
+
+          <Dropdown onSortChange={handleSort} />
+        </div>
       </section>
     </div>
   );
