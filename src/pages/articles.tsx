@@ -12,6 +12,7 @@ interface Article {
   content: string;
   createdAt: string;
   likeCount: number;
+  nickname: string;
 }
 
 interface ArticleResponse {
@@ -21,6 +22,7 @@ interface ArticleResponse {
 
 interface ArticlesPageProps {
   initialArticles: Article[];
+  bestArticles: Article[];
 }
 
 interface DropdownProps {
@@ -30,16 +32,27 @@ interface DropdownProps {
 // 초기 로딩 시 SSR 사용
 export async function getServerSideProps() {
   try {
-    const response = await api.get<ArticleResponse>(`/api/articles`, {
-      params: {
-        page: 1,
-        sortBy: "latest",
-      },
-    });
+    // 일반 게시글과 베스트 게시글을 병렬로 요청
+    const [articlesResponse, bestArticlesResponse] = await Promise.all([
+      api.get<ArticleResponse>(`/api/articles`, {
+        params: {
+          page: 1,
+          sortBy: "latest",
+        },
+      }),
+      api.get<ArticleResponse>(`/api/articles`, {
+        params: {
+          page: 1,
+          sortBy: "likes",
+          limit: 3,
+        },
+      }),
+    ]);
 
     return {
       props: {
-        initialArticles: response.data.articles,
+        initialArticles: articlesResponse.data.articles,
+        bestArticles: bestArticlesResponse.data.articles,
       },
     };
   } catch (error) {
@@ -47,17 +60,43 @@ export async function getServerSideProps() {
     return {
       props: {
         initialArticles: [],
+        bestArticles: [],
       },
     };
   }
 }
 
 // 검색, 정렬 변경 시 클라이언트 컴포넌트 재렌더링
-export default function ArticlesPage({ initialArticles }: ArticlesPageProps) {
+export default function ArticlesPage({
+  initialArticles,
+  bestArticles: initialBestArticles,
+}: ArticlesPageProps) {
   const [keyword, setKeyword] = useState("");
   const [sortBy, setSortBy] = useState<"latest" | "likes">("latest");
   const [articles, setArticles] = useState<Article[]>(initialArticles || []);
+  const [bestArticles, setBestArticles] = useState<Article[]>(
+    initialBestArticles || []
+  );
   const [isLoading, setIsLoading] = useState(false);
+
+  // 화면 크기에 따른 베스트 게시글 개수 조절을 위한 훅
+  const [displayCount, setDisplayCount] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setDisplayCount(3);
+      } else if (window.innerWidth >= 768) {
+        setDisplayCount(2);
+      } else {
+        setDisplayCount(1);
+      }
+    };
+
+    handleResize(); // 초기 실행
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // 게시글 불러오기
   const fetchArticles = async () => {
@@ -95,13 +134,16 @@ export default function ArticlesPage({ initialArticles }: ArticlesPageProps) {
         <h2 className="text-[18px] text-text-primary-black font-bold">
           베스트 게시글
         </h2>
-        <div className="flex justify-center">
-          <BestArticleCard
-            content="맥북 16인치 16기가 1테라 정도 사양이면 얼마에 팔아야 하나요?"
-            nickname="총명한판다"
-            createdAt="2025-02-24"
-            likeCount={10}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
+          {bestArticles.slice(0, displayCount).map((article) => (
+            <BestArticleCard
+              key={article.id}
+              content={article.content}
+              nickname={article.nickname}
+              createdAt={article.createdAt}
+              likeCount={article.likeCount}
+            />
+          ))}
         </div>
       </section>
 
