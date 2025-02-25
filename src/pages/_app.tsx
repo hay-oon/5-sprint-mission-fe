@@ -2,15 +2,20 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className="flex flex-col min-h-screen bg-[var(--background)]">
-      <Header />
-      <main className="flex-1 pt-[var(--header-height)]">
-        <Component {...pageProps} />
-      </main>
-      <Footer />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="flex flex-col min-h-screen bg-[var(--background)]">
+        <Header />
+        <main className="flex-1 pt-[var(--header-height)]">
+          <Component {...pageProps} />
+        </main>
+        <Footer />
+      </div>
+    </QueryClientProvider>
   );
 }
