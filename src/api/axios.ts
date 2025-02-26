@@ -1,6 +1,5 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:5005",
-  timeout: 5000,
+  baseURL: "https://five-sprint-mission-be.onrender.com",
 });

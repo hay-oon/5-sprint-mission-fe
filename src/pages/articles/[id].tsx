@@ -1,14 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import {
-  Article,
-  Comment,
-  getArticleById,
-  getCommentsByArticleId,
-  createComment,
-  deleteArticle,
-} from "@/api/articles";
+import { Article, getArticleById, deleteArticle } from "@/api/articles";
+import { Comment, getCommentsByArticleId, createComment } from "@/api/comments";
 import CommentItem from "@/components/common/CommentItem";
 import CommentForm from "@/components/common/CommentForm";
 import { formatDate } from "@/utils/date";

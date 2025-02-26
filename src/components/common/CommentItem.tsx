@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
-import { Comment, updateComment, deleteComment } from "@/api/articles";
+import { Comment, updateComment, deleteComment } from "@/api/comments";
 import { formatRelativeTime } from "@/utils/date";
 import ContextMenu from "./ContextMenu";
 

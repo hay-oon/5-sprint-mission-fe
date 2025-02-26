@@ -27,7 +27,7 @@ export default function BestArticleCard({
         className="absolute top-0 left-6"
       />
       <div className="flex flex-col justify-between h-full">
-        <div className="flex items-center gap-10 xl:gap-5">
+        <div className="flex items-center justify-between gap-10 xl:gap-5">
           <div className="text-[18px] text-text-primary-black font-semibold">
             {title}
           </div>
