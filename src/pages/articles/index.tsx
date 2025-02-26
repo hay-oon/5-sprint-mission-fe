@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
+import router from "next/router";
 interface Article {
   id: number;
   title: string;
-  content: string;
   createdAt: string;
   likeCount: number;
   nickname: string;
@@ -132,10 +132,12 @@ export default function ArticlesPage({
           {bestArticles.slice(0, displayCount).map((article) => (
             <BestArticleCard
               key={article.id}
-              content={article.content}
-              nickname={article.nickname}
+              title={article.title}
               createdAt={article.createdAt}
               likeCount={article.likeCount}
+              onClick={() => {
+                router.push(`/articles/${article.id}`);
+              }}
             />
           ))}
         </div>
@@ -169,10 +171,12 @@ export default function ArticlesPage({
                 articles.map((article) => (
                   <ArticleCard
                     key={article.id}
-                    content={article.content}
-                    nickname="총명한판다"
+                    title={article.title}
                     createdAt={article.createdAt}
                     likeCount={article.likeCount}
+                    onClick={() => {
+                      router.push(`/articles/${article.id}`);
+                    }}
                   />
                 ))
               ) : (
