@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { api } from "@/api/axios";
 import Button from "@/components/common/Button";
 import { getArticleById, updateArticle } from "@/api/articles";
 
@@ -89,19 +88,10 @@ export default function EditArticlePage() {
           <div className="flex items-center">
             <h1 className="text-xl font-bold">게시글 수정</h1>
           </div>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              className="bg-gray-200 text-gray-800 hover:bg-gray-300"
-              onClick={() => router.back()}
-              disabled={isSubmitting}
-            >
-              취소
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              수정
-            </Button>
-          </div>
+
+          <Button type="submit" disabled={isSubmitting}>
+            수정
+          </Button>
         </div>
 
         <div>

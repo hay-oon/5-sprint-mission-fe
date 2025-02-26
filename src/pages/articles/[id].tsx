@@ -177,7 +177,17 @@ function ArticleDetailPage() {
         <div>
           {comments.length > 0 ? (
             comments.map((comment) => (
-              <CommentItem key={comment.id} comment={comment} />
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                articleId={id as string}
+                onCommentUpdated={() => {
+                  // 댓글 수정/삭제 후 댓글 목록 다시 불러오기
+                  getCommentsByArticleId(id as string).then((data) => {
+                    setComments(data.comments);
+                  });
+                }}
+              />
             ))
           ) : (
             <div className="flex flex-col items-center justify-center py-8">
@@ -194,7 +204,7 @@ function ArticleDetailPage() {
         {/* 목록으로 돌아가기 버튼 */}
         <div className="flex justify-center mt-8">
           <button
-            className="px-6 py-2 bg-primary-blue text-white rounded-3xl hover:bg-primary-dark"
+            className="px-10 py-2 bg-primary-blue text-white font-semibold rounded-3xl hover:bg-primary-dark"
             onClick={() => router.push("/articles")}
           >
             목록으로 돌아가기
