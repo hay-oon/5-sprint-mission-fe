@@ -42,3 +42,17 @@ export const createComment = async (
 ): Promise<void> => {
   await api.post(`/api/articles/${articleId}/comments`, { content });
 };
+
+// 게시글 수정 함수
+export async function updateArticle(
+  id: string,
+  data: { title: string; content: string }
+): Promise<Article> {
+  const response = await api.patch(`/api/articles/${id}`, data);
+  return response.data;
+}
+
+// 게시글 삭제 함수
+export async function deleteArticle(id: string): Promise<void> {
+  await api.delete(`/api/articles/${id}`);
+}

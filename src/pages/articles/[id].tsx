@@ -7,6 +7,7 @@ import {
   getArticleById,
   getCommentsByArticleId,
   createComment,
+  deleteArticle,
 } from "@/api/articles";
 import CommentItem from "@/components/common/CommentItem";
 import CommentForm from "@/components/common/CommentForm";
@@ -70,6 +71,27 @@ function ArticleDetailPage() {
     setComments(commentsData.comments);
   };
 
+  // 게시글 수정 및 삭제 핸들러
+  const handleMenuSelect = async (value: string) => {
+    if (!id) return;
+
+    if (value === "edit") {
+      // 수정 페이지로 이동
+      router.push(`/articles/edit/${id}`);
+    } else if (value === "delete") {
+      if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+        try {
+          await deleteArticle(id as string);
+          alert("게시글이 삭제되었습니다.");
+          router.push("/articles");
+        } catch (err) {
+          console.error("게시글 삭제에 실패했습니다.", err);
+          alert("게시글 삭제에 실패했습니다.");
+        }
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -126,7 +148,7 @@ function ArticleDetailPage() {
               { value: "edit", label: "수정하기" },
               { value: "delete", label: "삭제하기" },
             ]}
-            onSelect={() => {}}
+            onSelect={handleMenuSelect}
             trigger={
               <Image
                 src="/icons/ic_kebab.png"
