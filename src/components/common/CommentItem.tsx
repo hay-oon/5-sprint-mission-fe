@@ -26,6 +26,9 @@ const CommentItem = ({
     } else if (value === "delete") {
       if (window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
         try {
+          console.log(
+            `댓글 삭제: 게시글 ID ${articleId}, 댓글 ID ${comment.id}`
+          );
           await deleteComment(comment.id);
           alert("댓글이 삭제되었습니다.");
           onCommentUpdated();
@@ -103,6 +106,14 @@ const CommentItem = ({
             disabled={isSubmitting}
           />
           <div className="flex justify-end mt-2">
+            <button
+              type="button"
+              className="px-4 py-2 mr-2 text-sm font-semibold bg-gray-200 text-gray-700 rounded-md"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+            >
+              취소
+            </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-semibold bg-primary-blue text-white rounded-md"

@@ -2,7 +2,7 @@ import BestArticleCard from "@/components/common/BestArticleCard";
 import ArticleCard from "@/components/common/ArticleCard";
 import Button from "@/components/common/Button";
 import SearchInput from "@/components/common/SearchInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
@@ -94,29 +94,44 @@ export default function ArticlesPage({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 게시글 불러오기
-  const fetchArticles = async () => {
+  // 게시글 데이터 불러오기
+  const fetchArticles = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await api.get<ArticleResponse>(`/api/articles`, {
+      const response = await api.get<ArticleResponse>("/articles", {
         params: {
           page: 1,
+          limit: 10,
           sortBy,
-          keyword,
+          keyword: keyword || undefined,
         },
       });
       setArticles(response.data.articles);
-    } catch (error) {
-      console.error("Failed to fetch articles:", error);
+    } catch (err) {
+      console.error("게시글을 불러오는데 실패했습니다.", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [sortBy, keyword]);
 
   // 초기 로딩 및 검색, 정렬 변경 시 새로 불러오기
   useEffect(() => {
     fetchArticles();
-  }, [sortBy, keyword]);
+  }, [fetchArticles]);
+
+  // 베스트 게시글 업데이트 함수 추가
+  const updateBestArticles = useCallback((newArticles: Article[]) => {
+    // 좋아요 순으로 정렬하여 베스트 게시글 업데이트
+    const sorted = [...newArticles].sort((a, b) => b.likeCount - a.likeCount);
+    setBestArticles(sorted.slice(0, 5)); // 상위 5개만 선택
+  }, []);
+
+  // 게시글 데이터가 변경될 때마다 베스트 게시글도 업데이트
+  useEffect(() => {
+    if (articles.length > 0) {
+      updateBestArticles(articles);
+    }
+  }, [articles, updateBestArticles]);
 
   const handleSort = (value: "latest" | "likes") => {
     setSortBy(value);
