@@ -61,11 +61,6 @@ const CommentItem = ({
     }
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-    setEditContent(comment.content);
-  };
-
   return (
     <div className="py-4 border-b border-gray-200">
       <div className="flex items-center mb-2">
@@ -106,14 +101,6 @@ const CommentItem = ({
             disabled={isSubmitting}
           />
           <div className="flex justify-end mt-2">
-            <button
-              type="button"
-              className="px-4 py-2 mr-2 text-sm font-semibold bg-gray-200 text-gray-700 rounded-md"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-            >
-              취소
-            </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-semibold bg-primary-blue text-white rounded-md"
