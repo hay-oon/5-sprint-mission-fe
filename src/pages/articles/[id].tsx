@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { Article, getArticleById, deleteArticle } from "@/api/articles";
 import { Comment, getCommentsByArticleId, createComment } from "@/api/comments";
@@ -21,8 +21,7 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
 
-  // 댓글 데이터 불러오기
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     if (!id) return;
 
     try {
@@ -34,14 +33,13 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
     } finally {
       setIsLoadingComments(false);
     }
-  };
+  }, [id]);
 
-  // 컴포넌트 마운트 시 댓글 데이터 불러오기
   useEffect(() => {
     if (id) {
       fetchComments();
     }
-  }, [id]);
+  }, [id, fetchComments]);
 
   // 댓글 작성 핸들러
   const handleSubmitComment = async (content: string) => {
@@ -195,7 +193,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     });
 
     const articles = response.data.articles;
-    const paths = articles.map((article: any) => ({
+    const paths = articles.map((article: { id: number }) => ({
       params: { id: article.id.toString() },
     }));
 
