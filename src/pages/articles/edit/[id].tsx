@@ -1,39 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Button from "@/components/common/Button";
 import { getArticleById, updateArticle } from "@/api/articles";
+import { GetServerSideProps } from "next";
 
-export default function EditArticlePage() {
+interface EditArticlePageProps {
+  article: {
+    id: string;
+    title: string;
+    content: string;
+    likeCount: number;
+    createdAt: string;
+  };
+}
+
+export default function EditArticlePage({ article }: EditArticlePageProps) {
   const router = useRouter();
   const { id } = router.query;
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(article.title);
+  const [content, setContent] = useState(article.content);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-
-  // 기존 게시글 데이터 불러오기
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchArticle = async () => {
-      try {
-        setIsLoading(true);
-        const articleData = await getArticleById(id as string);
-        setTitle(articleData.title);
-        setContent(articleData.content);
-        setError("");
-      } catch (err) {
-        console.error("게시글을 불러오는데 실패했습니다.", err);
-        setError("게시글을 불러오는데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchArticle();
-  }, [id]);
 
   const submitForm = async () => {
     if (!title || !content) {
@@ -55,6 +43,7 @@ export default function EditArticlePage() {
     } catch (error) {
       console.error("게시글 수정에 실패했습니다:", error);
       alert("게시글 수정에 실패했습니다.");
+      setError("게시글 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
     }
@@ -64,14 +53,6 @@ export default function EditArticlePage() {
     e.preventDefault();
     submitForm();
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        로딩중...
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -124,3 +105,35 @@ export default function EditArticlePage() {
     </div>
   );
 }
+
+// 서버 사이드 렌더링으로 변경
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  try {
+    const { id } = context.params || {};
+
+    if (!id) {
+      return {
+        notFound: true,
+      };
+    }
+
+    const article = await getArticleById(id as string);
+
+    if (!article) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        article,
+      },
+    };
+  } catch (error) {
+    console.error("게시글을 불러오는데 실패했습니다:", error);
+    return {
+      notFound: true,
+    };
+  }
+};

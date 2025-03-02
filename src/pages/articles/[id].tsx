@@ -7,8 +7,7 @@ import CommentItem from "@/components/common/CommentItem";
 import CommentForm from "@/components/common/CommentForm";
 import { formatDate } from "@/utils/date";
 import ContextMenu from "@/components/common/ContextMenu";
-import { GetStaticProps, GetStaticPaths } from "next";
-import { api } from "@/api/axios";
+import { GetServerSideProps } from "next";
 
 interface ArticleDetailPageProps {
   article: Article;
@@ -74,15 +73,6 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
       }
     }
   };
-
-  // 페이지가 생성 중일 때
-  if (router.isFallback) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-blue"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto mb-[234px] md:mb-[561px] lg:mb-[463px] px-4 py-8">
@@ -182,56 +172,34 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
   );
 }
 
-// 빌드 시점에 생성할 경로 지정
-export const getStaticPaths: GetStaticPaths = async () => {
+// 서버 사이드 렌더링으로 변경
+export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
-    // 인기 게시글 목록을 가져와서 미리 생성할 경로로 지정
-    const response = await api.get(`/api/articles`, {
-      params: {
-        page: 1,
-        sortBy: "likes",
-        limit: 10, // 인기 게시글 상위 10개만 미리 생성
-      },
-    });
+    const { id } = context.params || {};
 
-    const articles = response.data.articles;
-    const paths = articles.map((article: { id: number }) => ({
-      params: { id: article.id.toString() },
-    }));
+    if (!id) {
+      return {
+        notFound: true,
+      };
+    }
 
-    return {
-      paths,
-      fallback: "blocking", // 페이지가 완전히 생성된 후 보여주도록 함
-    };
-  } catch (error) {
-    console.error("정적 경로 생성 중 오류 발생:", error);
-    return {
-      paths: [],
-      fallback: "blocking",
-    };
-  }
-};
+    const article = await getArticleById(id as string);
 
-// 빌드 시점에 페이지 데이터 가져오기
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  try {
-    const id = params?.id as string;
-    const article = await getArticleById(id);
-
-    // 게시글이 없는 경우 404 페이지 반환
     if (!article) {
-      return { notFound: true };
+      return {
+        notFound: true,
+      };
     }
 
     return {
-      props: { article },
-      revalidate: 3600, // 1시간마다 재검증
+      props: {
+        article,
+      },
     };
   } catch (error) {
-    console.error("정적 페이지 생성 중 오류 발생:", error);
+    console.error("게시글을 불러오는데 실패했습니다:", error);
     return {
       notFound: true,
-      revalidate: 60, // 오류 발생 시 1분 후 재시도
     };
   }
 };
