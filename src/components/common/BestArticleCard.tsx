@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { formatDate } from "@/utils/date";
+import { BorderTrail } from "@/components/ui/border-trail";
 
 interface BestArticleCardProps {
   title: string;
@@ -19,6 +20,13 @@ export default function BestArticleCard({
       className="w-[343px] flex flex-col justify-between mt-4 px-6 pt-[46px] pb-4 h-[198px] relative xl:w-[384px] xl:h-[169px] bg-best-article-background rounded-lg shadow-lg cursor-pointer"
       onClick={onClick}
     >
+      <BorderTrail
+        style={{
+          boxShadow:
+            "0px 0px 60px 30px rgb(255 255 255 / 50%), 0 0 100px 60px rgb(0 0 0 / 50%), 0 0 140px 90px rgb(0 0 0 / 50%)",
+        }}
+        size={100}
+      />
       <Image
         src="/images/best_badge.png"
         alt="best badge"

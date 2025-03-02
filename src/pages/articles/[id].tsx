@@ -7,62 +7,52 @@ import CommentItem from "@/components/common/CommentItem";
 import CommentForm from "@/components/common/CommentForm";
 import { formatDate } from "@/utils/date";
 import ContextMenu from "@/components/common/ContextMenu";
+import { GetStaticProps, GetStaticPaths } from "next";
+import { api } from "@/api/axios";
 
-function ArticleDetailPage() {
+interface ArticleDetailPageProps {
+  article: Article;
+}
+
+function ArticleDetailPage({ article }: ArticleDetailPageProps) {
   const router = useRouter();
   const { id } = router.query;
 
-  const [article, setArticle] = useState<Article | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
 
-  // 게시글 상세 정보 조회
-  useEffect(() => {
+  // 댓글 데이터 불러오기
+  const fetchComments = async () => {
     if (!id) return;
 
-    const fetchArticle = async () => {
-      try {
-        setIsLoading(true);
-        const articleData = await getArticleById(id as string);
-        setArticle(articleData);
-        setError("");
-      } catch (err) {
-        console.error("게시글을 불러오는데 실패했습니다.", err);
-        setError("게시글을 불러오는데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    try {
+      setIsLoadingComments(true);
+      const commentsData = await getCommentsByArticleId(id as string);
+      setComments(commentsData.comments);
+    } catch (err) {
+      console.error("댓글을 불러오는데 실패했습니다.", err);
+    } finally {
+      setIsLoadingComments(false);
+    }
+  };
 
-    fetchArticle();
-  }, [id]);
-
-  // 댓글 목록 조회
+  // 컴포넌트 마운트 시 댓글 데이터 불러오기
   useEffect(() => {
-    if (!id) return;
-
-    const fetchComments = async () => {
-      try {
-        const commentsData = await getCommentsByArticleId(id as string);
-        setComments(commentsData.comments);
-      } catch (err) {
-        console.error("댓글을 불러오는데 실패했습니다.", err);
-      }
-    };
-
-    fetchComments();
+    if (id) {
+      fetchComments();
+    }
   }, [id]);
 
   // 댓글 작성 핸들러
   const handleSubmitComment = async (content: string) => {
     if (!id) return;
 
-    await createComment(id as string, content);
-
-    // 댓글 작성 후 댓글 목록 다시 불러오기
-    const commentsData = await getCommentsByArticleId(id as string);
-    setComments(commentsData.comments);
+    try {
+      await createComment(id as string, content);
+      fetchComments(); // 댓글 작성 후 목록 다시 불러오기
+    } catch (err) {
+      console.error("댓글 작성에 실패했습니다.", err);
+    }
   };
 
   // 게시글 수정 및 삭제 핸들러
@@ -70,7 +60,6 @@ function ArticleDetailPage() {
     if (!id) return;
 
     if (value === "edit") {
-      // 수정 페이지로 이동
       router.push(`/articles/edit/${id}`);
     } else if (value === "delete") {
       if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
@@ -86,26 +75,11 @@ function ArticleDetailPage() {
     }
   };
 
-  if (isLoading) {
+  // 페이지가 생성 중일 때
+  if (router.isFallback) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        로딩중...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen text-red-500">
-        {error}
-      </div>
-    );
-  }
-
-  if (!article) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        게시글을 찾을 수 없습니다.
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-blue"></div>
       </div>
     );
   }
@@ -169,18 +143,17 @@ function ArticleDetailPage() {
 
         {/* 댓글 목록 */}
         <div>
-          {comments.length > 0 ? (
+          {isLoadingComments ? (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-blue"></div>
+            </div>
+          ) : comments.length > 0 ? (
             comments.map((comment) => (
               <CommentItem
                 key={comment.id}
                 comment={comment}
                 articleId={id as string}
-                onCommentUpdated={() => {
-                  // 댓글 수정/삭제 후 댓글 목록 다시 불러오기
-                  getCommentsByArticleId(id as string).then((data) => {
-                    setComments(data.comments);
-                  });
-                }}
+                onCommentUpdated={fetchComments}
               />
             ))
           ) : (
@@ -208,5 +181,59 @@ function ArticleDetailPage() {
     </div>
   );
 }
+
+// 빌드 시점에 생성할 경로 지정
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    // 인기 게시글 목록을 가져와서 미리 생성할 경로로 지정
+    const response = await api.get(`/api/articles`, {
+      params: {
+        page: 1,
+        sortBy: "likes",
+        limit: 10, // 인기 게시글 상위 10개만 미리 생성
+      },
+    });
+
+    const articles = response.data.articles;
+    const paths = articles.map((article: any) => ({
+      params: { id: article.id.toString() },
+    }));
+
+    return {
+      paths,
+      fallback: "blocking", // 페이지가 완전히 생성된 후 보여주도록 함
+    };
+  } catch (error) {
+    console.error("정적 경로 생성 중 오류 발생:", error);
+    return {
+      paths: [],
+      fallback: "blocking",
+    };
+  }
+};
+
+// 빌드 시점에 페이지 데이터 가져오기
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  try {
+    const id = params?.id as string;
+    const article = await getArticleById(id);
+
+    // 게시글이 없는 경우 404 페이지 반환
+    if (!article) {
+      return { notFound: true };
+    }
+
+    return {
+      props: { article },
+      revalidate: 3600, // 1시간마다 재검증
+    };
+  } catch (error) {
+    console.error("정적 페이지 생성 중 오류 발생:", error);
+    return {
+      notFound: true,
+      revalidate: 60, // 오류 발생 시 1분 후 재시도
+    };
+  }
+};
 
 export default ArticleDetailPage;

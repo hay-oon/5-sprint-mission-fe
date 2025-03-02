@@ -10,8 +10,8 @@ import Button from "@/components/common/Button";
 
 const Header = () => {
   const pathname = usePathname(); // 현재 경로 가져오기
-  const isItemsPage = pathname.startsWith("/items"); // 현재 페이지가 '/items'인지 확인
-  const isArticlesPage = pathname.startsWith("/articles"); // articles 페이지 여부 확인
+  const isItemsPage = pathname?.startsWith("/items") ?? false; // 현재 페이지가 '/items'인지 확인
+  const isArticlesPage = pathname?.startsWith("/articles") ?? false; // articles 페이지 여부 확인
   const isRootPage = pathname === "/"; // 루트 페이지 여부 확인
 
   return (
