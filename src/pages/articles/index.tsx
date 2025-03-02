@@ -2,7 +2,7 @@ import BestArticleCard from "@/components/common/BestArticleCard";
 import ArticleCard from "@/components/common/ArticleCard";
 import Button from "@/components/common/Button";
 import SearchInput from "@/components/common/SearchInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
@@ -70,9 +70,7 @@ export default function ArticlesPage({
   const [keyword, setKeyword] = useState("");
   const [sortBy, setSortBy] = useState<"latest" | "likes">("latest");
   const [articles, setArticles] = useState<Article[]>(initialArticles || []);
-  const [bestArticles, setBestArticles] = useState<Article[]>(
-    initialBestArticles || []
-  );
+  const [bestArticles] = useState<Article[]>(initialBestArticles || []);
   const [isLoading, setIsLoading] = useState(false);
 
   // 화면 크기에 따른 베스트 게시글 개수 조절을 위한 훅
@@ -95,7 +93,7 @@ export default function ArticlesPage({
   }, []);
 
   // 게시글 불러오기
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await api.get<ArticleResponse>(`/api/articles`, {
@@ -111,12 +109,12 @@ export default function ArticlesPage({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [sortBy, keyword]);
 
   // 초기 로딩 및 검색, 정렬 변경 시 새로 불러오기
   useEffect(() => {
     fetchArticles();
-  }, [sortBy, keyword]);
+  }, [sortBy, keyword, fetchArticles]);
 
   const handleSort = (value: "latest" | "likes") => {
     setSortBy(value);

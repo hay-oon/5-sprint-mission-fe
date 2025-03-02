@@ -21,6 +21,7 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
 
+  // 댓글 데이터 불러오기
   const fetchComments = useCallback(async () => {
     if (!id) return;
 
@@ -35,6 +36,7 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
     }
   }, [id]);
 
+  // 컴포넌트 마운트 시 댓글 데이터 불러오기
   useEffect(() => {
     if (id) {
       fetchComments();
