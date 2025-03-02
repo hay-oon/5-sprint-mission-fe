@@ -43,6 +43,7 @@ export default function EditArticlePage({ article }: EditArticlePageProps) {
     } catch (error) {
       console.error("게시글 수정에 실패했습니다:", error);
       alert("게시글 수정에 실패했습니다.");
+      setError("게시글 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
     }

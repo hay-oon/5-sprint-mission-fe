@@ -8,7 +8,6 @@ import CommentForm from "@/components/common/CommentForm";
 import { formatDate } from "@/utils/date";
 import ContextMenu from "@/components/common/ContextMenu";
 import { GetServerSideProps } from "next";
-import { api } from "@/api/axios";
 
 interface ArticleDetailPageProps {
   article: Article;
