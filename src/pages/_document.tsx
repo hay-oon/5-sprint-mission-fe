@@ -4,7 +4,6 @@ export default function Document() {
   return (
     <Html lang="ko">
       <Head>
-        <title>판다마켓</title>
         <meta name="description" content="중고거래의 모든 것, 판다마켓" />
         <link rel="icon" href="/images/logo/favicon.ico" />
       </Head>
