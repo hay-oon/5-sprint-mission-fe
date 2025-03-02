@@ -2,11 +2,15 @@ import { useState } from "react";
 
 interface DropdownProps {
   onSortChange: (value: "latest" | "likes") => void;
+  initialValue?: "latest" | "likes";
 }
 
-export default function Dropdown({ onSortChange }: DropdownProps) {
+export default function Dropdown({
+  onSortChange,
+  initialValue = "latest",
+}: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<"latest" | "likes">("latest");
+  const [selected, setSelected] = useState<"latest" | "likes">(initialValue);
 
   const handleSelect = (value: "latest" | "likes") => {
     setSelected(value);

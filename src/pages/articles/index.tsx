@@ -7,6 +7,8 @@ import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
 import router from "next/router";
+import { GetServerSideProps } from "next";
+
 interface Article {
   id: number;
   title: string;
@@ -23,17 +25,22 @@ interface ArticleResponse {
 interface ArticlesPageProps {
   initialArticles: Article[];
   bestArticles: Article[];
+  initialKeyword?: string;
+  initialSortBy?: "latest" | "likes";
 }
 
-// 초기 로딩 시 SSR 사용
-export async function getServerSideProps() {
+// 서버 사이드 렌더링으로 변경
+export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
+    const { keyword = "", sortBy = "latest" } = context.query;
+
     // 일반 게시글과 베스트 게시글을 병렬로 요청
     const [articlesResponse, bestArticlesResponse] = await Promise.all([
       api.get<ArticleResponse>(`/api/articles`, {
         params: {
           page: 1,
-          sortBy: "latest",
+          sortBy,
+          keyword,
         },
       }),
       api.get<ArticleResponse>(`/api/articles`, {
@@ -49,6 +56,8 @@ export async function getServerSideProps() {
       props: {
         initialArticles: articlesResponse.data.articles,
         bestArticles: bestArticlesResponse.data.articles,
+        initialKeyword: keyword || "",
+        initialSortBy: sortBy || "latest",
       },
     };
   } catch (error) {
@@ -57,18 +66,22 @@ export async function getServerSideProps() {
       props: {
         initialArticles: [],
         bestArticles: [],
+        initialKeyword: "",
+        initialSortBy: "latest",
       },
     };
   }
-}
+};
 
 // 검색, 정렬 변경 시 클라이언트 컴포넌트 재렌더링
 export default function ArticlesPage({
   initialArticles,
   bestArticles: initialBestArticles,
+  initialKeyword = "",
+  initialSortBy = "latest",
 }: ArticlesPageProps) {
-  const [keyword, setKeyword] = useState("");
-  const [sortBy, setSortBy] = useState<"latest" | "likes">("latest");
+  const [keyword, setKeyword] = useState(initialKeyword);
+  const [sortBy, setSortBy] = useState<"latest" | "likes">(initialSortBy);
   const [articles, setArticles] = useState<Article[]>(initialArticles || []);
   const [bestArticles] = useState<Article[]>(initialBestArticles || []);
   const [isLoading, setIsLoading] = useState(false);
@@ -111,9 +124,22 @@ export default function ArticlesPage({
     }
   }, [sortBy, keyword]);
 
-  // 초기 로딩 및 검색, 정렬 변경 시 새로 불러오기
+  // 검색, 정렬 변경 시 새로 불러오기 및 URL 업데이트
   useEffect(() => {
     fetchArticles();
+
+    // URL 쿼리 파라미터 업데이트
+    const query: { keyword?: string; sortBy: string } = { sortBy };
+    if (keyword) query.keyword = keyword;
+
+    router.push(
+      {
+        pathname: "/articles",
+        query,
+      },
+      undefined,
+      { shallow: true }
+    );
   }, [sortBy, keyword, fetchArticles]);
 
   const handleSort = (value: "latest" | "likes") => {
@@ -158,7 +184,7 @@ export default function ArticlesPage({
             keyword={keyword}
             setKeyword={setKeyword}
           />
-          <Dropdown onSortChange={handleSort} />
+          <Dropdown onSortChange={handleSort} initialValue={sortBy} />
         </div>
         <div className="flex flex-col gap-4 mt-4 md:mt-12 xl:mt-6 mb-23">
           {isLoading ? (
