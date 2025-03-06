@@ -14,10 +14,15 @@ interface ArticleResponse {
   totalPages: number;
 }
 
+interface SearchParams {
+  keyword?: string;
+  sortBy?: "latest" | "likes";
+}
+
 export default async function ArticlesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ keyword?: string; sortBy?: "latest" | "likes" }>;
+  searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
   const keyword = params.keyword || "";
@@ -42,6 +47,7 @@ export default async function ArticlesPage({
       }),
     ]);
 
+    // ArticlesClient에 전달할 초기 데이터 props
     return (
       <ArticlesClient
         initialArticles={articlesResponse.data.articles}

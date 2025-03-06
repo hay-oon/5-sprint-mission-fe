@@ -1,5 +1,6 @@
 import { getArticleById } from "@/api/articles";
 import ArticleDetailClient from "./ArticleDetailClient";
+import { notFound } from "next/navigation";
 
 interface ArticleDetailPageProps {
   params: Promise<{
@@ -7,6 +8,7 @@ interface ArticleDetailPageProps {
   }>;
 }
 
+// 게시글은 SSR로 렌더링 (댓글은 CSR)
 export default async function ArticleDetailPage({
   params,
 }: ArticleDetailPageProps) {
@@ -16,12 +18,12 @@ export default async function ArticleDetailPage({
     const article = await getArticleById(id);
 
     if (!article) {
-      return <div>게시글을 찾을 수 없습니다.</div>;
+      notFound();
     }
 
     return <ArticleDetailClient article={article} />;
   } catch (error) {
     console.error("게시글을 불러오는데 실패했습니다:", error);
-    return <div>게시글을 불러오는데 실패했습니다.</div>;
+    notFound();
   }
 }
