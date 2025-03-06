@@ -1,3 +1,5 @@
+"use client";
+
 import BestArticleCard from "@/components/common/BestArticleCard";
 import ArticleCard from "@/components/common/ArticleCard";
 import Button from "@/components/common/Button";
@@ -6,8 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
-import router from "next/router";
-import { GetServerSideProps } from "next";
+import { useRouter } from "next/navigation";
 
 interface Article {
   id: number;
@@ -22,64 +23,20 @@ interface ArticleResponse {
   totalPages: number;
 }
 
-interface ArticlesPageProps {
+interface ArticlesClientProps {
   initialArticles: Article[];
   bestArticles: Article[];
   initialKeyword?: string;
   initialSortBy?: "latest" | "likes";
 }
 
-// 서버 사이드 렌더링으로 변경
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const { keyword = "", sortBy = "latest" } = context.query;
-
-    // 일반 게시글과 베스트 게시글을 병렬로 요청
-    const [articlesResponse, bestArticlesResponse] = await Promise.all([
-      api.get<ArticleResponse>(`/api/articles`, {
-        params: {
-          page: 1,
-          sortBy,
-          keyword,
-        },
-      }),
-      api.get<ArticleResponse>(`/api/articles`, {
-        params: {
-          page: 1,
-          sortBy: "likes",
-          limit: 3,
-        },
-      }),
-    ]);
-
-    return {
-      props: {
-        initialArticles: articlesResponse.data.articles,
-        bestArticles: bestArticlesResponse.data.articles,
-        initialKeyword: keyword || "",
-        initialSortBy: sortBy || "latest",
-      },
-    };
-  } catch (error) {
-    console.error("Failed to fetch articles:", error);
-    return {
-      props: {
-        initialArticles: [],
-        bestArticles: [],
-        initialKeyword: "",
-        initialSortBy: "latest",
-      },
-    };
-  }
-};
-
-// 검색, 정렬 변경 시 클라이언트 컴포넌트 재렌더링
-export default function ArticlesPage({
+export default function ArticlesClient({
   initialArticles,
   bestArticles: initialBestArticles,
   initialKeyword = "",
   initialSortBy = "latest",
-}: ArticlesPageProps) {
+}: ArticlesClientProps) {
+  const router = useRouter();
   const [keyword, setKeyword] = useState(initialKeyword);
   const [sortBy, setSortBy] = useState<"latest" | "likes">(initialSortBy);
   const [articles, setArticles] = useState<Article[]>(initialArticles || []);
@@ -129,17 +86,12 @@ export default function ArticlesPage({
     fetchArticles();
 
     // URL 쿼리 파라미터 업데이트
-    const query: { keyword?: string; sortBy: string } = { sortBy };
-    if (keyword) query.keyword = keyword;
+    const searchParams = new URLSearchParams();
+    searchParams.set("sortBy", sortBy);
+    if (keyword) searchParams.set("keyword", keyword);
 
-    router.push(
-      {
-        pathname: "/articles",
-        query,
-      },
-      undefined,
-      { shallow: true }
-    );
+    const url = `/articles?${searchParams.toString()}`;
+    window.history.pushState({}, "", url);
   }, [sortBy, keyword, fetchArticles]);
 
   const handleSort = (value: "latest" | "likes") => {

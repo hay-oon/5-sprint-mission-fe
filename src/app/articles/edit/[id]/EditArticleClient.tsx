@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useRouter } from "next/router";
-import Button from "@/components/common/Button";
-import { getArticleById, updateArticle } from "@/api/articles";
-import { GetServerSideProps } from "next";
+"use client";
 
-interface EditArticlePageProps {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Button from "@/components/common/Button";
+import { updateArticle } from "@/api/articles";
+
+interface EditArticleClientProps {
   article: {
     id: string;
     title: string;
@@ -14,9 +15,8 @@ interface EditArticlePageProps {
   };
 }
 
-export default function EditArticlePage({ article }: EditArticlePageProps) {
+export default function EditArticleClient({ article }: EditArticleClientProps) {
   const router = useRouter();
-  const { id } = router.query;
 
   const [title, setTitle] = useState(article.title);
   const [content, setContent] = useState(article.content);
@@ -29,20 +29,19 @@ export default function EditArticlePage({ article }: EditArticlePageProps) {
       return;
     }
 
-    if (!id) return;
-
     try {
       setIsSubmitting(true);
-      await updateArticle(id as string, {
+      setError("");
+
+      await updateArticle(article.id, {
         title,
         content,
       });
 
-      alert("게시글이 수정되었습니다.");
-      router.push(`/articles/${id}`);
+      // 수정 완료 후 상세 페이지로 이동
+      router.push(`/articles/${article.id}`);
     } catch (error) {
-      console.error("게시글 수정에 실패했습니다:", error);
-      alert("게시글 수정에 실패했습니다.");
+      console.error("Failed to update article:", error);
       setError("게시글 수정에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
@@ -105,35 +104,3 @@ export default function EditArticlePage({ article }: EditArticlePageProps) {
     </div>
   );
 }
-
-// 서버 사이드 렌더링으로 변경
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const { id } = context.params || {};
-
-    if (!id) {
-      return {
-        notFound: true,
-      };
-    }
-
-    const article = await getArticleById(id as string);
-
-    if (!article) {
-      return {
-        notFound: true,
-      };
-    }
-
-    return {
-      props: {
-        article,
-      },
-    };
-  } catch (error) {
-    console.error("게시글을 불러오는데 실패했습니다:", error);
-    return {
-      notFound: true,
-    };
-  }
-};

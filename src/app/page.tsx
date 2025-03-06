@@ -15,7 +15,7 @@ export default function Home() {
         <div className="text-[32px] md:text-[40px] xl:text-[40px] font-bold mb-8 break-keep text-center md:text-center xl:text-left">
           일상의 모든 물건을 거래해보세요
         </div>
-        <Link href="items">
+        <Link href="/items">
           <button className="bg-primary-blue text-white font-semibold rounded-full text-lg md:text-xl xl:text-xl h-[48px] md:h-[56px] xl:h-[56px] w-[240px] md:w-[357px] xl:w-[357px]">
             구경하러 가기
           </button>

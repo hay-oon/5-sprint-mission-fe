@@ -1,76 +1,73 @@
-import { useRouter } from "next/router";
+"use client";
+
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import { Article, getArticleById, deleteArticle } from "@/api/articles";
+import { Article, deleteArticle } from "@/api/articles";
 import { Comment, getCommentsByArticleId, createComment } from "@/api/comments";
 import CommentItem from "@/components/common/CommentItem";
 import CommentForm from "@/components/common/CommentForm";
 import { formatDate } from "@/utils/date";
 import ContextMenu from "@/components/common/ContextMenu";
-import { GetServerSideProps } from "next";
+import { useRouter } from "next/navigation";
 
-interface ArticleDetailPageProps {
+interface ArticleDetailClientProps {
   article: Article;
 }
 
-function ArticleDetailPage({ article }: ArticleDetailPageProps) {
+export default function ArticleDetailClient({
+  article,
+}: ArticleDetailClientProps) {
   const router = useRouter();
-  const { id } = router.query;
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
 
   // 댓글 데이터 불러오기
   const fetchComments = useCallback(async () => {
-    if (!id) return;
-
     try {
       setIsLoadingComments(true);
-      const commentsData = await getCommentsByArticleId(id as string);
+      const commentsData = await getCommentsByArticleId(article.id.toString());
       setComments(commentsData.comments);
     } catch (err) {
       console.error("댓글을 불러오는데 실패했습니다.", err);
     } finally {
       setIsLoadingComments(false);
     }
-  }, [id]);
+  }, [article.id]);
 
   // 컴포넌트 마운트 시 댓글 데이터 불러오기
   useEffect(() => {
-    if (id) {
-      fetchComments();
-    }
-  }, [id, fetchComments]);
+    fetchComments();
+  }, [fetchComments]);
 
   // 댓글 작성 핸들러
   const handleSubmitComment = async (content: string) => {
-    if (!id) return;
-
     try {
-      await createComment(id as string, content);
-      fetchComments(); // 댓글 작성 후 목록 다시 불러오기
+      await createComment(article.id.toString(), content);
+      fetchComments(); // 댓글 목록 새로고침
     } catch (err) {
       console.error("댓글 작성에 실패했습니다.", err);
     }
   };
 
-  // 게시글 수정 및 삭제 핸들러
-  const handleMenuSelect = async (value: string) => {
-    if (!id) return;
-
-    if (value === "edit") {
-      router.push(`/articles/edit/${id}`);
-    } else if (value === "delete") {
-      if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
-        try {
-          await deleteArticle(id as string);
-          alert("게시글이 삭제되었습니다.");
-          router.push("/articles");
-        } catch (err) {
-          console.error("게시글 삭제에 실패했습니다.", err);
-          alert("게시글 삭제에 실패했습니다.");
-        }
+  // 게시글 삭제 핸들러
+  const handleDeleteArticle = async () => {
+    if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+      try {
+        await deleteArticle(article.id.toString());
+        router.push("/articles");
+      } catch (err) {
+        console.error("게시글 삭제에 실패했습니다.", err);
       }
+    }
+  };
+
+  // ContextMenu 핸들러
+  const handleMenuSelect = (value: string) => {
+    if (value === "edit") {
+      router.push(`/articles/edit/${article.id}`);
+    } else if (value === "delete") {
+      handleDeleteArticle();
     }
   };
 
@@ -142,7 +139,7 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
               <CommentItem
                 key={comment.id}
                 comment={comment}
-                articleId={id as string}
+                articleId={article.id.toString()}
                 onCommentUpdated={fetchComments}
               />
             ))
@@ -171,37 +168,3 @@ function ArticleDetailPage({ article }: ArticleDetailPageProps) {
     </div>
   );
 }
-
-// 서버 사이드 렌더링으로 변경
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const { id } = context.params || {};
-
-    if (!id) {
-      return {
-        notFound: true,
-      };
-    }
-
-    const article = await getArticleById(id as string);
-
-    if (!article) {
-      return {
-        notFound: true,
-      };
-    }
-
-    return {
-      props: {
-        article,
-      },
-    };
-  } catch (error) {
-    console.error("게시글을 불러오는데 실패했습니다:", error);
-    return {
-      notFound: true,
-    };
-  }
-};
-
-export default ArticleDetailPage;
