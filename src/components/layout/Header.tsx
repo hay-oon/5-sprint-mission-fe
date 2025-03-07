@@ -48,7 +48,9 @@ const Header = () => {
       </div>
 
       <div className="flex items-center">
-        <Button className="text-sm sm:text-base">로그인</Button>
+        <Link href="/auth/login">
+          <Button className="text-sm sm:text-base">로그인</Button>
+        </Link>
       </div>
     </header>
   );

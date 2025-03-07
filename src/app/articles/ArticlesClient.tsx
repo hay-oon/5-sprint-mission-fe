@@ -9,6 +9,7 @@ import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import useResponsive from "@/hooks/useResponsive";
 
 interface Article {
   id: number;
@@ -43,24 +44,19 @@ export default function ArticlesClient({
   const [bestArticles] = useState<Article[]>(initialBestArticles || []);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 화면 크기에 따른 베스트 게시글 개수 조절을 위한 훅
+  // 반응형 커스텀 훅
+  const { isMobile, isTablet, isDesktop } = useResponsive();
   const [displayCount, setDisplayCount] = useState(1);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setDisplayCount(3);
-      } else if (window.innerWidth >= 768) {
-        setDisplayCount(2);
-      } else {
-        setDisplayCount(1);
-      }
-    };
-
-    handleResize(); // 초기 실행
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    if (isDesktop) {
+      setDisplayCount(3);
+    } else if (isTablet) {
+      setDisplayCount(2);
+    } else {
+      setDisplayCount(1);
+    }
+  }, [isMobile, isTablet, isDesktop]);
 
   // 게시글 불러오기
   const fetchArticles = useCallback(async () => {

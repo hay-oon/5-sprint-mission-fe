@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import ArticlesClient from "./ArticlesClient";
+import NotFound from "../not-found";
 
 interface Article {
   id: number;
@@ -58,13 +59,6 @@ export default async function ArticlesPage({
     );
   } catch (error) {
     console.error("Failed to fetch articles:", error);
-    return (
-      <ArticlesClient
-        initialArticles={[]}
-        bestArticles={[]}
-        initialKeyword={keyword}
-        initialSortBy={sortBy}
-      />
-    );
+    return <NotFound />;
   }
 }
