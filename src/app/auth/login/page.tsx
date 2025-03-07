@@ -9,6 +9,10 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import SocialLogin from "@/components/ui/SocialLogin";
 import Image from "next/image";
 import useResponsive from "@/hooks/useResponsive";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Modal from "@/components/ui/Modal";
+import axios from "axios";
 
 /**
  * zod 유효성 검사 스키마 정의
@@ -42,20 +46,73 @@ export default function LoginPage() {
     },
   });
 
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  /**
+   * 페이지 로드 시 로컬 스토리지에 accessToken이 있는 경우 '/items' 페이지로 리다이렉트
+   * 리다이렉트 전 로그인 페이지가 렌더링 되는 버그를 해결하기 위해 isLoading 상태를 추가하여 로딩 중일 때는 아무것도 표시하지 않음
+   */
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      router.push("/items");
+    } else {
+      setIsLoading(false);
+    }
+  }, [router]);
+
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      // 로그인 로직 구현
-      console.log("로그인 시도:", data);
-      // 여기에 API 호출 로직 추가
+      const response = await axios.post(
+        "https://panda-market-api.vercel.app/auth/signin",
+        data
+        // {
+        //   withCredentials: true,
+        // }
+      );
+      console.log(response.data);
+      // 로그인 성공 시 토큰 저장
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
+      if (response.data.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+
+      // 로그인 성공 시 /items로 이동
+      router.push("/items");
     } catch (error) {
       console.error("로그인 실패:", error);
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message || "로그인에 실패했습니다."
+        );
+      } else {
+        setErrorMessage("로그인에 실패했습니다.");
+      }
+      setIsModalOpen(true);
     }
   };
 
   const { isMobile } = useResponsive();
 
+  // 로딩 중일 때는 아무것도 표시하지 않음
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 space-y-6">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        message={errorMessage}
+        buttonText="확인"
+      />
+
       <div>
         {isMobile ? (
           <Image

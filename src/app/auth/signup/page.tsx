@@ -9,6 +9,10 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import SocialLogin from "@/components/ui/SocialLogin";
 import Image from "next/image";
 import useResponsive from "@/hooks/useResponsive";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Modal from "@/components/ui/Modal";
+import axios from "axios";
 
 /**
  * zod 유효성 검사 스키마 정의
@@ -61,125 +65,202 @@ export default function SignupPage() {
     },
   });
 
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  /**
+   * 페이지 로드 시 로컬 스토리지에 accessToken이 있는 경우 '/items' 페이지로 리다이렉트
+   * 리다이렉트 전 회원가입 페이지가 렌더링 되는 버그를 해결하기 위해 isLoading 상태를 추가하여 로딩 중일 때는 아무것도 표시하지 않음
+   */
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      router.push("/items");
+    } else {
+      setIsLoading(false);
+    }
+  }, [router]);
+
   const onSubmit = async (data: SignupFormValues) => {
     try {
-      // 회원가입 로직 구현
-      console.log("회원가입 시도:", data);
-      // 여기에 API 호출 로직 추가
+      // API 요청 형식에 맞게 데이터 변환
+      const requestData = {
+        email: data.email,
+        nickname: data.nickname,
+        password: data.password,
+        passwordConfirmation: data.confirmPassword,
+      };
+
+      const response = await axios.post(
+        "https://panda-market-api.vercel.app/auth/signup",
+        requestData
+        // {
+        //   withCredentials: true,
+        // }
+      );
+
+      // 회원가입 성공 시 토큰 저장
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
+      if (response.data.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+
+      // 회원가입 성공 상태 설정
+      setIsSuccess(true);
+      setErrorMessage(""); // 에러 메시지 초기화
+      setIsModalOpen(true);
     } catch (error) {
       console.error("회원가입 실패:", error);
+      setIsSuccess(false);
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(
+          error.response?.data?.message || "회원가입에 실패했습니다."
+        );
+      } else {
+        setErrorMessage("회원가입에 실패했습니다.");
+      }
+      setIsModalOpen(true);
+    }
+  };
+
+  // 모달 확인 버튼 클릭 시 처리
+  const handleModalButtonClick = () => {
+    if (isSuccess) {
+      router.push("/items");
+    } else {
+      setIsModalOpen(false);
     }
   };
 
   const { isMobile } = useResponsive();
 
+  // 로딩 중일 때는 아무것도 표시하지 않음
+  if (isLoading) {
+    return null;
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 space-y-6 ">
-      <div>
-        {isMobile ? (
-          <Image
-            src="/images/logo/logo_mb.png"
-            alt="logo"
-            width={198}
-            height={66}
-          />
-        ) : (
-          <Image
-            src="/images/logo/logo_pc.png"
-            alt="logo"
-            width={396}
-            height={132}
-          />
-        )}
-      </div>
-      <div className="w-full max-w-[640px] space-y-8">
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-[18px] font-bold text-primary-black mb-4"
-              >
-                이메일
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="이메일을 입력하세요"
-                error={errors.email?.message}
-                {...register("email")}
-              />
+    <>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        message={isSuccess ? "가입이 완료되었습니다." : errorMessage}
+        buttonText="확인"
+        onButtonClick={handleModalButtonClick}
+      />
+
+      <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 space-y-6 ">
+        <div>
+          {isMobile ? (
+            <Image
+              src="/images/logo/logo_mb.png"
+              alt="logo"
+              width={198}
+              height={66}
+            />
+          ) : (
+            <Image
+              src="/images/logo/logo_pc.png"
+              alt="logo"
+              width={396}
+              height={132}
+            />
+          )}
+        </div>
+        <div className="w-full max-w-[640px] space-y-8">
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-[18px] font-bold text-primary-black mb-4"
+                >
+                  이메일
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="이메일을 입력하세요"
+                  error={errors.email?.message}
+                  {...register("email")}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="nickname"
+                  className="block text-[18px] font-bold text-primary-black mb-4"
+                >
+                  닉네임
+                </label>
+                <Input
+                  id="nickname"
+                  type="text"
+                  placeholder="닉네임을 입력하세요"
+                  error={errors.nickname?.message}
+                  {...register("nickname")}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-[18px] font-bold text-primary-black mb-4"
+                >
+                  비밀번호
+                </label>
+                <PasswordInput
+                  id="password"
+                  placeholder="비밀번호를 입력하세요"
+                  error={errors.password?.message}
+                  {...register("password")}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-[18px] font-bold text-primary-black mb-4"
+                >
+                  비밀번호 확인
+                </label>
+                <PasswordInput
+                  id="confirmPassword"
+                  placeholder="비밀번호를 다시 입력하세요"
+                  error={errors.confirmPassword?.message}
+                  {...register("confirmPassword")}
+                />
+              </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="nickname"
-                className="block text-[18px] font-bold text-primary-black mb-4"
-              >
-                닉네임
-              </label>
-              <Input
-                id="nickname"
-                type="text"
-                placeholder="닉네임을 입력하세요"
-                error={errors.nickname?.message}
-                {...register("nickname")}
-              />
-            </div>
+            <button
+              type="submit"
+              className={`w-full ${
+                isValid ? "bg-primary-blue" : "bg-gray-400"
+              } text-white font-semibold text-[20px] rounded-[40px] py-[12px] px-[124px] transition-colors`}
+              disabled={isSubmitting || !isValid}
+            >
+              {isSubmitting ? "가입 중..." : "회원가입"}
+            </button>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-[18px] font-bold text-primary-black mb-4"
-              >
-                비밀번호
-              </label>
-              <PasswordInput
-                id="password"
-                placeholder="비밀번호를 입력하세요"
-                error={errors.password?.message}
-                {...register("password")}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-[18px] font-bold text-primary-black mb-4"
-              >
-                비밀번호 확인
-              </label>
-              <PasswordInput
-                id="confirmPassword"
-                placeholder="비밀번호를 다시 입력하세요"
-                error={errors.confirmPassword?.message}
-                {...register("confirmPassword")}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className={`w-full ${
-              isValid ? "bg-primary-blue" : "bg-gray-400"
-            } text-white font-semibold text-[20px] rounded-[40px] py-[12px] px-[124px] transition-colors`}
-            disabled={isSubmitting || !isValid}
+            <SocialLogin />
+          </form>
+        </div>
+        <p className="mt-2 text-sm text-gray-600">
+          이미 계정이 있으신가요?{" "}
+          <Link
+            href="/auth/login"
+            className="font-medium text-blue-600 hover:text-blue-500"
           >
-            {isSubmitting ? "가입 중..." : "회원가입"}
-          </button>
-
-          <SocialLogin />
-        </form>
+            로그인
+          </Link>
+        </p>
       </div>
-      <p className="mt-2 text-sm text-gray-600">
-        이미 계정이 있으신가요?{" "}
-        <Link
-          href="/auth/login"
-          className="font-medium text-blue-600 hover:text-blue-500"
-        >
-          로그인
-        </Link>
-      </p>
-    </div>
+    </>
   );
 }
