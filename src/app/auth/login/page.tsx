@@ -53,7 +53,7 @@ export default function LoginPage() {
 
   /**
    * 페이지 로드 시 로컬 스토리지에 accessToken이 있는 경우 '/items' 페이지로 리다이렉트
-   * 리다이렉트 전 로그인 페이지가 렌더링 되는 버그를 해결하기 위해 isLoading 상태를 추가하여 로딩 중일 때는 아무것도 표시하지 않음
+   * 리다이렉트 전 로그인 페이지가 반복 렌더링 되는 것을 방지하기 위해 isLoading 상태 사용
    */
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
