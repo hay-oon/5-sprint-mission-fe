@@ -1,7 +1,10 @@
+import BestItems from "@/components/common/BestItems";
+import OnSaleItems from "@/components/common/OnSaleItems";
 export default function ItemsPage() {
   return (
     <div>
-      <h1>중고마켓 페이지</h1>
+      <BestItems />
+      <OnSaleItems />
     </div>
   );
 }
