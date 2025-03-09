@@ -22,21 +22,29 @@ const ProductSortDropdown: React.FC<ProductSortDropdownProps> = ({
   };
 
   return (
-    <div className="dropdown">
+    <div className="relative h-full">
       <button
-        className="dropdownButton"
+        className="flex items-center justify-between px-4 py-2 h-full w-32 bg-white border border-gray-300 rounded-lg text-gray-700 text-md font-medium"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        {orderBy === "recent" ? "최신순" : "좋아요순"}
-        <Image src={toggleIcon} alt="토글" width={24} />
+        <span>{orderBy === "recent" ? "최신순" : "좋아요순"}</span>
+        <Image src={toggleIcon} alt="토글" width={16} height={16} />
       </button>
       {isDropdownOpen && (
-        <div className="dropdownMenu">
-          <div>
-            <button onClick={() => handleSortChange("recent")}>최신순</button>
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden z-10">
+          <div className="hover:bg-gray-100">
+            <button
+              className="w-full text-center px-4 py-2 text-md"
+              onClick={() => handleSortChange("recent")}
+            >
+              최신순
+            </button>
           </div>
-          <div>
-            <button onClick={() => handleSortChange("favorite")}>
+          <div className="hover:bg-gray-100">
+            <button
+              className="w-full text-center px-4 py-2 text-md"
+              onClick={() => handleSortChange("favorite")}
+            >
               좋아요순
             </button>
           </div>

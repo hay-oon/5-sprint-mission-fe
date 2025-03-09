@@ -35,7 +35,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   }, [inputValue, setKeyword]);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full h-full">
       <Image
         src={vectorIcon}
         alt="검색"

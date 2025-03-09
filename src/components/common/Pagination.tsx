@@ -30,7 +30,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="w-16 h-16 rounded-full border border-gray-300 bg-white text-gray-600 text-lg cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-10 h-10 rounded-full border border-gray-300 bg-white text-gray-600 text-md cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {"<"}
       </button>
@@ -41,8 +41,8 @@ const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(pageNum)}
           className={
             currentPage === pageNum
-              ? "w-16 h-16 rounded-full bg-blue-500 text-white text-lg cursor-pointer"
-              : "w-16 h-16 rounded-full border border-gray-300 bg-white text-gray-600 text-lg cursor-pointer hover:bg-gray-100"
+              ? "w-10 h-10 rounded-full bg-blue-500 text-white text-md cursor-pointer"
+              : "w-10 h-10 rounded-full border border-gray-300 bg-white text-gray-600 text-md cursor-pointer hover:bg-gray-100"
           }
         >
           {pageNum}
@@ -52,7 +52,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="w-16 h-16 rounded-full border border-gray-300 bg-white text-gray-600 text-lg cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-10 h-10 rounded-full border border-gray-300 bg-white text-gray-600 text-md cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {">"}
       </button>

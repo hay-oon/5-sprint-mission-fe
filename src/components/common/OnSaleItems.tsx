@@ -15,10 +15,10 @@ const BASE_URL = "https://panda-market-api.vercel.app/products";
 
 // Product 인터페이스 정의
 interface Product {
-  _id: string;
+  id: string;
   name: string;
   price: number;
-  images?: string;
+  images?: string[];
   favoriteCount?: number;
 }
 
@@ -42,29 +42,11 @@ const OnSaleItems: React.FC = () => {
       if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
 
       const data = await response.json();
-      // 데이터 유효성 검사 추가
-      if (data && Array.isArray(data.list)) {
-        // API 응답 형식에 맞게 수정 (data.list와 data.totalCount 사용)
-        setProductList(
-          data.list.map((item: any) => ({
-            _id: item.id.toString(), // id를 _id로 변환
-            name: item.name,
-            price: item.price,
-            images: item.thumbnail, // thumbnail을 images로 사용
-            favoriteCount: item.likes || 0, // likes를 favoriteCount로 사용
-          }))
-        );
+      setProductList(data.list);
 
-        // totalCount와 pageSize를 기반으로 totalPages 계산
-        const calculatedTotalPages = Math.ceil(
-          (data.totalCount || 0) / pageSize
-        );
-        setTotalPages(calculatedTotalPages || 1);
-      } else {
-        console.error("API 응답 형식이 올바르지 않습니다:", data);
-        setProductList([]);
-        setTotalPages(1);
-      }
+      // totalCount와 pageSize를 기반으로 totalPages 계산
+      const calculatedTotalPages = Math.ceil((data.totalCount || 0) / pageSize);
+      setTotalPages(calculatedTotalPages || 1);
     } catch (err) {
       console.error("데이터 로딩 에러:", err);
       setProductList([]);
@@ -77,23 +59,29 @@ const OnSaleItems: React.FC = () => {
   // useEffect 내에서만 fetchOnSaleItems 호출
   useEffect(() => {
     fetchOnSaleItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, orderBy, pageSize, keyword]);
 
-  // render
   return (
-    <section className="max-w-[120rem] px-8 py-16 mx-auto w-full">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl">판매중인 상품</h2>
-        <div className="flex gap-4">
-          <SearchInput keyword={keyword} setKeyword={setKeyword} />
+    <section className="max-w-[1200px] px-6 py-10 mx-auto w-full">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+        <h2 className="text-xl font-bold ㅡ">판매중인 상품</h2>
+        <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3 items-stretch">
+          <div className="w-full sm:w-64">
+            <SearchInput
+              keyword={keyword}
+              setKeyword={setKeyword}
+              placeholder="검색할 상품을 입력해주세요"
+            />
+          </div>
           <Button
-            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg text-lg cursor-pointer"
+            className="h-10 px-4 bg-blue-500 text-white font-semibold rounded-lg text-sm whitespace-nowrap"
             onClick={() => router.push("/registration")}
           >
             상품 등록하기
           </Button>
-          <ProductSortDropdown orderBy={orderBy} setOrderBy={setOrderBy} />
+          <div className="h-10">
+            <ProductSortDropdown orderBy={orderBy} setOrderBy={setOrderBy} />
+          </div>
         </div>
       </div>
 
@@ -105,20 +93,21 @@ const OnSaleItems: React.FC = () => {
         ) : productList && productList.length > 0 ? (
           productList.map((item, index) => (
             <div
-              key={item._id || `product-${index}`}
+              key={item.id || `product-${index}`}
               className="cursor-pointer"
-              onClick={() => router.push(`/products/${item._id}`)}
+              onClick={() => router.push(`/products/${item.id}`)}
             >
               <Image
-                src={item.images || defaultImage}
+                src={item.images?.[0] || defaultImage.src}
                 alt={item.name}
                 width={500}
                 height={500}
-                className="w-full aspect-square border border-gray-300 rounded-2xl overflow-hidden mb-3 object-cover cursor-pointer transition-transform duration-300 ease-in-out shadow-md hover:-translate-y-2 hover:shadow-lg"
+                className="w-full aspect-square border border-gray-300 rounded-2xl overflow-hidden mb-1 object-cover cursor-pointer transition-transform duration-300 ease-in-out shadow-md hover:-translate-y-2 hover:shadow-lg"
                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                   (e.target as HTMLImageElement).onerror = null;
                   (e.target as HTMLImageElement).src = defaultImage.src;
                 }}
+                unoptimized // 이미지 최적화 비활성화
               />
               <div className="p-3">
                 <h3 className="text-lg font-medium text-gray-800 mb-2">

@@ -11,9 +11,8 @@ const BASE_URL = "https://panda-market-api.vercel.app";
 interface Product {
   id: string;
   name: string;
-  title: string;
   price: number;
-  images?: string;
+  images?: string[];
   favoriteCount?: number;
 }
 
@@ -41,25 +40,22 @@ const BestItems: React.FC = () => {
   }, [pageSize]);
 
   return (
-    <section className="max-w-[120rem] px-8 py-16 mx-auto w-full">
-      <h2 className="text-2xl mb-6">베스트 상품</h2>
+    <section className="max-w-[1200px] px-6 py-10 mx-auto w-full">
+      <h2 className="text-xl font-bold mb-4">베스트 상품</h2>
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
         {productLists.map((item) => (
           <div key={item.id}>
             <Image
-              src={
-                typeof item.images === "string" && item.images.trim() !== ""
-                  ? item.images
-                  : defaultImage
-              }
-              alt={item.title || "상품 이미지"} // 항상 alt 속성이 있도록 보장
-              width={500} // 너비 추가
-              height={500} // 높이 추가
-              className="w-full aspect-square border border-gray-300 rounded-2xl overflow-hidden mb-3 object-cover cursor-pointer transition-transform duration-300 ease-in-out shadow-md hover:-translate-y-2 hover:shadow-lg"
+              src={item.images?.[0] || defaultImage.src}
+              alt={item.name || "상품 이미지"}
+              width={500}
+              height={500}
+              className="w-full aspect-square border border-gray-300 rounded-2xl overflow-hidden mb-1 object-cover cursor-pointer transition-transform duration-300 ease-in-out shadow-md hover:-translate-y-2 hover:shadow-lg"
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                 (e.target as HTMLImageElement).onerror = null;
                 (e.target as HTMLImageElement).src = defaultImage.src;
               }}
+              unoptimized
             />
             <div className="p-3">
               <h3 className="text-lg font-medium text-gray-800 mb-2">
