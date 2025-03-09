@@ -9,7 +9,7 @@ import CommentForm from "@/components/common/CommentForm";
 import { formatDate } from "@/utils/date";
 import ContextMenu from "@/components/common/ContextMenu";
 import { useRouter } from "next/navigation";
-
+import LikeCountBtn from "@/components/common/LikeCountBtn";
 interface ArticleDetailClientProps {
   article: Article;
 }
@@ -85,17 +85,7 @@ export default function ArticleDetailClient({
         <span className="mx-2 text-gray-400">·</span>
         <span className="text-gray-400">{formatDate(article.createdAt)}</span>
         <div className="ml-8 pl-8 border-l border-gray-200">
-          <div className="flex items-center border border-gray-200 rounded-3xl px-3 py-1">
-            <button className="flex items-center text-gray-500">
-              <Image
-                src="/icons/ic_heart.png"
-                alt="like"
-                width={24}
-                height={24}
-              />
-              <span className="ml-1">{article.likeCount}</span>
-            </button>
-          </div>
+          <LikeCountBtn favoriteCount={article.likeCount} />
         </div>
         <div className="ml-auto">
           <ContextMenu
@@ -126,7 +116,10 @@ export default function ArticleDetailClient({
         <h3 className="text-lg font-bold mb-4">댓글달기</h3>
 
         {/* 댓글 입력 폼 */}
-        <CommentForm onSubmit={handleSubmitComment} />
+        <CommentForm
+          onSubmit={handleSubmitComment}
+          placeholder="댓글을 입력해주세요."
+        />
 
         {/* 댓글 목록 */}
         <div>

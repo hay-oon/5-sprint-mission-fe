@@ -3,9 +3,10 @@ import Button from "./Button";
 
 interface CommentFormProps {
   onSubmit: (content: string) => Promise<void>;
+  placeholder?: string;
 }
 
-const CommentForm = ({ onSubmit }: CommentFormProps) => {
+const CommentForm = ({ onSubmit, placeholder }: CommentFormProps) => {
   const [commentInput, setCommentInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,7 +31,7 @@ const CommentForm = ({ onSubmit }: CommentFormProps) => {
       <textarea
         className="w-full p-4 bg-input-background border border-none rounded-lg mb-2 resize-none"
         rows={4}
-        placeholder="댓글을 입력해주세요."
+        placeholder={placeholder}
         value={commentInput}
         onChange={(e) => setCommentInput(e.target.value)}
         disabled={isSubmitting}

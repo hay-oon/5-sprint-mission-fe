@@ -25,6 +25,7 @@ export default {
         "banner-background": "var(--banner-background)",
         "best-article-background": "var(--best-article-background)",
         "input-background": "var(--input-background)",
+        "tag-background": "var(--tag-background)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

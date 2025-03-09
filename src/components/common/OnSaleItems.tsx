@@ -95,7 +95,7 @@ const OnSaleItems: React.FC = () => {
             <div
               key={item.id || `product-${index}`}
               className="cursor-pointer"
-              onClick={() => router.push(`/products/${item.id}`)}
+              onClick={() => router.push(`/items/${item.id}`)}
             >
               <Image
                 src={item.images?.[0] || defaultImage.src}

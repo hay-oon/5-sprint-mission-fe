@@ -5,7 +5,8 @@ import heartIcon from "@public/icons/ic_heart.png";
 import defaultImage from "@public/icons/img_default.png";
 import Image from "next/image";
 import useResponsivePageSize from "@/hooks/useResponsivePageSize";
-
+import { useRouter } from "next/navigation";
+import router from "next/router";
 const BASE_URL = "https://panda-market-api.vercel.app";
 
 interface Product {
@@ -19,7 +20,7 @@ interface Product {
 const BestItems: React.FC = () => {
   const [productLists, setProductLists] = useState<Product[]>([]);
   const pageSize = useResponsivePageSize({ mobile: 1, tablet: 2, desktop: 4 });
-
+  const router = useRouter();
   useEffect(() => {
     const fetchBestItems = async (): Promise<void> => {
       try {
@@ -44,7 +45,7 @@ const BestItems: React.FC = () => {
       <h2 className="text-xl font-bold mb-4">베스트 상품</h2>
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
         {productLists.map((item) => (
-          <div key={item.id}>
+          <div key={item.id} onClick={() => router.push(`/items/${item.id}`)}>
             <Image
               src={item.images?.[0] || defaultImage.src}
               alt={item.name || "상품 이미지"}
