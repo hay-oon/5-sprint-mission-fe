@@ -85,7 +85,11 @@ export default function ArticleDetailClient({
         <span className="mx-2 text-gray-400">·</span>
         <span className="text-gray-400">{formatDate(article.createdAt)}</span>
         <div className="ml-8 pl-8 border-l border-gray-200">
-          <LikeCountBtn favoriteCount={article.likeCount} />
+          <LikeCountBtn
+            favoriteCount={article.likeCount}
+            onLikeClick={() => {}}
+            isLiked={false}
+          />
         </div>
         <div className="ml-auto">
           <ContextMenu

@@ -22,6 +22,7 @@ interface Product {
   ownerNickname: string;
   createdAt: string;
   favoriteCount: number;
+  isFavorite: boolean;
 }
 export default function ItemPage() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ export default function ItemPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [nextCursor, setNextCursor] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const alertShown = useRef(false); // 로그인 리다이렉트 알림 표시가 두번씩 나오는 것을 방지하기 위해 사용
+  const alertShown = useRef(false); // 로그인 리다이렉트 알림 표시가 두번씩 나오는 버그 방지하기 위해 사용
 
   // 인증 상태 확인 및 리다이렉트
   useEffect(() => {
@@ -120,6 +121,19 @@ export default function ItemPage() {
       handleEditProduct();
     } else if (value === "delete") {
       handleDeleteProduct();
+    }
+  };
+
+  const handleLikeClick = async () => {
+    try {
+      if (!item?.isFavorite) {
+        await api.post(`/products/${id}/favorite`);
+      } else {
+        await api.delete(`/products/${id}/favorite`);
+      }
+      getItemDetail();
+    } catch (error) {
+      console.error("좋아요 추가 실패:", error);
     }
   };
 
@@ -217,7 +231,11 @@ export default function ItemPage() {
                 </p>
               </div>
             </div>
-            <LikeCountBtn favoriteCount={item?.favoriteCount || 0} />
+            <LikeCountBtn
+              favoriteCount={item?.favoriteCount || 0}
+              onLikeClick={handleLikeClick}
+              isFavorite={item?.isFavorite || false}
+            />
           </div>
         </div>
       </div>
