@@ -3,7 +3,7 @@
 import CommentForm from "@/components/common/CommentForm";
 import CommentItem from "@/components/common/CommentItem";
 import ContextMenu from "@/components/common/ContextMenu";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import router from "next/router";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -11,18 +11,7 @@ import { api } from "@/api/axios";
 import defaultImage from "@public/icons/img_default.png";
 import { formatDate } from "@/utils/date";
 import LikeCountBtn from "@/components/common/LikeCountBtn";
-
-interface Comment {
-  id: string;
-  writer: {
-    id: string;
-    image?: string;
-    nickname: string;
-  };
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Comment } from "@/api/comments";
 
 interface Product {
   id: string;
@@ -37,34 +26,48 @@ interface Product {
 }
 export default function ItemPage() {
   const { id } = useParams();
-  const searchParams = useSearchParams();
   const [item, setItem] = useState<Product>();
-  const [comment, setComment] = useState<Comment>({
-    id: "",
-    content: "",
-    createdAt: "",
-    updatedAt: "",
-    writer: {
-      id: "",
-      nickname: "",
-      image: "",
-    },
-  });
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
 
   const getItemDetail = async () => {
     const response = await api.get(`/products/${id}`);
     const data = await response.data;
-    console.log(data);
     setItem(data);
   };
 
-  const getComments = async () => {
+  const getComments = async (cursor?: number | null) => {
+    const params = new URLSearchParams();
+    params.append("limit", "5");
+    if (cursor) {
+      params.append("cursor", cursor.toString());
+    }
+
     const response = await api.get(
-      `/products/${id}/comments?limit=10&offset=${searchParams.get("offset")}`
+      `/products/${id}/comments?${params.toString()}`
     );
     const data = await response.data;
-    console.log(data);
-    setComment(data);
+
+    if (cursor) {
+      // 더보기: 기존 댓글에 새 댓글 추가
+      setComments((prev) => [...prev, ...data.list]);
+    } else {
+      // 초기 로딩: 댓글 목록 설정
+      setComments(data.list);
+    }
+
+    setNextCursor(data.nextCursor);
+  };
+
+  const handleCommentSubmit = async (content: string) => {
+    try {
+      await api.post(`/products/${id}/comments`, { content });
+      alert("댓글이 등록되었습니다.");
+      getComments(); // 댓글 목록 새로고침
+    } catch (error) {
+      console.error("댓글 등록 실패:", error);
+      alert("댓글 등록에 실패했습니다.");
+    }
   };
 
   useEffect(() => {
@@ -165,14 +168,44 @@ export default function ItemPage() {
       <div>
         <h3 className="text-lg font-bold mb-4">문의하기</h3>
         <CommentForm
-          // onSubmit={() => {}}
+          onSubmit={handleCommentSubmit}
           placeholder="개인정보를 공유 및 요청하거나, 명예 훼손, 무단 광고, 불법 정보 유포시 모니터링 후 삭제될 수 있으며, 이에 대한 민형사상 책임은 게시자에게 있습니다."
         />
-        <CommentItem
-          comment={comment}
-          articleId={id}
-          onCommentUpdated={() => {}}
-        />
+
+        {comments.length > 0 ? (
+          <div>
+            {comments.map((comment) => (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                articleId={id as string}
+                onCommentUpdated={getComments}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8">
+            <Image
+              src="/images/img_no_inquiry.png"
+              alt="문의가 없습니다"
+              width={196}
+              height={230}
+            />
+          </div>
+        )}
+
+        {nextCursor && (
+          <div className="flex justify-center mt-4">
+            <button
+              className="px-4 py-2 rounded-3xl text-gray-700 border border-gray-300 hover:bg-gray-300 "
+              onClick={() => {
+                getComments(nextCursor);
+              }}
+            >
+              더 보기
+            </button>
+          </div>
+        )}
       </div>
       <div className="flex justify-center mt-8">
         <button

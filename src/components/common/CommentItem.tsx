@@ -66,7 +66,9 @@ const CommentItem = ({
       <div className="flex items-center mb-2">
         <div className="flex items-center">
           <Image src="/icons/Avatar.png" alt="profile" width={24} height={24} />
-          <span className="ml-2 text-sm text-gray-600">총명한판다</span>
+          <span className="ml-2 text-sm text-gray-600">
+            {comment.writer.nickname}
+          </span>
         </div>
         <span className="mx-2 text-gray-400">·</span>
         <span className="text-sm text-gray-400">

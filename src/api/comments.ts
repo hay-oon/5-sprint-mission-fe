@@ -2,8 +2,14 @@ import { api } from "./axios";
 
 export interface Comment {
   id: string;
+  writer: {
+    id: string;
+    image?: string;
+    nickname: string;
+  };
   content: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface CommentsResponse {
