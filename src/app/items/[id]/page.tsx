@@ -11,6 +11,7 @@ import defaultImage from "@public/icons/img_default.png";
 import { formatDate } from "@/utils/date";
 import LikeCountBtn from "@/components/common/LikeCountBtn";
 import { Comment } from "@/api/comments";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 interface Product {
   id: string;
@@ -32,6 +33,7 @@ export default function ItemPage() {
   const [nextCursor, setNextCursor] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const alertShown = useRef(false); // 로그인 리다이렉트 알림 표시가 두번씩 나오는 버그 방지하기 위해 사용
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // 인증 상태 확인 및 리다이렉트
   useEffect(() => {
@@ -103,16 +105,19 @@ export default function ItemPage() {
     router.push(`/items/${id}/edit`);
   };
 
-  // 상품 삭제
-  const handleDeleteProduct = async () => {
-    if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
-      try {
-        await api.delete(`/products/${id}`);
-        alert("상품이 성공적으로 삭제되었습니다.");
-        router.push("/items");
-      } catch (error) {
-        console.error("상품 삭제 실패:", error);
-      }
+  // 상품 삭제 모달 열기
+  const handleDeleteProduct = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  // 상품 삭제 실행
+  const handleConfirmDelete = async () => {
+    try {
+      await api.delete(`/products/${id}`);
+      alert("상품이 성공적으로 삭제되었습니다.");
+      router.push("/items");
+    } catch (error) {
+      console.error("상품 삭제 실패:", error);
     }
   };
 
@@ -291,6 +296,13 @@ export default function ItemPage() {
           목록으로 돌아가기
         </button>
       </div>
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        message="정말로 상품을 삭제하시겠어요?"
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

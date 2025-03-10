@@ -88,7 +88,7 @@ export default function ArticleDetailClient({
           <LikeCountBtn
             favoriteCount={article.likeCount}
             onLikeClick={() => {}}
-            isLiked={false}
+            isFavorite={false}
           />
         </div>
         <div className="ml-auto">
