@@ -3,8 +3,7 @@
 import CommentForm from "@/components/common/CommentForm";
 import CommentItem from "@/components/common/CommentItem";
 import ContextMenu from "@/components/common/ContextMenu";
-import { useParams } from "next/navigation";
-import router from "next/router";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { api } from "@/api/axios";
@@ -26,6 +25,7 @@ interface Product {
 }
 export default function ItemPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [item, setItem] = useState<Product>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [nextCursor, setNextCursor] = useState<number | null>(null);
@@ -70,6 +70,34 @@ export default function ItemPage() {
     }
   };
 
+  // 상품 수정 함수
+  const handleEditProduct = () => {
+    router.push(`/items/${id}/edit`);
+  };
+
+  // 상품 삭제 함수
+  const handleDeleteProduct = async () => {
+    if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
+      try {
+        await api.delete(`/products/${id}`);
+        alert("상품이 성공적으로 삭제되었습니다.");
+        router.push("/items");
+      } catch (error) {
+        console.error("상품 삭제 실패:", error);
+        alert("상품 삭제에 실패했습니다.");
+      }
+    }
+  };
+
+  // ContextMenu 선택 처리 함수
+  const handleMenuSelect = (value: string) => {
+    if (value === "edit") {
+      handleEditProduct();
+    } else if (value === "delete") {
+      handleDeleteProduct();
+    }
+  };
+
   useEffect(() => {
     getItemDetail();
     getComments();
@@ -108,7 +136,7 @@ export default function ItemPage() {
                   { value: "edit", label: "수정하기" },
                   { value: "delete", label: "삭제하기" },
                 ]}
-                onSelect={() => {}}
+                onSelect={handleMenuSelect}
                 trigger={
                   <Image
                     src="/icons/ic_kebab.png"
@@ -218,29 +246,3 @@ export default function ItemPage() {
     </div>
   );
 }
-
-// <div>
-//   {isLoadingComments ? (
-//     <div className="flex justify-center py-4">
-//       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-blue"></div>
-//     </div>
-//   ) : comments.length > 0 ? (
-//     comments.map((comment) => (
-//       <CommentItem
-//         key={comment.id}
-//         comment={comment}
-//         articleId={article.id.toString()}
-//         onCommentUpdated={fetchComments}
-//       />
-//     ))
-//   ) : (
-//     <div className="flex flex-col items-center justify-center py-8">
-//       <Image
-//         src="/images/img_no_comment.png"
-//         alt="댓글이 없습니다"
-//         width={200}
-//         height={200}
-//       />
-//     </div>
-//   )}
-// </div>
