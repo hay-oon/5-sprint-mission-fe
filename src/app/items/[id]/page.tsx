@@ -4,7 +4,7 @@ import CommentForm from "@/components/common/CommentForm";
 import CommentItem from "@/components/common/CommentItem";
 import ContextMenu from "@/components/common/ContextMenu";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { api } from "@/api/axios";
 import defaultImage from "@public/icons/img_default.png";
@@ -29,34 +29,61 @@ export default function ItemPage() {
   const [item, setItem] = useState<Product>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const alertShown = useRef(false); // 로그인 리다이렉트 알림 표시가 두번씩 나오는 것을 방지하기 위해 사용
+
+  // 인증 상태 확인 및 리다이렉트
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token && !alertShown.current) {
+      alertShown.current = true;
+      alert("로그인이 필요한 서비스입니다.");
+      router.push("/auth/login");
+      return;
+    }
+
+    // 인증된 사용자만 데이터 로드
+    getItemDetail();
+    getComments();
+  }, []);
 
   const getItemDetail = async () => {
-    const response = await api.get(`/products/${id}`);
-    const data = await response.data;
-    setItem(data);
+    try {
+      const response = await api.get(`/products/${id}`);
+      const data = await response.data;
+      setItem(data);
+    } catch (error) {
+      console.error("상품 정보 로딩 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getComments = async (cursor?: number | null) => {
-    const params = new URLSearchParams();
-    params.append("limit", "5");
-    if (cursor) {
-      params.append("cursor", cursor.toString());
+    try {
+      const params = new URLSearchParams();
+      params.append("limit", "5");
+      if (cursor) {
+        params.append("cursor", cursor.toString());
+      }
+
+      const response = await api.get(
+        `/products/${id}/comments?${params.toString()}`
+      );
+      const data = await response.data;
+
+      if (cursor) {
+        // 더보기: 기존 댓글에 새 댓글 추가
+        setComments((prev) => [...prev, ...data.list]);
+      } else {
+        // 초기 로딩: 댓글 목록 설정
+        setComments(data.list);
+      }
+
+      setNextCursor(data.nextCursor);
+    } catch (error) {
+      console.error("댓글 로딩 실패:", error);
     }
-
-    const response = await api.get(
-      `/products/${id}/comments?${params.toString()}`
-    );
-    const data = await response.data;
-
-    if (cursor) {
-      // 더보기: 기존 댓글에 새 댓글 추가
-      setComments((prev) => [...prev, ...data.list]);
-    } else {
-      // 초기 로딩: 댓글 목록 설정
-      setComments(data.list);
-    }
-
-    setNextCursor(data.nextCursor);
   };
 
   const handleCommentSubmit = async (content: string) => {
@@ -70,12 +97,12 @@ export default function ItemPage() {
     }
   };
 
-  // 상품 수정 함수
+  // 상품 수정
   const handleEditProduct = () => {
     router.push(`/items/${id}/edit`);
   };
 
-  // 상품 삭제 함수
+  // 상품 삭제
   const handleDeleteProduct = async () => {
     if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
       try {
@@ -84,12 +111,10 @@ export default function ItemPage() {
         router.push("/items");
       } catch (error) {
         console.error("상품 삭제 실패:", error);
-        alert("상품 삭제에 실패했습니다.");
       }
     }
   };
 
-  // ContextMenu 선택 처리 함수
   const handleMenuSelect = (value: string) => {
     if (value === "edit") {
       handleEditProduct();
@@ -98,10 +123,13 @@ export default function ItemPage() {
     }
   };
 
-  useEffect(() => {
-    getItemDetail();
-    getComments();
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-blue"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[1200px] mx-auto mb-[234px] md:mb-[561px] lg:mb-[463px] px-4 py-8">
@@ -127,7 +155,7 @@ export default function ItemPage() {
                 {item?.name}
               </h1>
               <p className="text-[24px] md:text-[32px] lg:text-[40px] text-text-primary-black font-semibold">
-                {item?.price.toLocaleString()}원
+                {item?.price?.toLocaleString()}원
               </p>
             </div>
             <div className="ml-auto">
@@ -193,6 +221,7 @@ export default function ItemPage() {
           </div>
         </div>
       </div>
+
       <div>
         <h3 className="text-lg font-bold mb-4">문의하기</h3>
         <CommentForm
@@ -235,6 +264,7 @@ export default function ItemPage() {
           </div>
         )}
       </div>
+
       <div className="flex justify-center mt-8">
         <button
           className="px-10 py-2 bg-primary-blue text-white font-semibold rounded-3xl hover:bg-primary-dark"
