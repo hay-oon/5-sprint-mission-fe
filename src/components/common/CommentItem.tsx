@@ -22,7 +22,6 @@ const CommentItem = ({
   const handleMenuSelect = async (value: string) => {
     if (value === "edit") {
       setIsEditing(true);
-      setEditContent(comment.content);
     } else if (value === "delete") {
       if (window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
         try {
@@ -40,7 +39,7 @@ const CommentItem = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!editContent.trim()) {
@@ -94,7 +93,7 @@ const CommentItem = ({
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="mt-2">
+        <form onSubmit={handleEditSubmit} className="mt-2">
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}

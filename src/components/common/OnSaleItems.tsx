@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Pagination from "@/components/common/Pagination";
 import SearchInput from "@/components/common/SearchInput";
 import ProductSortDropdown from "@/components/common/ProductSortDropdown";
@@ -10,56 +10,90 @@ import useResponsivePageSize from "@/hooks/useResponsivePageSize";
 import { useRouter } from "next/navigation";
 import Button from "@/components/common/Button";
 import Image from "next/image";
-
-const BASE_URL = "https://panda-market-api.vercel.app/products";
-
-// Product 인터페이스 정의
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  images?: string[];
-  favoriteCount?: number;
-}
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getProductsByPage, getProductById } from "@/api/products";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const OnSaleItems: React.FC = () => {
-  const [productList, setProductList] = useState<Product[]>([]);
   const [orderBy, setOrderBy] = useState<string>("recent");
   const [keyword, setKeyword] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const pageSize = useResponsivePageSize({ mobile: 4, tablet: 6, desktop: 10 });
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  // fetch data
-  const fetchOnSaleItems = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `${BASE_URL}?page=${currentPage}&pageSize=${pageSize}&orderBy=${orderBy}&keyword=${keyword}`
-      );
-      if (!response.ok) throw new Error("데이터를 불러오는데 실패했습니다");
+  // 쿼리 키를 메모이제이션하여 불필요한 리렌더링 방지
+  const queryKey = useMemo(
+    () => ["products", currentPage, pageSize, orderBy, keyword],
+    [currentPage, pageSize, orderBy, keyword]
+  );
 
-      const data = await response.json();
-      setProductList(data.list);
+  // 쿼리 함수를 메모이제이션
+  const queryFn = useCallback(
+    () => getProductsByPage(currentPage, pageSize, orderBy, keyword),
+    [currentPage, pageSize, orderBy, keyword]
+  );
 
-      // totalCount와 pageSize를 기반으로 totalPages 계산
-      const calculatedTotalPages = Math.ceil((data.totalCount || 0) / pageSize);
-      setTotalPages(calculatedTotalPages || 1);
-    } catch (err) {
-      console.error("데이터 로딩 에러:", err);
-      setProductList([]);
-      setTotalPages(1);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // useQuery
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey,
+    queryFn,
+    staleTime: 1000 * 60 * 2, // 2분 동안 캐시 유지
+  });
 
-  // useEffect 내에서만 fetchOnSaleItems 호출
-  useEffect(() => {
-    fetchOnSaleItems();
-  }, [currentPage, orderBy, pageSize, keyword]);
+  // 상품 목록 및 총 페이지 수 계산을 메모이제이션
+  const { productList, totalPages } = useMemo(() => {
+    const list = data?.list || [];
+    const total = data?.totalCount ? Math.ceil(data.totalCount / pageSize) : 1;
+    return { productList: list, totalPages: total };
+  }, [data, pageSize]);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+    },
+    [currentPage]
+  );
+
+  // 정렬 변경 핸들러
+  const handleOrderByChange = useCallback(
+    (value: string) => {
+      setOrderBy(value);
+      setCurrentPage(1);
+    },
+    [orderBy]
+  );
+
+  // 검색어 변경 핸들러
+  const handleKeywordChange = useCallback(
+    (value: string) => {
+      setKeyword(value);
+      setCurrentPage(1);
+    },
+    [keyword]
+  );
+
+  // 상품 상세 페이지로 이동하기 전에 데이터 Prefetching
+  const handleProductClick = useCallback(
+    (productId: string) => {
+      // 상품 상세 데이터 Prefetching
+      queryClient.prefetchQuery({
+        queryKey: ["product", productId],
+        queryFn: () => getProductById(productId),
+        staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
+      });
+
+      // 상품 상세 페이지로 이동
+      router.push(`/items/${productId}`);
+    },
+    [queryClient, router]
+  );
+
+  // 상품 등록 페이지로 이동
+  const handleRegistration = useCallback(() => {
+    router.push("/registration");
+  }, [router]);
 
   return (
     <section className="max-w-[1200px] px-6 py-10 mx-auto w-full">
@@ -69,33 +103,45 @@ const OnSaleItems: React.FC = () => {
           <div className="w-full sm:w-64">
             <SearchInput
               keyword={keyword}
-              setKeyword={setKeyword}
+              setKeyword={handleKeywordChange}
               placeholder="검색할 상품을 입력해주세요"
             />
           </div>
           <Button
             className="h-10 px-4 bg-blue-500 text-white font-semibold rounded-lg text-sm whitespace-nowrap"
-            onClick={() => router.push("/registration")}
+            onClick={handleRegistration}
           >
             상품 등록하기
           </Button>
           <div className="h-10">
-            <ProductSortDropdown orderBy={orderBy} setOrderBy={setOrderBy} />
+            <ProductSortDropdown
+              orderBy={orderBy}
+              setOrderBy={handleOrderByChange}
+            />
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 justify-center">
         {isLoading ? (
-          <div className="col-span-full text-center py-10">
-            <p className="text-lg text-gray-500">로딩 중...</p>
+          <div className="col-span-full flex justify-center items-center py-10">
+            <LoadingSpinner size={10} />
           </div>
-        ) : productList && productList.length > 0 ? (
+        ) : isError ? (
+          <div className="col-span-full flex justify-center items-center py-10">
+            <div className="flex flex-col items-center">
+              <p className="text-lg text-red-500 mb-2">
+                {(error as Error)?.message || "상품을 불러오는데 실패했습니다."}
+              </p>
+              <Button onClick={() => refetch()}>다시 시도</Button>
+            </div>
+          </div>
+        ) : productList.length > 0 ? (
           productList.map((item, index) => (
             <div
               key={item.id || `product-${index}`}
               className="cursor-pointer"
-              onClick={() => router.push(`/items/${item.id}`)}
+              onClick={() => handleProductClick(item.id)}
             >
               <Image
                 src={item.images?.[0] || defaultImage.src}
@@ -107,7 +153,7 @@ const OnSaleItems: React.FC = () => {
                   (e.target as HTMLImageElement).onerror = null;
                   (e.target as HTMLImageElement).src = defaultImage.src;
                 }}
-                unoptimized // 이미지 최적화 비활성화
+                unoptimized
               />
               <div className="p-3">
                 <h3 className="text-lg font-medium text-gray-800 mb-2">
@@ -139,7 +185,7 @@ const OnSaleItems: React.FC = () => {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
       />
     </section>
   );

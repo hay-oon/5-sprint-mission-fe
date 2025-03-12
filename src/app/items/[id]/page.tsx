@@ -4,148 +4,154 @@ import CommentForm from "@/components/common/CommentForm";
 import CommentItem from "@/components/common/CommentItem";
 import ContextMenu from "@/components/common/ContextMenu";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { api } from "@/api/axios";
 import defaultImage from "@public/icons/img_default.png";
 import { formatDate } from "@/utils/date";
 import LikeCountBtn from "@/components/common/LikeCountBtn";
-import { Comment } from "@/api/comments";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
+import {
+  getProductById,
+  getProductComments,
+  createProductComment,
+  deleteProduct,
+  addFavorite,
+  removeFavorite,
+} from "@/api/products";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  images?: string[];
-  description: string;
-  tags?: string[];
-  ownerNickname: string;
-  createdAt: string;
-  favoriteCount: number;
-  isFavorite: boolean;
-}
 export default function ItemPage() {
-  const { id } = useParams();
+  const { id: productId } = useParams();
   const router = useRouter();
-  const [item, setItem] = useState<Product>();
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const alertShown = useRef(false); // 로그인 리다이렉트 알림 표시가 두번씩 나오는 버그 방지하기 위해 사용
+  const alertShown = useRef(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  // 인증 상태 확인 및 리다이렉트
+  // 인증 상태 확인 - useEffect 내에서 localStorage 접근
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token && !alertShown.current) {
       alertShown.current = true;
       alert("로그인이 필요한 서비스입니다.");
       router.push("/auth/login");
-      return;
+    } else {
+      setIsAuthenticated(true);
     }
+  }, [router]);
 
-    // 인증된 사용자만 데이터 로드
-    getItemDetail();
-    getComments();
-  }, []);
+  // 상품 상세 정보 조회
+  const {
+    data: item,
+    isLoading: isItemLoading,
+    isError: isItemError,
+  } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: () => getProductById(productId as string),
+    enabled: !!productId && isAuthenticated === true,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const getItemDetail = async () => {
-    try {
-      const response = await api.get(`/products/${id}`);
-      const data = await response.data;
-      setItem(data);
-    } catch (error) {
-      console.error("상품 정보 로딩 실패:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // 댓글 목록 조회 (무한 스크롤)
+  const {
+    data: commentsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isCommentsLoading,
+    isError: isCommentsError,
+  } = useInfiniteQuery({
+    queryKey: ["productComments", productId],
+    queryFn: ({ pageParam }) =>
+      getProductComments(productId as string, pageParam),
+    initialPageParam: null as number | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    enabled: !!productId && isAuthenticated === true,
+    staleTime: 1000 * 60 * 2,
+  });
 
-  const getComments = async (cursor?: number | null) => {
-    try {
-      const params = new URLSearchParams();
-      params.append("limit", "5");
-      if (cursor) {
-        params.append("cursor", cursor.toString());
-      }
-
-      const response = await api.get(
-        `/products/${id}/comments?${params.toString()}`
-      );
-      const data = await response.data;
-
-      if (cursor) {
-        // 더보기: 기존 댓글에 새 댓글 추가
-        setComments((prev) => [...prev, ...data.list]);
-      } else {
-        // 초기 로딩: 댓글 목록 설정
-        setComments(data.list);
-      }
-
-      setNextCursor(data.nextCursor);
-    } catch (error) {
-      console.error("댓글 로딩 실패:", error);
-    }
-  };
-
-  const handleCommentSubmit = async (content: string) => {
-    try {
-      await api.post(`/products/${id}/comments`, { content });
+  // 댓글 작성 뮤테이션
+  const commentMutation = useMutation({
+    mutationFn: (content: string) =>
+      createProductComment(productId as string, content),
+    onSuccess: () => {
       alert("댓글이 등록되었습니다.");
-      getComments(); // 댓글 목록 새로고침
-    } catch (error) {
+      queryClient.invalidateQueries({
+        queryKey: ["productComments", productId],
+      });
+    },
+    onError: (error) => {
       console.error("댓글 등록 실패:", error);
       alert("댓글 등록에 실패했습니다.");
-    }
-  };
+    },
+  });
 
-  // 상품 수정
-  const handleEditProduct = () => {
-    router.push(`/items/${id}/edit`);
-  };
-
-  // 상품 삭제 모달 열기
-  const handleDeleteProduct = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  // 상품 삭제 실행
-  const handleConfirmDelete = async () => {
-    try {
-      await api.delete(`/products/${id}`);
+  // 상품 삭제 뮤테이션
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteProduct(productId as string),
+    onSuccess: () => {
       alert("상품이 성공적으로 삭제되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       router.push("/items");
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("상품 삭제 실패:", error);
-    }
-  };
+      alert("상품 삭제에 실패했습니다.");
+    },
+  });
 
-  const handleMenuSelect = (value: string) => {
-    if (value === "edit") {
-      handleEditProduct();
-    } else if (value === "delete") {
-      handleDeleteProduct();
-    }
-  };
+  // 좋아요 뮤테이션
+  const likeMutation = useMutation({
+    mutationFn: () => {
+      return item?.isFavorite
+        ? removeFavorite(productId as string)
+        : addFavorite(productId as string);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    },
+    onError: (error) => {
+      console.error("좋아요 처리 실패:", error);
+      alert("좋아요 처리에 실패했습니다.");
+    },
+    // optimistic update
+    onMutate: () => {
+      queryClient.setQueryData(["product", productId], (oldData: any) => {
+        return {
+          ...oldData,
+          isFavorite: !item?.isFavorite,
+        };
+      });
+    },
+  });
 
-  const handleLikeClick = async () => {
-    try {
-      if (!item?.isFavorite) {
-        await api.post(`/products/${id}/favorite`);
-      } else {
-        await api.delete(`/products/${id}/favorite`);
-      }
-      getItemDetail();
-    } catch (error) {
-      console.error("좋아요 추가 실패:", error);
-    }
-  };
+  // 댓글 목록 가져오기
+  const comments = commentsData?.pages.flatMap((page) => page.list) || [];
 
-  if (isLoading) {
+  // 인증 확인 중이거나 로딩 중 표시
+  if (isAuthenticated === null || isItemLoading) {
+    return <LoadingSpinner size={12} />;
+  }
+
+  // 에러 표시
+  if (isItemError) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-blue"></div>
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <p className="text-red-500 text-xl mb-4">
+          상품 정보를 불러오는데 실패했습니다.
+        </p>
+        <button
+          className="mt-4 px-6 py-2 bg-primary-blue text-white rounded-3xl"
+          onClick={() => router.push("/items")}
+        >
+          목록으로 돌아가기
+        </button>
       </div>
     );
   }
@@ -183,7 +189,13 @@ export default function ItemPage() {
                   { value: "edit", label: "수정하기" },
                   { value: "delete", label: "삭제하기" },
                 ]}
-                onSelect={handleMenuSelect}
+                onSelect={(value) => {
+                  if (value === "edit") {
+                    router.push(`/items/${productId}/edit`);
+                  } else if (value === "delete") {
+                    setIsDeleteModalOpen(true);
+                  }
+                }}
                 trigger={
                   <Image
                     src="/icons/ic_kebab.png"
@@ -238,7 +250,7 @@ export default function ItemPage() {
             </div>
             <LikeCountBtn
               favoriteCount={item?.favoriteCount || 0}
-              onLikeClick={handleLikeClick}
+              onLikeClick={() => likeMutation.mutate()}
               isFavorite={item?.isFavorite || false}
             />
           </div>
@@ -248,18 +260,28 @@ export default function ItemPage() {
       <div>
         <h3 className="text-lg font-bold mb-4">문의하기</h3>
         <CommentForm
-          onSubmit={handleCommentSubmit}
+          onSubmit={(content) => commentMutation.mutate(content)}
           placeholder="개인정보를 공유 및 요청하거나, 명예 훼손, 무단 광고, 불법 정보 유포시 모니터링 후 삭제될 수 있으며, 이에 대한 민형사상 책임은 게시자에게 있습니다."
         />
 
-        {comments.length > 0 ? (
+        {isCommentsLoading ? (
+          <LoadingSpinner size={8} />
+        ) : isCommentsError ? (
+          <div className="flex justify-center py-8 text-red-500">
+            댓글을 불러오는데 실패했습니다.
+          </div>
+        ) : comments.length > 0 ? (
           <div>
             {comments.map((comment) => (
               <CommentItem
                 key={comment.id}
                 comment={comment}
-                articleId={id as string}
-                onCommentUpdated={getComments}
+                articleId={productId as string}
+                onCommentUpdated={() =>
+                  queryClient.invalidateQueries({
+                    queryKey: ["productComments", productId],
+                  })
+                }
               />
             ))}
           </div>
@@ -274,15 +296,14 @@ export default function ItemPage() {
           </div>
         )}
 
-        {nextCursor && (
+        {hasNextPage && (
           <div className="flex justify-center mt-4">
             <button
-              className="px-4 py-2 rounded-3xl text-gray-700 border border-gray-300 hover:bg-gray-300 "
-              onClick={() => {
-                getComments(nextCursor);
-              }}
+              className="px-4 py-2 rounded-3xl text-gray-700 border border-gray-300 hover:bg-gray-300 disabled:opacity-50"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
             >
-              더 보기
+              {isFetchingNextPage ? "로딩 중..." : "더 보기"}
             </button>
           </div>
         )}
@@ -301,7 +322,7 @@ export default function ItemPage() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         message="정말로 상품을 삭제하시겠어요?"
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => deleteMutation.mutate()}
       />
     </div>
   );
