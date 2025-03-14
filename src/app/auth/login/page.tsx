@@ -12,7 +12,7 @@ import useResponsive from "@/hooks/useResponsive";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
-import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * zod 유효성 검사 스키마 정의
@@ -49,50 +49,35 @@ export default function LoginPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const { login, isAuthenticated, loading } = useAuth();
 
   /**
    * 페이지 로드 시 로컬 스토리지에 accessToken이 있는 경우 '/items' 페이지로 리다이렉트
    * 리다이렉트 전 로그인 페이지가 반복 렌더링 되는 것을 방지하기 위해 isLoading 상태 사용
    */
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
+    if (isAuthenticated) {
       router.push("/items");
-    } else {
-      setIsLoading(false);
     }
-  }, [router]);
+  }, [isAuthenticated, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
-    try {
-      const response = await axios.post(
-        "https://panda-market-api.vercel.app/auth/signin",
-        data
-        // {
-        //   withCredentials: true,
-        // }
-      );
-      console.log(response.data);
-      // 로그인 성공 시 토큰 저장
-      if (response.data.accessToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
-      }
-      if (response.data.refreshToken) {
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-      }
+    const requestData = {
+      email: data.email,
+      password: data.password,
+    };
 
-      // 로그인 성공 시 /items로 이동
-      router.push("/items");
+    try {
+      const result = await login(requestData);
+      if (result.success) {
+        router.push("/items");
+      } else {
+        setErrorMessage(result.message);
+        setIsModalOpen(true);
+      }
     } catch (error) {
       console.error("로그인 실패:", error);
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(
-          error.response?.data?.message || "로그인에 실패했습니다."
-        );
-      } else {
-        setErrorMessage("로그인에 실패했습니다.");
-      }
+      setErrorMessage("로그인에 실패했습니다.");
       setIsModalOpen(true);
     }
   };
@@ -100,7 +85,7 @@ export default function LoginPage() {
   const { isMobile } = useResponsive();
 
   // 로딩 중일 때는 아무것도 표시하지 않음
-  if (isLoading) {
+  if (loading) {
     return null;
   }
 

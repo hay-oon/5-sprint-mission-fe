@@ -12,7 +12,7 @@ import useResponsive from "@/hooks/useResponsive";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
-import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * zod 유효성 검사 스키마 정의
@@ -69,20 +69,17 @@ export default function SignupPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { signup, isAuthenticated, loading } = useAuth();
 
   /**
    * 페이지 로드 시 로컬 스토리지에 accessToken이 있는 경우 '/items' 페이지로 리다이렉트
    * 리다이렉트 전 회원가입 페이지가 렌더링 되는 버그를 해결하기 위해 isLoading 상태를 추가하여 로딩 중일 때는 아무것도 표시하지 않음
    */
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
+    if (isAuthenticated) {
       router.push("/items");
-    } else {
-      setIsLoading(false);
     }
-  }, [router]);
+  }, [isAuthenticated, router]);
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
@@ -94,36 +91,16 @@ export default function SignupPage() {
         passwordConfirmation: data.confirmPassword,
       };
 
-      const response = await axios.post(
-        "https://panda-market-api.vercel.app/auth/signup",
-        requestData
-        // {
-        //   withCredentials: true,
-        // }
-      );
+      const result = await signup(requestData);
 
-      // 회원가입 성공 시 토큰 저장
-      if (response.data.accessToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
-      }
-      if (response.data.refreshToken) {
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-      }
-
-      // 회원가입 성공 상태 설정
-      setIsSuccess(true);
-      setErrorMessage(""); // 에러 메시지 초기화
+      // 회원가입 결과 처리
+      setIsSuccess(result.success);
+      setErrorMessage(result.success ? "" : result.message);
       setIsModalOpen(true);
     } catch (error) {
       console.error("회원가입 실패:", error);
       setIsSuccess(false);
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(
-          error.response?.data?.message || "회원가입에 실패했습니다."
-        );
-      } else {
-        setErrorMessage("회원가입에 실패했습니다.");
-      }
+      setErrorMessage("회원가입에 실패했습니다.");
       setIsModalOpen(true);
     }
   };
@@ -140,7 +117,7 @@ export default function SignupPage() {
   const { isMobile } = useResponsive();
 
   // 로딩 중일 때는 아무것도 표시하지 않음
-  if (isLoading) {
+  if (loading) {
     return null;
   }
 
