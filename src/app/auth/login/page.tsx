@@ -11,7 +11,7 @@ import Image from "next/image";
 import useResponsive from "@/hooks/useResponsive";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Modal from "@/components/ui/Modal";
+import Modal from "@/components/modals/Modal";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**

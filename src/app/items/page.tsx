@@ -1,5 +1,5 @@
-import BestItems from "@/components/common/BestItems";
-import OnSaleItems from "@/components/common/OnSaleItems";
+import BestItems from "@/components/items/BestItems";
+import OnSaleItems from "@/components/items/OnSaleItems";
 import { getBestProducts, getProductsByPage } from "@/api/products";
 import {
   HydrationBoundary,

@@ -9,8 +9,8 @@ import Image from "next/image";
 import defaultImage from "@public/icons/img_default.png";
 import { formatDate } from "@/utils/date";
 import LikeCountBtn from "@/components/common/LikeCountBtn";
-import ConfirmModal from "@/components/ui/ConfirmModal";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import ConfirmModal from "@/components/modals/ConfirmModal";
 import {
   useQuery,
   useMutation,

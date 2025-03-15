@@ -1,7 +1,7 @@
 "use client";
 
-import BestArticleCard from "@/components/common/BestArticleCard";
-import ArticleCard from "@/components/common/ArticleCard";
+import BestArticleCard from "@/components/articles/BestArticleCard";
+import ArticleCard from "@/components/articles/ArticleCard";
 import Button from "@/components/common/Button";
 import SearchInput from "@/components/common/SearchInput";
 import { useState, useEffect, useCallback } from "react";

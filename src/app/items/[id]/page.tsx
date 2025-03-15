@@ -12,9 +12,9 @@ import ItemDetailClient from "./ItemDetailClient";
 import { notFound } from "next/navigation";
 
 interface ItemDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ItemDetailPage({ params }: ItemDetailPageProps) {

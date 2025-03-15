@@ -10,7 +10,6 @@ export default function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
       <AuthProvider>{children}</AuthProvider>
     </QueryClientProvider>
   );
