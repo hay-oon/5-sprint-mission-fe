@@ -6,7 +6,12 @@ import Image from "next/image";
 import useResponsivePageSize from "@/hooks/useResponsivePageSize";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getBestProducts, getProductById } from "@/api/products";
+import {
+  getBestProducts,
+  getProductById,
+  Product,
+  ProductsResponse,
+} from "@/api/products";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const BestItems: React.FC = () => {
@@ -15,7 +20,7 @@ const BestItems: React.FC = () => {
   const queryClient = useQueryClient();
 
   // React Query를 사용하여 베스트 상품 목록 조회
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<ProductsResponse>({
     queryKey: ["bestProducts", pageSize],
     queryFn: () => getBestProducts(pageSize),
     staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
@@ -56,7 +61,7 @@ const BestItems: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
-          {productLists.map((item) => (
+          {productLists.map((item: Product) => (
             <div
               key={item.id}
               onClick={() => handleProductClick(item.id)}
