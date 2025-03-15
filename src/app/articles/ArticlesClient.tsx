@@ -1,13 +1,15 @@
-import BestArticleCard from "@/components/common/BestArticleCard";
-import ArticleCard from "@/components/common/ArticleCard";
+"use client";
+
+import BestArticleCard from "@/components/articles/BestArticleCard";
+import ArticleCard from "@/components/articles/ArticleCard";
 import Button from "@/components/common/Button";
 import SearchInput from "@/components/common/SearchInput";
 import { useState, useEffect, useCallback } from "react";
 import Dropdown from "@/components/common/Dropdown";
 import { api } from "@/api/axios";
 import Link from "next/link";
-import router from "next/router";
-import { GetServerSideProps } from "next";
+import { useRouter } from "next/navigation";
+import useResponsive from "@/hooks/useResponsive";
 
 interface Article {
   id: number;
@@ -22,88 +24,39 @@ interface ArticleResponse {
   totalPages: number;
 }
 
-interface ArticlesPageProps {
+interface ArticlesClientProps {
   initialArticles: Article[];
   bestArticles: Article[];
   initialKeyword?: string;
   initialSortBy?: "latest" | "likes";
 }
 
-// 서버 사이드 렌더링으로 변경
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const { keyword = "", sortBy = "latest" } = context.query;
-
-    // 일반 게시글과 베스트 게시글을 병렬로 요청
-    const [articlesResponse, bestArticlesResponse] = await Promise.all([
-      api.get<ArticleResponse>(`/api/articles`, {
-        params: {
-          page: 1,
-          sortBy,
-          keyword,
-        },
-      }),
-      api.get<ArticleResponse>(`/api/articles`, {
-        params: {
-          page: 1,
-          sortBy: "likes",
-          limit: 3,
-        },
-      }),
-    ]);
-
-    return {
-      props: {
-        initialArticles: articlesResponse.data.articles,
-        bestArticles: bestArticlesResponse.data.articles,
-        initialKeyword: keyword || "",
-        initialSortBy: sortBy || "latest",
-      },
-    };
-  } catch (error) {
-    console.error("Failed to fetch articles:", error);
-    return {
-      props: {
-        initialArticles: [],
-        bestArticles: [],
-        initialKeyword: "",
-        initialSortBy: "latest",
-      },
-    };
-  }
-};
-
-// 검색, 정렬 변경 시 클라이언트 컴포넌트 재렌더링
-export default function ArticlesPage({
+export default function ArticlesClient({
   initialArticles,
   bestArticles: initialBestArticles,
   initialKeyword = "",
   initialSortBy = "latest",
-}: ArticlesPageProps) {
+}: ArticlesClientProps) {
+  const router = useRouter();
   const [keyword, setKeyword] = useState(initialKeyword);
   const [sortBy, setSortBy] = useState<"latest" | "likes">(initialSortBy);
   const [articles, setArticles] = useState<Article[]>(initialArticles || []);
   const [bestArticles] = useState<Article[]>(initialBestArticles || []);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 화면 크기에 따른 베스트 게시글 개수 조절을 위한 훅
+  // 반응형 커스텀 훅
+  const { isMobile, isTablet, isDesktop } = useResponsive();
   const [displayCount, setDisplayCount] = useState(1);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setDisplayCount(3);
-      } else if (window.innerWidth >= 768) {
-        setDisplayCount(2);
-      } else {
-        setDisplayCount(1);
-      }
-    };
-
-    handleResize(); // 초기 실행
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    if (isDesktop) {
+      setDisplayCount(3);
+    } else if (isTablet) {
+      setDisplayCount(2);
+    } else {
+      setDisplayCount(1);
+    }
+  }, [isMobile, isTablet, isDesktop]);
 
   // 게시글 불러오기
   const fetchArticles = useCallback(async () => {
@@ -129,17 +82,12 @@ export default function ArticlesPage({
     fetchArticles();
 
     // URL 쿼리 파라미터 업데이트
-    const query: { keyword?: string; sortBy: string } = { sortBy };
-    if (keyword) query.keyword = keyword;
+    const searchParams = new URLSearchParams();
+    searchParams.set("sortBy", sortBy);
+    if (keyword) searchParams.set("keyword", keyword);
 
-    router.push(
-      {
-        pathname: "/articles",
-        query,
-      },
-      undefined,
-      { shallow: true }
-    );
+    const url = `/articles?${searchParams.toString()}`;
+    window.history.pushState({}, "", url);
   }, [sortBy, keyword, fetchArticles]);
 
   const handleSort = (value: "latest" | "likes") => {

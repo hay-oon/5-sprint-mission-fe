@@ -22,7 +22,6 @@ const CommentItem = ({
   const handleMenuSelect = async (value: string) => {
     if (value === "edit") {
       setIsEditing(true);
-      setEditContent(comment.content);
     } else if (value === "delete") {
       if (window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
         try {
@@ -40,7 +39,7 @@ const CommentItem = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!editContent.trim()) {
@@ -66,7 +65,9 @@ const CommentItem = ({
       <div className="flex items-center mb-2">
         <div className="flex items-center">
           <Image src="/icons/Avatar.png" alt="profile" width={24} height={24} />
-          <span className="ml-2 text-sm text-gray-600">총명한판다</span>
+          <span className="ml-2 text-sm text-gray-600">
+            {comment.writer.nickname}
+          </span>
         </div>
         <span className="mx-2 text-gray-400">·</span>
         <span className="text-sm text-gray-400">
@@ -92,7 +93,7 @@ const CommentItem = ({
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="mt-2">
+        <form onSubmit={handleEditSubmit} className="mt-2">
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
