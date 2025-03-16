@@ -3,7 +3,7 @@
 import CommentForm from "@/components/common/CommentForm";
 import CommentItem from "@/components/common/CommentItem";
 import ContextMenu from "@/components/common/ContextMenu";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import defaultImage from "@public/icons/img_default.png";
@@ -27,14 +27,9 @@ import {
   CommentsResponse,
 } from "@/api/products";
 
-interface ItemDetailPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function ItemDetailPage({ params }: ItemDetailPageProps) {
-  const productId = params.id;
+export default function ItemDetailPage() {
+  const params = useParams();
+  const productId = params.id as string;
   const router = useRouter();
   const alertShown = useRef(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
