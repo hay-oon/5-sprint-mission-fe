@@ -36,24 +36,24 @@ export interface Comment {
   updatedAt: string;
 }
 
-// 상품 목록 조회
-export const getProducts = async (
-  cursor?: number | null,
-  limit: number = 10
-): Promise<ProductsResponse> => {
-  const params = new URLSearchParams();
-  params.append("limit", limit.toString());
-  if (cursor) {
-    params.append("cursor", cursor.toString());
-  }
+// 상품 목록 조회 - 커서 방식
+// export const getProductsByCursor = async (
+//   cursor?: number | null,
+//   limit: number = 10
+// ): Promise<ProductsResponse> => {
+//   const params = new URLSearchParams();
+//   params.append("limit", limit.toString());
+//   if (cursor) {
+//     params.append("cursor", cursor.toString());
+//   }
 
-  const response = await api.get<ProductsResponse>(
-    `/products?${params.toString()}`
-  );
-  return response.data;
-};
+//   const response = await api.get<ProductsResponse>(
+//     `/products?${params.toString()}`
+//   );
+//   return response.data;
+// };
 
-// 페이지네이션 방식의 상품 목록 조회
+// 상품 목록 조회 - 페이지네이션 방식
 export const getProductsByPage = async (
   page: number = 1,
   pageSize: number = 10,

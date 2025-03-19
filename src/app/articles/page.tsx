@@ -6,8 +6,11 @@ interface Article {
   id: number;
   title: string;
   createdAt: string;
-  likeCount: number;
-  nickname: string;
+  favoriteCount: number;
+  writer: {
+    id: string;
+    nickname: string;
+  };
 }
 
 interface ArticleResponse {
@@ -47,7 +50,6 @@ export default async function ArticlesPage({
         },
       }),
     ]);
-
     // ArticlesClient에 전달할 초기 데이터 props
     return (
       <ArticlesClient

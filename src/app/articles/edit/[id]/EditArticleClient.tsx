@@ -10,7 +10,7 @@ interface EditArticleClientProps {
     id: string;
     title: string;
     content: string;
-    likeCount: number;
+    favoriteCount: number;
     createdAt: string;
   };
 }

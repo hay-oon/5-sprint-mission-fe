@@ -15,8 +15,11 @@ interface Article {
   id: number;
   title: string;
   createdAt: string;
-  likeCount: number;
-  nickname: string;
+  favoriteCount: number;
+  writer: {
+    id: string;
+    nickname: string;
+  };
 }
 
 interface ArticleResponse {
@@ -69,6 +72,7 @@ export default function ArticlesClient({
           keyword,
         },
       });
+      console.log(response.data);
       setArticles(response.data.articles);
     } catch (error) {
       console.error("Failed to fetch articles:", error);
@@ -106,7 +110,8 @@ export default function ArticlesClient({
               key={article.id}
               title={article.title}
               createdAt={article.createdAt}
-              likeCount={article.likeCount}
+              favoriteCount={article.favoriteCount}
+              nickname={article.writer.nickname}
               onClick={() => {
                 router.push(`/articles/${article.id}`);
               }}
@@ -145,7 +150,8 @@ export default function ArticlesClient({
                     key={article.id}
                     title={article.title}
                     createdAt={article.createdAt}
-                    likeCount={article.likeCount}
+                    favoriteCount={article.favoriteCount}
+                    nickname={article.writer.nickname}
                     onClick={() => {
                       router.push(`/articles/${article.id}`);
                     }}

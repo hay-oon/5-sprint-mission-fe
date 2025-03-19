@@ -98,7 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (requestData: { email: string; password: string }) => {
     try {
       const response = await axios.post(
-        "https://panda-market-api.vercel.app/auth/signin",
+        "http://localhost:5005/api/auth/signin",
         requestData
       );
       const { accessToken, refreshToken } = response.data;
@@ -134,7 +134,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signup = async (userData: SignupData) => {
     try {
       const response = await axios.post(
-        "https://panda-market-api.vercel.app/auth/signup",
+        "http://localhost:5005/api/auth/signup",
         userData
       );
 

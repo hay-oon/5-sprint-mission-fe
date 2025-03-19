@@ -4,8 +4,12 @@ export interface Article {
   id: string;
   title: string;
   content: string;
-  likeCount: number;
+  favoriteCount: number;
   createdAt: string;
+  writer: {
+    id: string;
+    nickname: string;
+  };
 }
 
 // 게시글 상세 조회

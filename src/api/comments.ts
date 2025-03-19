@@ -14,6 +14,11 @@ export interface Comment {
 
 export interface CommentsResponse {
   comments: Comment[];
+  writer: {
+    id: string;
+    image?: string;
+    nickname: string;
+  };
   nextCursor: string | null;
 }
 

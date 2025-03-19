@@ -2,7 +2,8 @@ import axios from "axios";
 
 export const api = axios.create({
   // baseURL: "https://five-sprint-mission-be.onrender.com",
-  baseURL: "https://panda-market-api.vercel.app",
+  baseURL: "http://localhost:5005",
+  // baseURL: "https://panda-market-api.vercel.app",
 });
 
 // 요청 인터셉터 설정
