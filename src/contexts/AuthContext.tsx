@@ -138,21 +138,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
         userData
       );
 
-      const { accessToken, refreshToken } = response.data;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      // 회원가입 성공 후 자동 로그인 실행
+      if (response.status === 200 || response.status === 201) {
+        // 회원가입 API가 토큰을 반환하는 경우 아래 코드 사용
+        // const { accessToken, refreshToken } = response.data;
+        // if (accessToken && refreshToken) {
+        //   localStorage.setItem("accessToken", accessToken);
+        //   localStorage.setItem("refreshToken", refreshToken);
+        //
+        //   // 사용자 정보 객체 생성
+        //   const userInfo = {
+        //     email: response.data.user.email || userData.email,
+        //     nickname: response.data.user.nickname || userData.nickname,
+        //     image: response.data.user.image || null,
+        //   };
+        //
+        //   // 사용자 정보를 로컬 스토리지에 저장
+        //   localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        //   setUser(userInfo);
+        //   setIsAuthenticated(true);
+        // } else {
+        // 회원가입 API가 토큰을 반환하지 않는 경우 자동 로그인 실행
+        const loginResult = await login({
+          email: userData.email,
+          password: userData.password,
+        });
 
-      // 사용자 정보 객체 생성
-      const userInfo = {
-        email: response.data.user.email || userData.email,
-        nickname: response.data.user.nickname || userData.nickname,
-        image: response.data.user.image || null,
-      };
-
-      // 사용자 정보를 로컬 스토리지에 저장
-      localStorage.setItem("userInfo", JSON.stringify(userInfo));
-      setUser(userInfo);
-      setIsAuthenticated(true);
+        // 로그인 실패 시 에러 메시지 반환
+        if (!loginResult.success) {
+          return {
+            success: true,
+            message:
+              "회원가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인 페이지로 이동합니다.",
+          };
+        }
+        // }
+      }
 
       return { success: true, message: "가입이 완료되었습니다." };
     } catch (error) {
@@ -169,9 +190,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 로그아웃 함수
   const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userInfo");
+    localStorage.clear();
     setIsAuthenticated(false);
     setUser(null);
     router.push("/auth/login");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { Article, getArticleById, deleteArticle } from "@/api/articles";
 import { Comment, getCommentsByArticleId, createComment } from "@/api/comments";
@@ -21,6 +21,17 @@ export default function ArticleDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const alertShown = useRef(false);
+
+  // 인증 상태 확인 - useEffect 내에서 localStorage 접근
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token && !alertShown.current) {
+      alertShown.current = true;
+      alert("로그인이 필요한 서비스입니다.");
+      router.push("/auth/login");
+    }
+  }, [router]);
 
   // 게시글 데이터 불러오기
   const fetchArticle = useCallback(async () => {

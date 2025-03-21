@@ -69,7 +69,7 @@ export const getProductsByPage = async (
   }
 
   const response = await api.get<ProductsResponse>(
-    `/products?${params.toString()}`
+    `/api/products?${params.toString()}`
   );
   return response.data;
 };
@@ -84,14 +84,14 @@ export const getBestProducts = async (
   params.append("orderBy", "favorite");
 
   const response = await api.get<ProductsResponse>(
-    `/products?${params.toString()}`
+    `/api/products?${params.toString()}`
   );
   return response.data;
 };
 
 // 상품 상세 조회
 export const getProductById = async (id: string): Promise<Product> => {
-  const response = await api.get<Product>(`/products/${id}`);
+  const response = await api.get<Product>(`/api/products/${id}`);
   return response.data;
 };
 
@@ -108,7 +108,7 @@ export const getProductComments = async (
   }
 
   const response = await api.get<CommentsResponse>(
-    `/products/${productId}/comments?${params.toString()}`
+    `/api/products/${productId}/comments?${params.toString()}`
   );
   return response.data;
 };
@@ -118,7 +118,7 @@ export const createProductComment = async (
   productId: string,
   content: string
 ): Promise<void> => {
-  await api.post(`/products/${productId}/comments`, { content });
+  await api.post(`/api/products/${productId}/comments`, { content });
 };
 
 // 댓글 수정
@@ -126,27 +126,27 @@ export const updateProductComment = async (
   commentId: string,
   content: string
 ): Promise<void> => {
-  await api.patch(`/comments/${commentId}`, { content });
+  await api.patch(`/api/comments/${commentId}`, { content });
 };
 
 // 댓글 삭제
 export const deleteProductComment = async (
   commentId: string
 ): Promise<void> => {
-  await api.delete(`/comments/${commentId}`);
+  await api.delete(`/api/comments/${commentId}`);
 };
 
 // 좋아요 추가
 export const addFavorite = async (productId: string): Promise<void> => {
-  await api.post(`/products/${productId}/favorite`);
+  await api.post(`/api/products/${productId}/favorite`);
 };
 
 // 좋아요 삭제
 export const removeFavorite = async (productId: string): Promise<void> => {
-  await api.delete(`/products/${productId}/favorite`);
+  await api.delete(`/api/products/${productId}/favorite`);
 };
 
 // 상품 삭제
 export const deleteProduct = async (productId: string): Promise<void> => {
-  await api.delete(`/products/${productId}`);
+  await api.delete(`/api/products/${productId}`);
 };

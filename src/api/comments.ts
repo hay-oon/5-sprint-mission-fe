@@ -45,12 +45,12 @@ export async function updateComment(
   commentId: string,
   content: string
 ): Promise<void> {
-  await api.patch(`/comments/${commentId}`, {
+  await api.patch(`/api/comments/${commentId}`, {
     content,
   });
 }
 
 // 댓글 삭제 함수
 export async function deleteComment(commentId: string): Promise<void> {
-  await api.delete(`/comments/${commentId}`);
+  await api.delete(`/api/comments/${commentId}`);
 }
