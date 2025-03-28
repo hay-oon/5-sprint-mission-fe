@@ -272,9 +272,9 @@ export default function ItemDetailPage() {
           </div>
         ) : comments.length > 0 ? (
           <div>
-            {comments.map((comment) => (
+            {comments.map((comment, index) => (
               <CommentItem
-                key={comment.id}
+                key={`${comment.id}-${index}`}
                 comment={comment}
                 articleId={productId}
                 onCommentUpdated={() =>

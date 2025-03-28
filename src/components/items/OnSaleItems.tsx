@@ -98,7 +98,7 @@ const OnSaleItems: React.FC = () => {
   return (
     <section className="max-w-[1200px] px-6 py-10 mx-auto w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-        <h2 className="text-xl font-bold ㅡ">판매중인 상품</h2>
+        <h2 className="text-xl font-bold">판매중인 상품</h2>
         <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3 items-stretch">
           <div className="w-full sm:w-64">
             <SearchInput

@@ -186,9 +186,9 @@ export default function ArticleDetailPage() {
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-blue"></div>
             </div>
           ) : comments.length > 0 ? (
-            comments.map((comment) => (
+            comments.map((comment, index) => (
               <CommentItem
-                key={comment.id}
+                key={`${comment.id}-${index}`}
                 comment={comment}
                 articleId={article.id.toString()}
                 onCommentUpdated={fetchComments}

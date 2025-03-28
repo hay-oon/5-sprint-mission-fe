@@ -150,3 +150,31 @@ export const removeFavorite = async (productId: string): Promise<void> => {
 export const deleteProduct = async (productId: string): Promise<void> => {
   await api.delete(`/api/products/${productId}`);
 };
+
+// 상품 등록
+export interface ProductFormData {
+  name: string;
+  price: number;
+  description: string;
+  images?: string[];
+  tags?: string[];
+}
+
+export const createProduct = async (
+  productData: ProductFormData
+): Promise<Product> => {
+  const response = await api.post<Product>("/api/products", productData);
+  return response.data;
+};
+
+// 상품 수정
+export const updateProduct = async (
+  productId: string,
+  productData: ProductFormData
+): Promise<Product> => {
+  const response = await api.patch<Product>(
+    `/api/products/${productId}`,
+    productData
+  );
+  return response.data;
+};
