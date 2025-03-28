@@ -10,6 +10,7 @@ export interface Article {
     id: string;
     nickname: string;
   };
+  isFavorite?: boolean;
 }
 
 // 게시글 상세 조회
@@ -31,3 +32,15 @@ export async function updateArticle(
 export async function deleteArticle(id: string): Promise<void> {
   await api.delete(`/api/articles/${id}`);
 }
+
+// 좋아요 추가
+export const addArticleFavorite = async (articleId: string): Promise<void> => {
+  await api.post(`/api/articles/${articleId}/favorite`);
+};
+
+// 좋아요 삭제
+export const removeArticleFavorite = async (
+  articleId: string
+): Promise<void> => {
+  await api.delete(`/api/articles/${articleId}/favorite`);
+};

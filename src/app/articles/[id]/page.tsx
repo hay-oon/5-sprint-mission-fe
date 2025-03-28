@@ -2,7 +2,13 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
-import { Article, getArticleById, deleteArticle } from "@/api/articles";
+import {
+  Article,
+  getArticleById,
+  deleteArticle,
+  addArticleFavorite,
+  removeArticleFavorite,
+} from "@/api/articles";
 import { Comment, getCommentsByArticleId, createComment } from "@/api/comments";
 import CommentItem from "@/components/common/CommentItem";
 import CommentForm from "@/components/common/CommentForm";
@@ -21,7 +27,10 @@ export default function ArticleDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
   const alertShown = useRef(false);
+  const articleId = useRef<string | null>(null);
 
   // 인증 상태 확인 - useEffect 내에서 localStorage 접근
   useEffect(() => {
@@ -39,6 +48,31 @@ export default function ArticleDetailPage() {
       setIsLoading(true);
       const articleData = await getArticleById(id);
       setArticle(articleData);
+      setIsFavorite(articleData.isFavorite || false);
+      setFavoriteCount(articleData.favoriteCount);
+      articleId.current = articleData.id.toString();
+
+      // 게시글 로드 성공 후 바로 댓글 로드
+      try {
+        setIsLoadingComments(true);
+        const commentsData = await getCommentsByArticleId(
+          articleData.id.toString()
+        );
+        console.log("댓글 데이터:", commentsData);
+        if (commentsData && commentsData.comments) {
+          setComments(commentsData.comments);
+          console.log("설정된 댓글 데이터:", commentsData.comments);
+        } else {
+          console.error("댓글 데이터 형식이 올바르지 않습니다:", commentsData);
+          setComments([]);
+        }
+      } catch (err) {
+        console.error("댓글을 불러오는데 실패했습니다.", err);
+        setComments([]);
+      } finally {
+        setIsLoadingComments(false);
+      }
+
       console.log(articleData);
     } catch (error) {
       console.error("게시글을 불러오는데 실패했습니다:", error);
@@ -50,11 +84,11 @@ export default function ArticleDetailPage() {
 
   // 댓글 데이터 불러오기
   const fetchComments = useCallback(async () => {
-    if (!article) return;
+    if (!articleId.current) return;
 
     try {
       setIsLoadingComments(true);
-      const commentsData = await getCommentsByArticleId(article.id.toString());
+      const commentsData = await getCommentsByArticleId(articleId.current);
       console.log(commentsData);
       setComments(commentsData.comments);
     } catch (err) {
@@ -62,29 +96,37 @@ export default function ArticleDetailPage() {
     } finally {
       setIsLoadingComments(false);
     }
-  }, [article]);
+  }, []);
 
   // 컴포넌트 마운트 시 게시글 데이터 불러오기
   useEffect(() => {
     fetchArticle();
   }, [fetchArticle]);
 
-  // 게시글 데이터가 로드되면 댓글 데이터 불러오기
-  useEffect(() => {
-    if (article) {
-      fetchComments();
-    }
-  }, [article, fetchComments]);
-
   // 댓글 작성 핸들러
   const handleSubmitComment = async (content: string) => {
-    if (!article) return;
+    if (!articleId.current) return;
 
     try {
-      await createComment(article.id.toString(), content);
-      fetchComments(); // 댓글 목록 새로고침
+      await createComment(articleId.current, content);
+      alert("댓글이 등록되었습니다.");
+
+      // 댓글 목록 새로고침
+      try {
+        setIsLoadingComments(true);
+        const commentsData = await getCommentsByArticleId(articleId.current);
+        console.log("댓글 작성 후 새로 불러온 데이터:", commentsData);
+        if (commentsData && commentsData.comments) {
+          setComments(commentsData.comments);
+        }
+      } catch (err) {
+        console.error("댓글 작성 후 목록 불러오기 실패:", err);
+      } finally {
+        setIsLoadingComments(false);
+      }
     } catch (err) {
       console.error("댓글 작성에 실패했습니다.", err);
+      alert("댓글 작성에 실패했습니다.");
     }
   };
 
@@ -110,6 +152,25 @@ export default function ArticleDetailPage() {
       router.push(`/articles/edit/${article.id}`);
     } else if (value === "delete") {
       handleDeleteArticle();
+    }
+  };
+
+  // 좋아요 토글 핸들러
+  const handleLikeToggle = async () => {
+    if (!article) return;
+
+    try {
+      if (isFavorite) {
+        await removeArticleFavorite(article.id.toString());
+        setFavoriteCount((prev) => Math.max(0, prev - 1));
+      } else {
+        await addArticleFavorite(article.id.toString());
+        setFavoriteCount((prev) => prev + 1);
+      }
+      setIsFavorite(!isFavorite);
+    } catch (err) {
+      console.error("좋아요 처리에 실패했습니다:", err);
+      alert("좋아요 처리에 실패했습니다.");
     }
   };
 
@@ -140,9 +201,9 @@ export default function ArticleDetailPage() {
         <span className="text-gray-400">{formatDate(article.createdAt)}</span>
         <div className="ml-8 pl-8 border-l border-gray-200">
           <LikeCountBtn
-            favoriteCount={article.favoriteCount}
-            onLikeClick={() => {}}
-            isFavorite={false}
+            favoriteCount={favoriteCount}
+            onLikeClick={handleLikeToggle}
+            isFavorite={isFavorite}
           />
         </div>
         <div className="ml-auto">
@@ -185,15 +246,20 @@ export default function ArticleDetailPage() {
             <div className="flex justify-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-blue"></div>
             </div>
-          ) : comments.length > 0 ? (
-            comments.map((comment, index) => (
-              <CommentItem
-                key={`${comment.id}-${index}`}
-                comment={comment}
-                articleId={article.id.toString()}
-                onCommentUpdated={fetchComments}
-              />
-            ))
+          ) : comments && comments.length > 0 ? (
+            <>
+              <p className="text-sm text-gray-600 mb-4">
+                총 {comments.length}개의 댓글
+              </p>
+              {comments.map((comment, index) => (
+                <CommentItem
+                  key={`${comment.id || index}-${index}`}
+                  comment={comment}
+                  articleId={article.id.toString()}
+                  onCommentUpdated={fetchComments}
+                />
+              ))}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center py-8">
               <Image
@@ -202,6 +268,9 @@ export default function ArticleDetailPage() {
                 width={200}
                 height={200}
               />
+              <p className="mt-4 text-gray-500">
+                아직 댓글이 없습니다. 첫 댓글을 작성해보세요!
+              </p>
             </div>
           )}
         </div>
