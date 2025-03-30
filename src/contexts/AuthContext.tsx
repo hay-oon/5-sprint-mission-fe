@@ -51,7 +51,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // 쿠키를 포함한 요청을 위한 axios 인스턴스
 const authAxios = axios.create({
-  baseURL: "http://localhost:5005",
+  // baseURL: "http://localhost:5005",
+  baseURL: "https://five-sprint-mission-be.onrender.com",
   withCredentials: true,
 });
 
