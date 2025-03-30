@@ -26,6 +26,7 @@ import {
   removeFavorite,
   CommentsResponse,
 } from "@/api/products";
+import { getImageUrl } from "@/utils/images/url";
 
 export default function ItemDetailPage() {
   const params = useParams();
@@ -155,13 +156,14 @@ export default function ItemDetailPage() {
       </div>
     );
   }
+  console.log(item);
 
   return (
     <div className="max-w-[1200px] mx-auto mb-[234px] md:mb-[561px] lg:mb-[463px] px-4 py-8">
       <div className="flex flex-col md:flex-row md:gap-6 mb-6 border-b border-gray-300 pb-6">
         <div>
           <Image
-            src={item?.images?.[0] || defaultImage.src}
+            src={getImageUrl(item?.images?.[0], defaultImage.src)}
             alt={item?.name || "상품 이미지"}
             width={480}
             height={480}
@@ -272,9 +274,9 @@ export default function ItemDetailPage() {
           </div>
         ) : comments.length > 0 ? (
           <div>
-            {comments.map((comment) => (
+            {comments.map((comment, index) => (
               <CommentItem
-                key={comment.id}
+                key={`${comment.id}-${index}`}
                 comment={comment}
                 articleId={productId}
                 onCommentUpdated={() =>

@@ -95,7 +95,7 @@ export default function SignupPage() {
 
       // 회원가입 결과 처리
       setIsSuccess(result.success);
-      setErrorMessage(result.success ? "" : result.message);
+      setErrorMessage(result.success ? result.message : result.message);
       setIsModalOpen(true);
     } catch (error) {
       console.error("회원가입 실패:", error);
@@ -108,7 +108,12 @@ export default function SignupPage() {
   // 모달 확인 버튼 클릭 시 처리
   const handleModalButtonClick = () => {
     if (isSuccess) {
-      router.push("/items");
+      // 회원가입은 성공했지만 자동 로그인에 실패한 경우
+      if (errorMessage.includes("자동 로그인에 실패")) {
+        router.push("/auth/login");
+      } else {
+        router.push("/items");
+      }
     } else {
       setIsModalOpen(false);
     }
@@ -126,7 +131,9 @@ export default function SignupPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        message={isSuccess ? "가입이 완료되었습니다." : errorMessage}
+        message={
+          isSuccess ? errorMessage || "가입이 완료되었습니다." : errorMessage
+        }
         buttonText="확인"
         onButtonClick={handleModalButtonClick}
       />

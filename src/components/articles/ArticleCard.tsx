@@ -5,14 +5,16 @@ import { formatDate } from "@/utils/date";
 interface ArticleCardProps {
   title: string;
   createdAt: string;
-  likeCount: number;
+  favoriteCount: number;
+  nickname: string;
   onClick?: () => void;
 }
 
 export default function ArticleCard({
   title,
   createdAt,
-  likeCount,
+  favoriteCount,
+  nickname,
   onClick,
 }: ArticleCardProps) {
   return (
@@ -35,7 +37,7 @@ export default function ArticleCard({
         <div className="flex justify-between gap-2 text-[14px]">
           <div className="text-text-primary-charcoal flex items-center gap-2">
             <Image src={avatar} alt="avatar" width={24} height={24} />
-            <div>총명한판다</div>
+            <div>{nickname}</div>
             <div className="text-text-primary-gray">
               {formatDate(createdAt)}
             </div>
@@ -47,7 +49,7 @@ export default function ArticleCard({
               width={14}
               height={14}
             />
-            {likeCount}
+            {favoriteCount}
           </div>
         </div>
       </div>

@@ -5,14 +5,16 @@ import { BorderTrail } from "@/components/ui/border-trail";
 interface BestArticleCardProps {
   title: string;
   createdAt: string;
-  likeCount: number;
+  favoriteCount: number;
+  nickname: string;
   onClick?: () => void;
 }
 
 export default function BestArticleCard({
   title,
   createdAt,
-  likeCount,
+  favoriteCount,
+  nickname,
   onClick,
 }: BestArticleCardProps) {
   return (
@@ -48,7 +50,7 @@ export default function BestArticleCard({
         </div>
         <div className="flex justify-between gap-2 text-[14px]">
           <div className="text-text-primary-charcoal flex items-center gap-2">
-            <div>총명한판다</div>
+            <div>{nickname}</div>
             <div className="flex items-center gap-1">
               <Image
                 src="/icons/ic_heart.png"
@@ -56,7 +58,7 @@ export default function BestArticleCard({
                 width={14}
                 height={14}
               />
-              {likeCount}
+              {favoriteCount}
             </div>
           </div>
           <div className="text-text-primary-gray">{formatDate(createdAt)}</div>
