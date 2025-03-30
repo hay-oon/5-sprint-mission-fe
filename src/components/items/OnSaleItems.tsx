@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProductsByPage, getProductById } from "@/api/products";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { getImageUrl } from "@/utils/images/url";
 
 const OnSaleItems: React.FC = () => {
   const [orderBy, setOrderBy] = useState<string>("recent");
@@ -144,7 +145,7 @@ const OnSaleItems: React.FC = () => {
               onClick={() => handleProductClick(item.id)}
             >
               <Image
-                src={item.images?.[0] || defaultImage.src}
+                src={getImageUrl(item.images?.[0], defaultImage.src)}
                 alt={item.name}
                 width={500}
                 height={500}

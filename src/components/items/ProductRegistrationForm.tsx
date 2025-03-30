@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import xIcon from "@public/icons/ic_X.png";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import defaultImage from "@public/icons/img_default.png";
+import { getImageUrl } from "@/utils/images/url";
 
 interface Product {
   id: string;
@@ -61,11 +62,11 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
   // 상품 등록/수정 API 호출
   const createMutation = useMutation({
     mutationFn: createProduct,
-    onSuccess: () => {
+    onSuccess: (data) => {
       // 등록 성공 시 캐시 갱신
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      // 목록 페이지로 이동
-      router.push("/");
+      // 등록된 상품 상세 페이지로 이동
+      router.push(`/items/${data.id}`);
       alert("상품이 성공적으로 등록되었습니다.");
     },
     onError: (error: any) => {
@@ -231,7 +232,7 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
     }));
   };
 
-  // 이미지 업로드 처리 (모의 구현)
+  // 이미지 업로드 처리
   const handleImageUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
@@ -243,32 +244,44 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
         return;
       }
       try {
-        // 실제로는 이미지 업로드 API를 호출하고 URL을 받아야 함
-        // 여기서는 예시로 고정된 URL을 사용 (실제 구현시에는 서버 API 호출 필요)
         const newImagePreviewUrls: string[] = [];
-        const newImageUrls: string[] = [];
+        const newFiles: File[] = [];
 
         for (let i = 0; i < files.length; i++) {
           // 로컬 미리보기용 URL 생성
           const localPreviewUrl = URL.createObjectURL(files[i]);
           newImagePreviewUrls.push(localPreviewUrl);
 
-          // 실제로는 서버 업로드 후 반환받은 URL을 사용해야 함
-          const imageUrl = `https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/example-image-${Date.now()}-${i}.jpg`;
-          newImageUrls.push(imageUrl);
+          // 파일 객체 저장
+          newFiles.push(files[i]);
         }
 
         setImagePreview((prev) => [...prev, ...newImagePreviewUrls]);
 
-        // 서버에 전송할 실제 URL 저장
-        setFormData((prev) => ({
-          ...prev,
-          images: [...(prev.images || []), ...newImageUrls],
-        }));
+        // 기존 이미지가 있는지 확인
+        setFormData((prev) => {
+          // 현재 images의 타입 확인 및 기존 이미지 유지
+          const currentImages = prev.images || [];
+
+          // 이미지 배열의 첫 번째 항목을 검사하여 배열 전체 타입 추론
+          if (
+            currentImages.length > 0 &&
+            typeof currentImages[0] === "string"
+          ) {
+            return {
+              ...prev,
+              images: newFiles,
+            };
+          } else {
+            return {
+              ...prev,
+              images: [...newFiles],
+            };
+          }
+        });
       } catch (error) {
         console.error("이미지 처리 중 오류 발생:", error);
         alert("이미지 처리 중 오류가 발생했습니다. 기본 이미지가 사용됩니다.");
-        // 에러 발생 시에도 폼 제출은 가능하도록 images 배열은 비워둠
         setFormData((prev) => ({
           ...prev,
           images: [],
@@ -281,11 +294,49 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
   // 이미지 삭제 처리
   const handleRemoveImage = useCallback((index: number) => {
     setImagePreview((prev) => prev.filter((_, i) => i !== index));
-    setFormData((prev) => ({
-      ...prev,
-      images: (prev.images || []).filter((_, i) => i !== index),
-    }));
+
+    setFormData((prev) => {
+      const currentImages = prev.images || [];
+
+      // splice로 해당 인덱스 항목 제거
+      if (currentImages.length > 0) {
+        // 새 배열 생성 (참조 변경을 위해)
+        if (currentImages[0] instanceof File) {
+          // File 배열인 경우
+          const newImages = [...(currentImages as File[])];
+          newImages.splice(index, 1);
+          return { ...prev, images: newImages };
+        } else {
+          // string 배열인 경우
+          const newImages = [...(currentImages as string[])];
+          newImages.splice(index, 1);
+          return { ...prev, images: newImages };
+        }
+      }
+
+      return prev;
+    });
   }, []);
+
+  // 폼 제출 시 백엔드에 적절한 타입 전달을 위한 데이터 변환
+  const prepareDataForSubmission = useCallback(() => {
+    const dataToSubmit: ProductFormData = { ...formData };
+
+    // 이미지가 없는 경우 기본 이미지 URL 설정
+    if (!dataToSubmit.images?.length) {
+      dataToSubmit.images = [
+        "https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/default-product-image.jpg",
+      ];
+      return dataToSubmit;
+    }
+
+    // 수정 모드에서 기존 이미지 URL을 추가 처리
+    if (isEdit && product?.images?.length) {
+      dataToSubmit.existingImages = product.images;
+    }
+
+    return dataToSubmit;
+  }, [formData, isEdit, product]);
 
   // 폼 제출 처리
   const handleSubmit = useCallback(
@@ -300,13 +351,8 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
       setIsSubmitting(true);
       setError(null);
 
-      // 이미지가 없는 경우 기본 이미지 URL 설정
-      const dataToSubmit = { ...formData };
-      if (!dataToSubmit.images?.length) {
-        dataToSubmit.images = [
-          "https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/default-product-image.jpg",
-        ];
-      }
+      // 제출 데이터 준비
+      const dataToSubmit = prepareDataForSubmission();
 
       // API 호출 (등록 또는 수정)
       if (isEdit && product) {
@@ -315,7 +361,15 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
         createMutation.mutate(dataToSubmit);
       }
     },
-    [formData, createMutation, updateMutation, isEdit, product, isFormValid]
+    [
+      formData,
+      createMutation,
+      updateMutation,
+      isEdit,
+      product,
+      isFormValid,
+      prepareDataForSubmission,
+    ]
   );
 
   // formData가 변경될 때마다 유효성 검사 실행
@@ -390,7 +444,11 @@ const ProductRegistrationForm: React.FC<ProductRegistrationFormProps> = ({
               className="relative w-[282px] h-[282px] border border-none rounded-[12px] overflow-hidden"
             >
               <Image
-                src={url || defaultImage.src}
+                src={
+                  url.startsWith("blob:")
+                    ? url
+                    : getImageUrl(url, defaultImage.src)
+                }
                 alt={`상품 이미지 ${index + 1}`}
                 width={282}
                 height={282}

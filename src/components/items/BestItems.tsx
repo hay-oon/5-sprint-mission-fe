@@ -13,6 +13,7 @@ import {
   ProductsResponse,
 } from "@/api/products";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { getImageUrl } from "@/utils/images/url";
 
 const BestItems: React.FC = () => {
   const pageSize = useResponsivePageSize({ mobile: 1, tablet: 2, desktop: 4 });
@@ -68,7 +69,7 @@ const BestItems: React.FC = () => {
               className="cursor-pointer"
             >
               <Image
-                src={item.images?.[0] || defaultImage.src}
+                src={getImageUrl(item.images?.[0], defaultImage.src)}
                 alt={item.name || "상품 이미지"}
                 width={500}
                 height={500}

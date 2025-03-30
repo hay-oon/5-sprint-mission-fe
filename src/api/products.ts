@@ -156,14 +156,43 @@ export interface ProductFormData {
   name: string;
   price: number;
   description: string;
-  images?: string[];
+  images?: File[] | string[]; // File 객체 또는 기존 이미지 URL 배열
   tags?: string[];
+  existingImages?: string[]; // 기존 이미지 URL을 별도로 저장하기 위한 속성
 }
 
 export const createProduct = async (
   productData: ProductFormData
 ): Promise<Product> => {
-  const response = await api.post<Product>("/api/products", productData);
+  const formData = new FormData();
+
+  // 기본 정보 추가
+  formData.append("name", productData.name);
+  formData.append("price", productData.price.toString());
+  formData.append("description", productData.description);
+
+  // 이미지 파일 추가
+  if (productData.images && productData.images.length > 0) {
+    productData.images.forEach((image) => {
+      if (image instanceof File) {
+        formData.append("images", image);
+      } else if (typeof image === "string") {
+        formData.append("existingImages", image);
+      }
+    });
+  }
+
+  // 태그 추가
+  if (productData.tags && productData.tags.length > 0) {
+    formData.append("tags", JSON.stringify(productData.tags));
+  }
+
+  const response = await api.post<Product>("/api/products", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
   return response.data;
 };
 
@@ -172,9 +201,44 @@ export const updateProduct = async (
   productId: string,
   productData: ProductFormData
 ): Promise<Product> => {
+  const formData = new FormData();
+
+  // 기본 정보 추가
+  formData.append("name", productData.name);
+  formData.append("price", productData.price.toString());
+  formData.append("description", productData.description);
+
+  // 이미지 파일 추가 (File 객체만 처리)
+  if (productData.images && productData.images.length > 0) {
+    productData.images.forEach((image) => {
+      if (image instanceof File) {
+        formData.append("images", image);
+      }
+    });
+  }
+
+  // 기존 이미지 URL 추가
+  if (productData.existingImages && productData.existingImages.length > 0) {
+    formData.append(
+      "existingImages",
+      JSON.stringify(productData.existingImages)
+    );
+  }
+
+  // 태그 추가
+  if (productData.tags && productData.tags.length > 0) {
+    formData.append("tags", JSON.stringify(productData.tags));
+  }
+
   const response = await api.patch<Product>(
     `/api/products/${productId}`,
-    productData
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
+
   return response.data;
 };
