@@ -9,6 +9,7 @@ import {
 } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { api } from "@/api/axios"; // 기존 API 인스턴스 사용
 
 // 인증 컨텍스트의 타입 정의
 type AuthContextType = {
@@ -25,14 +26,14 @@ type AuthContextType = {
   loading: boolean;
 };
 
-// 사용자 정보 타입
+// User 타입 정의
 type User = {
   email: string;
   nickname: string;
-  image?: string | null;
+  image: string | null;
 };
 
-// 회원가입 데이터 타입
+// 회원가입 데이터 타입 정의
 type SignupData = {
   email: string;
   nickname: string;
@@ -40,13 +41,19 @@ type SignupData = {
   passwordConfirmation: string;
 };
 
-// AuthProvider props 타입
+// AuthProvider props 타입 정의
 type AuthProviderProps = {
   children: ReactNode;
 };
 
 // 기본값으로 사용할 컨텍스트 생성
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// 쿠키를 포함한 요청을 위한 axios 인스턴스
+const authAxios = axios.create({
+  baseURL: "http://localhost:5005",
+  withCredentials: true,
+});
 
 // AuthProvider 컴포넌트
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -97,13 +104,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 로그인 함수
   const login = async (requestData: { email: string; password: string }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5005/api/auth/signin",
-        requestData
-      );
+      // 쿠키를 전송하고 받을 수 있도록 withCredentials 옵션이 있는 인스턴스 사용
+      const response = await authAxios.post("/api/auth/signin", requestData);
+
       const { accessToken, refreshToken } = response.data;
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+
+      // refreshToken은 쿠키로 설정되지만, 일부 작업을 위해 로컬 스토리지에도 저장
+      // (참고: 실제로는 쿠키만 사용하는 것이 더 안전할 수 있음)
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
 
       // 사용자 정보 객체 생성
       const userInfo = {
@@ -133,32 +144,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 회원가입 함수
   const signup = async (userData: SignupData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5005/api/auth/signup",
-        userData
-      );
+      // 쿠키를 포함한 요청을 위해 authAxios 사용
+      const response = await authAxios.post("/api/auth/signup", userData);
 
       // 회원가입 성공 후 자동 로그인 실행
       if (response.status === 200 || response.status === 201) {
-        // 회원가입 API가 토큰을 반환하는 경우 아래 코드 사용
-        // const { accessToken, refreshToken } = response.data;
-        // if (accessToken && refreshToken) {
-        //   localStorage.setItem("accessToken", accessToken);
-        //   localStorage.setItem("refreshToken", refreshToken);
-        //
-        //   // 사용자 정보 객체 생성
-        //   const userInfo = {
-        //     email: response.data.user.email || userData.email,
-        //     nickname: response.data.user.nickname || userData.nickname,
-        //     image: response.data.user.image || null,
-        //   };
-        //
-        //   // 사용자 정보를 로컬 스토리지에 저장
-        //   localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        //   setUser(userInfo);
-        //   setIsAuthenticated(true);
-        // } else {
-        // 회원가입 API가 토큰을 반환하지 않는 경우 자동 로그인 실행
         const loginResult = await login({
           email: userData.email,
           password: userData.password,
@@ -172,7 +162,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
               "회원가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인 페이지로 이동합니다.",
           };
         }
-        // }
       }
 
       return { success: true, message: "가입이 완료되었습니다." };
@@ -190,7 +179,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 로그아웃 함수
   const logout = () => {
+    // 로컬 스토리지 클리어
     localStorage.clear();
+
+    // 쿠키 삭제를 위한 서버 요청 (백엔드에서 지원한다면)
+    try {
+      authAxios.post("/api/auth/signout");
+    } catch (error) {
+      console.error("로그아웃 API 오류:", error);
+    }
+
     setIsAuthenticated(false);
     setUser(null);
     router.push("/auth/login");
